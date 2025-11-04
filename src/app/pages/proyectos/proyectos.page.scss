@@ -1,0 +1,163 @@
+/* --- Estilos del Header (Copiados) --- */
+.main-header {
+  --box-shadow: none;
+
+ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;
+    text-transform: none;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  // Botón "Cerrar Sesión"
+  .btn-logout {
+    --background: #ffffff;
+    --color: #2C73B8;
+  }
+
+  .top-bar-dark {
+    --background: #252525;
+    --color: #fff;
+    --min-height: auto;
+    padding: 4px 0;
+    
+    ion-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 20px;
+    }
+  }
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .logo { width: 150px; margin-left: 20px; }
+  .btn-gestion { --border-radius: 6px; margin-right: 20px; }
+  .header-swoosh {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: var(--ion-color-primary);
+    clip-path: polygon(40% 0, 100% 0, 100% 100%);
+    z-index: -1;
+  }
+}
+
+/* ==========================================================
+   CAMBIO 6: AÑADIR CLASES DE VISIBILIDAD DEL MENÚ
+   ========================================================== */
+.desktop-only-buttons {
+  display: none; // Oculto por defecto (móvil)
+}
+
+.mobile-only-button {
+  display: block; // Visible por defecto (móvil)
+}
+
+/* --- Estilos del Footer (Copiados) --- */
+/* --- !! NUEVOS ESTILOS PARA ESTA PÁGINA !! --- */
+
+.main-content-grid {
+  max-width: 1100px;
+  padding: 20px;
+  margin-left: auto; // <-- AÑADIDO PARA CENTRAR EN WEB
+  margin-right: auto; // <-- AÑADIDO PARA CENTRAR EN WEB
+}
+
+.btn-volver {
+  --border-radius: 6px;
+  --color: #666;
+  --border-color: #ccc;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+// Estilos para la tarjeta de proyecto
+.project-card {
+  --background: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 20px;
+  
+  // Estilo para la imagen (previsualización de documento)
+  .project-image {
+    width: 100%;
+    height: 250px;
+    object-fit: contain; // 'contain' para que se vea el doc completo
+    background: #f5f5f5; // Fondo para que no sea blanco
+    border-bottom: 1px solid #eee;
+  }
+  
+  ion-card-header {
+    padding-bottom: 10px;
+  }
+
+  .category-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  ion-card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  ion-card-subtitle {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  ion-card-content {
+    ion-button {
+      margin-top: 10px;
+      --border-radius: 6px;
+      font-weight: bold;
+    }
+  }
+}
+
+/* ==========================================================
+   CAMBIO 7: LÓGICA DE VISIBILIDAD PARA DESKTOP Y MÓVIL
+   ========================================================== */
+
+/* Para Desktop (más de 992px) */
+@media (min-width: 992px) {
+  /* Muestra botones de desktop */
+  .desktop-only-buttons {
+    display: block; // O 'flex'
+  }
+  
+  /* Oculta botón de hamburguesa */
+  .mobile-only-button {
+    display: none;
+  }
+}
+
+/* Para Móvil (menos de 991px) */
+@media (max-width: 991px) {
+  /* Oculta botones de desktop */
+  .main-toolbar ion-buttons[slot="end"] {
+    display: none;
+  }
+
+  /* Mueve el logo a la derecha en móvil */
+  .main-toolbar .logo {
+    margin-left: auto;
+    margin-right: 20px;
+  }
+}

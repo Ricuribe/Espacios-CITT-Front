@@ -1,0 +1,134 @@
+<!-- 1. HEADER (Queda igual) -->
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start" class="mobile-only-button">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light">Guia de Uso</ion-button>
+      <ion-button fill="clear" color="light">Recursos</ion-button>
+      <ion-button class="btn-register" fill="solid" color="light">Registrarse</ion-button>
+      <ion-button class="btn-login" fill="outline" color="light">Iniciar Sesión</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- 2. MENÚ (Queda igual) -->
+<ion-menu contentId="main-content-home" type="overlay">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <!-- El ion-content aquí DENTRO es correcto para el menú -->
+    <ion-list>
+      <ion-item button>
+        <ion-label>Guia de Uso</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Recursos</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Registrarse</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Iniciar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<!-- 
+  3. CONTENIDO PRINCIPAL
+  Aquí es donde estaba el error.
+  Todas tus secciones (hero, calendar, partners) AHORA ESTÁN DENTRO.
+-->
+<ion-content [fullscreen]="true" id="main-content-home">
+
+  <section class="hero">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <h1>Reserva de Espacios Colaborativos</h1>
+          <p>Elige y reserva el espacio ideal para tus proyectos. Revisa la disponibilidad y asegura tu lugar.</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-img src="/assets/icon/portadapagina.jpg" alt="Espacios colaborativos" class="hero-image"></ion-img>
+  </section>
+
+  <section class="calendar-promo">
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col size="12" size-md="6">
+          <ion-img src="/assets/icon/2da_foto_home.jpg" alt="Persona revisando calendario" class="promo-image"></ion-img>
+        </ion-col>
+        <ion-col size="12" size-md="6" class="promo-text">
+          <h2>Revisa el calendario de disponibilidad</h2>
+          <p>Espacios diseñados para el trabajo en equipo y sesiones colaborativas para tus proyectos.</p>
+          <ion-button color="primary" size="large" class="btn-primary" [routerLink]="['/inicio-usuario']">Revisar calendario</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+
+  <section class="partners">
+    <ion-grid>
+      <ion-row>
+        <ion-col class="ion-text-center">
+          <h2>Empresas con las que se han trabajado</h2>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <!-- (Aquí van tus 3 ion-col con las ion-card de Pepsico, Polpaico, Sodimac) -->
+        <ion-col size="12" size-md="4">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title color="primary">Pepsico</ion-card-title>
+            </ion-card-header>
+            <ion-img src="/assets/img/logo-pepsico.png"></ion-img>
+            <ion-card-content>
+              Ya estan diseñados los espacios para desarrollar nuestros casos con enfoque social.
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="4">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title color="primary">Polpaico</ion-card-title>
+            </ion-card-header>
+            <ion-img src="/assets/img/logo-polpaico.png"></ion-img>
+            <ion-card-content>
+              CITT fomenta que sus equipos...
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="4">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title color="primary">SODIMAC</ion-card-title>
+            </ion-card-header>
+            <ion-img src="/assets/img/logo-sodimac.png"></ion-img>
+            <ion-card-content>
+              Ya estan comprometidos al ...
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+  
+  <!-- 
+    Eliminamos el <ion-content> vacío que tenías aquí.
+    Esta es la etiqueta de CIERRE del ion-content principal.
+  -->
+</ion-content>
+
+<!-- 
+  4. FOOTER
+  Ahora sí, <app-footer> va aquí, 
+  después de cerrar ion-content.
+-->
+<!-- <app-footer></app-footer> -->

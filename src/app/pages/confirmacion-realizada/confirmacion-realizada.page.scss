@@ -1,0 +1,164 @@
+/* --- Estilos del Header (Copiados) --- */
+.main-header {
+  --box-shadow: none;
+
+ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;
+    text-transform: none;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .btn-logout { // Nota: Tu clase en el HTML es 'btn-register', la he cambiado a 'btn-logout' para que coincida
+    --background: #ffffff;
+    --color: #2C73B8;
+  }
+
+  .top-bar-dark {
+    --background: #252525;
+    --color: #fff;
+    --min-height: auto;
+    padding: 4px 0;
+    
+    ion-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 20px;
+    }
+  }
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+  }
+  .logo { width: 150px; margin-left: 20px; }
+  .btn-gestion { --border-radius: 6px; margin-right: 20px; }
+  .header-swoosh {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: var(--ion-color-primary);
+    clip-path: polygon(40% 0, 100% 0, 100% 100%);
+    z-index: -1;
+  }
+}
+
+/* ==========================================================
+   CAMBIO 6: AÑADIR CLASES DE VISIBILIDAD DEL MENÚ
+   ========================================================== */
+.desktop-only-buttons {
+  display: none; // Oculto por defecto (móvil)
+}
+
+.mobile-only-button {
+  display: block; // Visible por defecto (móvil)
+}
+
+/* --- Estilos del Footer (Copiados) --- */
+
+/* --- !! NUEVOS ESTILOS PARA ESTA PÁGINA !! --- */
+
+.main-content-grid {
+  max-width: 1100px;
+  padding: 20px;
+  position: relative; // Para posicionar el botón "Volver"
+  margin-left: auto; // <-- AÑADIDO PARA CENTRAR EN WEB
+  margin-right: auto; // <-- AÑADIDO PARA CENTRAR EN WEB
+}
+
+// Clase para que la grid ocupe el 100% de la altura
+.h-100 {
+  height: 100%;
+}
+
+.btn-volver {
+  --border-radius: 6px;
+  --color: #666;
+  --border-color: #ccc;
+  font-weight: bold;
+  // Posición absoluta en la esquina superior izquierda
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+// Caja de confirmación centrada
+.confirmation-box {
+  text-align: center;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 25px;
+  }
+
+  ion-img {
+    width: 100%;
+    max-width: 350px; // Limita el tamaño de la imagen
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-top: 30px;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+  }
+
+  ion-button {
+    --border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .btn-secondary {
+    --border-color: #ccc;
+    --color: #333;
+  }
+}
+
+/* ==========================================================
+   CAMBIO 7: LÓGICA DE VISIBILIDAD PARA DESKTOP Y MÓVIL
+   ========================================================== */
+
+/* Para Desktop (más de 992px) */
+@media (min-width: 992px) {
+  /* Muestra botones de desktop */
+  .desktop-only-buttons {
+    display: block; // O 'flex'
+  }
+  
+  /* Oculta botón de hamburguesa */
+  .mobile-only-button {
+    display: none;
+  }
+}
+
+/* Para Móvil (menos de 991px) */
+@media (max-width: 991px) {
+  /* Oculta botones de desktop */
+  .main-toolbar ion-buttons[slot="end"] {
+    display: none;
+  }
+
+  /* Mueve el logo a la derecha en móvil */
+  .main-toolbar .logo {
+    margin-left: auto;
+    margin-right: 20px;
+  }
+}
+

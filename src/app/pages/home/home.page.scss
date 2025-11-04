@@ -1,0 +1,282 @@
+/* ... Aquí abajo va el resto de tu código CSS (.main-header, .top-bar, etc) ... */
+/* ... aquí va el resto de tu código SCSS para el header, footer, etc. ... */
+/* --- Header --- */
+.main-header {
+  // Saca la sombra de abajo del header
+  --box-shadow: none;
+
+  .top-bar {
+    --background: #f5f5f5;
+    --min-height: auto; // Hace la barra más delgada
+    padding: 2px 0;
+    --border-width: 0;
+    border-bottom: 1px solid #ffffff;
+
+    ion-chip {
+      background: #2C73B8;
+      font-size: 0.8rem;
+    }
+  }
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden; // Necesario para la forma azul
+    padding: 10px 0;
+  }
+
+  .logo {
+    width: 150px;
+    margin-left: 20px;
+  }
+  
+ ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;  /* <-- CAMBIO: Todos los botones redondos */
+    text-transform: none;   /* Opcional: quita las mayúsculas */
+    font-weight: 500;
+    margin-right: 10px;
+  }
+
+  /* Botón Principal (Registrarse) */
+  .btn-register {
+    --background: #ffffff; /* Fondo blanco */
+    --color: #2C73B8;      /* Texto azul (color del fondo del header) */
+  }
+
+  /* Botón Secundario (Iniciar Sesión) */
+  .btn-login {
+    --border-color: #ffffff; /* Borde blanco */
+    --color: #ffffff;        /* Texto blanco */
+    margin-right: 20px;      /* Margen extra al final */
+  }
+
+  /* --- FIN DE CAMBIOS EN BOTONES --- */
+}
+
+/* VISTA MÓVIL (Por defecto) 
+  - Escondemos los botones de desktop
+  - Mostramos el botón de hamburguesa
+*/
+.desktop-only-buttons {
+  display: none;
+}
+.mobile-only-button {
+  display: block; /* O 'flex' si prefieres */
+}
+
+/* VISTA DESKTOP (Pantallas más anchas que 991px) 
+  - Escondemos el botón de hamburguesa
+  - Mostramos los botones de desktop
+*/
+@media (min-width: 992px) {
+  .desktop-only-buttons {
+    display: block; /* O 'flex' */
+  }
+  
+  .mobile-only-button {
+    display: none;
+  }
+}
+
+/* (Tus otras reglas @media (max-width: 991px) 
+  para centrar texto pueden quedar igual)
+*/
+@media (max-width: 991px) {
+  /* Centra el texto en móvil */
+  .promo-text, .partners ion-card {
+    text-align: center;
+  }
+  .partners ion-card ion-card-header {
+    padding-left: 16px; /* Reset */
+  }
+  .partners ion-card ion-card-content {
+    padding-left: 16px; /* Reset */
+  }
+}
+
+
+/* --- Contenido Principal --- */
+ion-content {
+  // Asegura que el contenido no sea tapado por el header
+  --padding-top: 10px;
+}
+
+/* --- 3. Sección Hero --- */
+.hero {
+  padding-bottom: 0;
+  text-align: left;
+
+  ion-grid {
+    padding-left: 20px;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 15px;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 600px;
+  }
+  
+  .hero-image {
+    width: 100%;
+    margin-top: 30px;
+  }
+}
+
+/* --- 4. Sección Calendario --- */
+.calendar-promo {
+  padding: 60px 20px;
+  background-color: #fdfdfd;
+
+  .promo-image {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .promo-text {
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    
+    // Estilo del botón azul
+    .btn-primary {
+      --border-radius: 6px;
+      font-weight: bold;
+    }
+  }
+}
+
+
+/* --- 5. Sección Empresas --- */
+.partners {
+  padding: 60px 20px;
+  
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 50px;
+  }
+  
+  ion-card {
+    // Saca la sombra y bordes por defecto
+    --background: #fff;
+    box-shadow: none;
+    text-align: left;
+    
+    margin-bottom: 24px; /* Añade separación vertical entre cards */
+    
+    ion-card-header {
+      padding-left: 0;
+    }
+    
+    ion-card-title {
+      font-size: 1.3rem;
+    }
+    
+    ion-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 1px solid #eee;
+      padding: 5px;
+      margin-bottom: 15px;
+      // Centrar la imagen si la columna es más ancha
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    ion-card-content {
+      padding-left: 0;
+      font-size: 0.95rem;
+      color: #666;
+    }
+  }
+}
+
+
+/* --- Arreglos para Desktop y Móvil --- */
+
+/* VISTA MÓVIL (Por defecto) 
+  - Escondemos los botones de desktop
+  - Mostramos el botón de hamburguesa
+*/
+.desktop-only-buttons {
+  display: none;
+}
+.mobile-only-button {
+  display: block; /* O 'flex' si prefieres */
+}
+
+/* VISTA DESKTOP (Pantallas más anchas que 991px) 
+  - Escondemos el botón de hamburguesa
+  - Mostramos los botones de desktop
+*/
+@media (min-width: 992px) {
+  .desktop-only-buttons {
+    display: block; /* O 'flex' */
+  }
+  
+  .mobile-only-button {
+    display: none;
+  }
+}
+
+/* (Tus otras reglas @media (max-width: 991px) 
+  para centrar texto pueden quedar igual)
+*/
+@media (max-width: 991px) {
+  /* Centra el texto en móvil */
+  .promo-text, .partners ion-card {
+    text-align: center;
+  }
+  .partners ion-card ion-card-header {
+    padding-left: 16px; /* Reset */
+  }
+  .partners ion-card ion-card-content {
+    padding-left: 16px; /* Reset */
+  }
+}
+
+:host {
+  ion-content {
+    --padding-bottom: 190px;
+  }
+}
+
+/*
+  Ajuste para mover el logo a la derecha en MÓVIL
+  (Pantallas de 991px o menos)
+*/
+@media (max-width: 991px) {
+
+  /* Usamos .main-toolbar .logo para ser más específicos
+    y sobreescribir el 'margin-left: 20px' que ya tenías.
+  */
+  .main-toolbar .logo {
+    /* 'margin-left: auto' es un truco de flexbox que
+      "empuja" el elemento lo más a la derecha posible.
+    */
+    margin-left: auto;
+    
+    /* Le damos un margen derecho para que no se pegue
+      totalmente al borde de la pantalla.
+    */
+    margin-right: 20px;
+  }
+}

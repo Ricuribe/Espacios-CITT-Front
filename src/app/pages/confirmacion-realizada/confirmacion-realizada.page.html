@@ -1,0 +1,87 @@
+<!-- ==========================================================
+     CAMBIO 1: AÑADIR BOTÓN DE HAMBURGUESA Y CLASES
+     ========================================================== -->
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+
+    <!-- CAMBIO 1.A: Añadido el botón de hamburguesa -->
+    <ion-buttons slot="start" class="mobile-only-button">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
+    
+    <!-- CAMBIO 1.B: Añadida la clase "desktop-only-buttons" -->
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light">Recursos</ion-button>
+      <ion-button fill="clear" color="light">Memorias</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light">Cerrar sesion</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- ==========================================================
+     CAMBIO 2: AÑADIR EL BLOQUE DEL MENÚ LATERAL
+     ========================================================== -->
+<ion-menu contentId="confirmacion-content" type="overlay">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <!-- Aquí pones los botones que quieres en el menú -->
+      <ion-item button [routerLink]="['/inicio-usuario']">
+        <ion-label>Inicio</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/recursos']">
+        <ion-label>Recursos</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/memorias']">
+        <ion-label>Memorias</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Cerrar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+<!-- ==========================================================
+     CAMBIO 3: AÑADIR 'id' AL ION-CONTENT
+     ========================================================== -->
+<ion-content [fullscreen]="true" id="confirmacion-content">
+  <ion-grid class="main-content-grid ion-justify-content-center ion-align-items-center h-100">
+    
+    <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
+      <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+      Volver
+    </ion-button>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6" size-lg="5" class="confirmation-box">
+        
+        <h1>Solicitud realizada</h1>
+        
+        <ion-img src="/assets/img/espacio-cubo.png" alt="Área de reuniones"></ion-img>
+
+        <h2>El Área de Reuniones ha sido agendada con éxito</h2>
+        
+        <p>Horario: Lunes 27, Octubre 2025</p>
+
+        <ion-button expand="block" class="btn-primary">
+          Ver Mis Solicitudes
+        </ion-button>
+        
+        <ion-button expand="block" fill="outline" class="btn-secondary">
+          Volver a Inicio CITT
+        </ion-button>
+
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+

@@ -1,0 +1,140 @@
+<!-- ==========================================================
+     CAMBIO 1: AÑADIR BOTÓN DE HAMBURGUESA Y CLASES
+     ========================================================== -->
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+
+    <!-- CAMBIO 1.A: Añadido el botón de hamburguesa -->
+    <ion-buttons slot="start" class="mobile-only-button">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
+    
+    <!-- CAMBIO 1.B: Añadida la clase "desktop-only-buttons" -->
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light">Recursos</ion-button>
+      <ion-button fill="clear" color="light">Memorias</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light">Cerrar sesion</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- ==========================================================
+     CAMBIO 2: AÑADIR EL BLOQUE DEL MENÚ LATERAL
+     ========================================================== -->
+<ion-menu contentId="seleccion-espacio-content" type="overlay">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <!-- Aquí pones los botones que quieres en el menú -->
+      <ion-item button [routerLink]="['/inicio-usuario']">
+        <ion-label>Inicio</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/recursos']">
+        <ion-label>Recursos</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/memorias']">
+        <ion-label>Memorias</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Cerrar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<!-- ==========================================================
+     CAMBIO 3: AÑADIR 'id' AL ION-CONTENT
+     ========================================================== -->
+<ion-content [fullscreen]="true" id="seleccion-espacio-content">
+  <ion-grid class="main-content-grid"> <!-- Moví la grid aquí para envolver todo -->
+
+    <ion-row>
+      <ion-col>
+        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
+          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+          Volver
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    
+    <ion-row>
+      <ion-col>
+        <h1 class="page-title">Selecciona el tipo de espacio</h1>
+      </ion-col>
+    </ion-row>
+
+    <!-- Barra de Filtros (sin cambios) -->
+    <ion-row>
+      <ion-col>
+        <div class="filter-bar">
+          <ion-item>
+            <ion-select placeholder="Filtrar por...">
+            </ion-select>
+          </ion-item>
+          <ion-button class="btn-apply-filter">APLICAR FILTRO</ion-button>
+          <ion-button fill="outline" class="btn-clear-filter">LIMPIAR FILTROS</ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <!-- ==========================================================
+         CAMBIO 4: LOADER IMPACTANTE (SKELETON)
+         ========================================================== -->
+    <div *ngIf="isLoading">
+      <ion-grid>
+        <ion-row>
+          <!-- Genera 6 tarjetas "fantasma" -->
+          <ion-col size="12" size-md="6" *ngFor="let i of [1,2,3,4,5,6]">
+            <ion-card class="skeleton-card">
+              <ion-skeleton-text animated class="skeleton-image"></ion-skeleton-text>
+              <ion-card-header>
+                <ion-skeleton-text animated class="skeleton-title"></ion-skeleton-text>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-skeleton-text animated class="skeleton-line-1"></ion-skeleton-text>
+                <ion-skeleton-text animated class="skeleton-line-2"></ion-skeleton-text>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Mensaje de Error (sin cambios) -->
+    <div *ngIf="!isLoading && error" class="ion-text-center ion-padding">
+      <ion-text color="danger">
+        <p>Error al cargar los datos. Intenta de nuevo más tarde.</p>
+        <p><small>{{ error.message }}</small></p>
+      </ion-text>
+    </div>
+
+    <!-- Contenido Real (se muestra cuando !isLoading y !error) -->
+    <ion-grid *ngIf="!isLoading && !error">
+      <ion-row>
+        <ion-col size="12" size-md="6" *ngFor="let workspace of workspaces">
+          <ion-card class="space-card">
+            <ion-img [src]="workspace.image" [alt]="workspace.name" (ionError)="workspace.image = '/assets/img/placeholder.png'"></ion-img>
+            <ion-card-header>
+              <ion-card-title>{{ workspace.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>{{ workspace.description }}</p>
+              <ion-button 
+                expand="block" 
+                (click)="verDetalleEspacio(workspace.id_workspace)">
+                VER INFORMACIÓN DE ESPACIO
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,54 @@
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
+    
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light">Recursos</ion-button>
+      <ion-button fill="clear" color="light">Memorias</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light">Cerrar sesion</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid class="main-content-grid">
+    <ion-row>
+      <ion-col>
+        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
+          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+          Volver
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    
+    <ion-row>
+      <ion-col size="12" size-md="6" class="guide-text">
+        <h1>Cómo reservar</h1>
+        
+        <div class="step">
+          <h3>Inicia Sesión en tu Cuenta</h3>
+          <p>Para acceder a las reservas, inicia sesión con tu cuenta de estudiante de DUOC. Si aún no tienes una, regístrate en pocos segundos.</p>
+        </div>
+        
+        <div class="step">
+          <h3>Selecciona un Espacio</h3>
+          <p>Navega por las diferentes opciones de salas y elige la que mejor se adapte a tus necesidades: salas de reuniones, salas de estudio o espacios con equipamiento tecnológico.</p>
+        </div>
+
+        <div class="step">
+          <h3>Elige tu Horario</h3>
+          <p>"Utiliza el calendario interactivo para revisar la disponibilidad de la sala y selecciona la fecha y hora que más te convenga. Verás las horarios libres y ocupados."</p>
+        </div>
+
+        <div class="step">
+          <h3>Confirma la Reserva</h3>
+          <p>Completa un breve formulario con los detalles de tu reserva y confírmala. Recibirás una confirmación en tu correo electrónico con todos los datos.</p>
+        </div>
+      </ion-col>
+
+      <ion-col size="12" size-md="6" class="guide-image">
+        <ion-img src="/assets/img/guia-uso-image.png" alt="Estudiantes usando espacios"></ion-img>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

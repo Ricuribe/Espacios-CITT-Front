@@ -1,0 +1,179 @@
+/* --- Estilos del Header (Copiados de home.page.scss) --- */
+.main-header {
+  --box-shadow: none;
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+  }
+
+  .logo {
+    width: 150px;
+    margin-left: 20px;
+  }
+  
+  ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;
+    text-transform: none;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+
+  .btn-register { // Tu botón de "Cerrar Sesión" usa esta clase
+    --background: #ffffff; /* Fondo blanco */
+    --color: #2C73B8;      /* Texto azul (color del fondo del header) */
+  }
+}
+
+/* --- !! NUEVOS ESTILOS PARA ESTA PÁGINA !! --- */
+
+// Botón azul genérico
+.btn-primary {
+  --border-radius: 6px;
+  font-weight: bold;
+}
+
+// Sección 1: Bienvenida
+.welcome-section {
+  padding: 20px;
+
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  ion-img {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+// Sección 2: CTA "Mis Reservas"
+.cta-section {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+
+  h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+  }
+}
+
+// Sección 3 y 4: Tarjetas Promocionales
+.promo-card {
+  position: relative;
+  min-height: 450px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  color: #fff;
+
+  // El overlay oscuro
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); // Sombra
+    z-index: 1;
+  }
+
+  // El contenido de texto (encima del overlay)
+  .promo-content {
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+  }
+}
+
+// Clases para las imágenes de fondo
+.reserva-bg {
+  // Reemplaza con la ruta a tu imagen
+  background-image: url('/assets/icon/segundafotoini-usuario.jpg'); 
+}
+
+.historial-bg {
+  // Reemplaza con la ruta a tu imagen
+  background-image: url('/assets/icon/3ra-fto-ini-usuario.jpg');
+}
+
+/* --- LÓGICA DE VISIBILIDAD MÓVIL/DESKTOP --- */
+
+/* Por defecto (móvil): Oculta botones de desktop, muestra hamburguesa */
+.desktop-only-buttons {
+  display: none;
+}
+.mobile-only-button {
+  display: block; 
+}
+
+
+/* --- Arreglos para Desktop --- */
+@media (min-width: 992px) {
+  ion-grid {
+    max-width: 1100px;
+  }
+
+  /* AQUÍ: Muestra los botones de desktop y 
+    oculta el de hamburguesa en pantallas grandes 
+  */
+  .main-toolbar ion-buttons[slot="end"] {
+    display: block;
+  }
+  .mobile-only-button {
+    display: none;
+  }
+  .desktop-only-buttons {
+    display: block;
+  }
+}
+
+/* --- Arreglos para Móvil --- */
+@media (max-width: 991px) {
+  /* AQUÍ: Oculta los botones de desktop y 
+    mueve el logo a la derecha en pantallas pequeñas
+  */
+  .main-toolbar ion-buttons[slot="end"] {
+    display: none;
+  }
+
+  .promo-card .promo-content h2 {
+    font-size: 2rem;
+  }
+
+  .main-toolbar .logo {
+    margin-left: auto;
+    margin-right: 20px;
+  }
+}
+

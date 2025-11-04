@@ -1,0 +1,140 @@
+/* --- Estilos del Header (Copiados) --- */
+.main-header {
+  --box-shadow: none;
+
+ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;  /* <-- CAMBIO: Todos los botones redondos */
+    text-transform: none;   /* Opcional: quita las mayúsculas */
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  // Botón "Cerrar Sesión"
+  .btn-logout {
+    --background: #ffffff; /* Fondo blanco */
+    --color: #2C73B8;      /* Texto azul (color del fondo del header) */
+  }
+
+  /* !! NUEVA !! Barra superior morada */
+  .top-bar-purple {
+    --background: #4A1E6A; // Un morado oscuro (estimado)
+    --color: #fff;
+    --min-height: auto;
+    padding: 4px 0;
+    
+    // Centra el título en iOS y lo alinea a la izquierda en MD (Android/Web)
+    ion-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 20px;
+    }
+  }
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+  }
+  .logo { width: 150px; margin-left: 20px; }
+  .btn-logout { --border-radius: 6px; margin-right: 20px; }
+  
+}
+
+/* --- Estilos del Footer (Copiados) --- */
+
+/* --- !! NUEVOS ESTILOS PARA ESTA PÁGINA !! --- */
+
+// Grid principal para centrar el contenido
+.main-content-grid {
+  max-width: 1100px;
+  padding: 20px;
+}
+
+.btn-volver {
+  --border-radius: 6px;
+  --color: #666;
+  --border-color: #ccc;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+.guide-text {
+  // Asegura que el texto esté alineado con la imagen en desktop
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 30px;
+  }
+
+  .step {
+    margin-bottom: 25px;
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.6;
+    }
+  }
+}
+
+.guide-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-img {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+  }
+}
+
+/* --- Arreglos para Desktop (Copiados) --- */
+@media (min-width: 992px) {
+  .main-toolbar ion-buttons[slot="end"] {
+    display: block;
+  }
+}
+@media (max-width: 991px) {
+  .main-toolbar ion-buttons[slot="end"] {
+    display: none;
+  }
+  
+  // En móvil, la imagen se va para abajo
+  .guide-image {
+    margin-top: 30px;
+  }
+}
+
+/*
+  Ajuste para mover el logo a la derecha en MÓVIL
+  (Pantallas de 991px o menos)
+*/
+@media (max-width: 991px) {
+
+  /* Usamos .main-toolbar .logo para ser más específicos
+    y sobreescribir el 'margin-left: 20px' que ya tenías.
+  */
+  .main-toolbar .logo {
+    /* 'margin-left: auto' es un truco de flexbox que
+      "empuja" el elemento lo más a la derecha posible.
+    */
+    margin-left: auto;
+    
+    /* Le damos un margen derecho para que no se pegue
+      totalmente al borde de la pantalla.
+    */
+    margin-right: 20px;
+  }
+}

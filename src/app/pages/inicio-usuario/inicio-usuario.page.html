@@ -1,0 +1,101 @@
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+
+    <!-- 
+      Botón de Hamburguesa (para móvil)
+    -->
+    <ion-buttons slot="start" class="mobile-only-button">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
+    
+    <!-- Botones de Desktop -->
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light">Recursos</ion-button>
+      <ion-button fill="clear" color="light">Memorias</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light">Cerrar sesion</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- 
+  Menú Lateral
+-->
+<ion-menu contentId="inicio-usuario-content" type="overlay">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button>
+        <ion-label>Recursos</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Memorias</ion-label>
+      </ion-item>
+      <ion-item button>
+        <ion-label>Cerrar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+<!-- 
+  Contenido Principal
+  (Con el ID que coincide con el 'contentId' del menú)
+-->
+<ion-content [fullscreen]="true" id="inicio-usuario-content">
+
+  <section class="welcome-section">
+    <ion-grid>
+      <ion-row>
+        <!-- 
+          AQUÍ ESTABA EL ERROR: 
+          Debe ser </ion-col>
+        -->
+        <ion-col>
+          <h2>Bienvenido, Juan Perez</h2>
+          <p>Tu centro de control para reservar espacios y organizar eventos.</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-img src="/assets/icon/1ra-fto-inicio-usuario.jpg" alt="Edificio Duoc UC"></ion-img>
+  </section>
+
+  <section class="cta-section">
+    <ion-grid>
+      <ion-row>
+        <!-- 
+          AQUÍ ESTABA EL OTRO ERROR: 
+          Debe ser </ion-col>
+        -->
+        <ion-col class="ion-text-center">
+          <h3>"Elige la acción que deseas realizar o revisa el estado de tus reservas."</h3>
+          <ion-button size="large" class="btn-primary">Ver Mis Reservas</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+
+  <section class="promo-card reserva-bg">
+    <div class="promo-content">
+      <h2>RESERVA UN ESPACIO</h2>
+      <p>Revisa la disponibilidad y reserva el espacio ideal para estudiar o trabajar en equipo.</p>
+      <ion-button size="large" class="btn-primary" [routerLink]="['/seleccion-espacio']">Reservar Ahora</ion-button>
+    </div>
+  </section>
+
+  <section class="promo-card historial-bg">
+    <div class="promo-content">
+      <h2>HISTORIAL Y MEMORIAS</h2>
+      <p>Conoce el proyecto de nuestros compañeros de estudio. No te quedes dentro de CITT, sé el resto, todo se puede.</p>
+      <ion-button size="large" class="btn-primary">Ver Repositorio De Memorias</ion-button>
+    </div>
+  </section>
+
+</ion-content>
+

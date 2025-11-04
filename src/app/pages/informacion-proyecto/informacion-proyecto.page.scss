@@ -1,0 +1,198 @@
+/* --- Estilos del Header (Copiados) --- */
+.main-header {
+  --box-shadow: none;
+
+  /* === AÑADIDO: Estilos de botones del header === */
+  ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;
+    text-transform: none;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .btn-logout {
+    --background: #ffffff;
+    --color: #2C73B8;
+  }
+  /* === FIN AÑADIDO === */
+
+  .top-bar-dark {
+    --background: #252525;
+    --color: #fff;
+    --min-height: auto;
+    padding: 4px 0;
+    
+    ion-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 20px;
+    }
+  }
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+  }
+  .logo { width: 150px; margin-left: 20px; }
+  .btn-gestion { --border-radius: 6px; margin-right: 20px; }
+  
+}
+
+/* ==========================================================
+   CAMBIO 6: AÑADIR CLASES DE VISIBILIDAD DEL MENÚ
+   ========================================================== */
+.desktop-only-buttons {
+  display: none; // Oculto por defecto (móvil)
+}
+
+.mobile-only-button {
+  display: block; // Visible por defecto (móvil)
+}
+
+/* --- Estilos del Footer (Copiados) --- */
+
+/* --- !! ESTILOS PARA ESTA PÁGINA !! --- */
+
+/* === AÑADIDO: Centrado en Web === */
+.main-content-grid {
+  max-width: 1100px;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* === AÑADIDO: Botón Volver === */
+.btn-volver {
+  --border-radius: 6px;
+  --color: #666;
+  --border-color: #ccc;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+
+// Columna de información del proyecto
+.project-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .author {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  .description {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  // Lista de detalles
+  .details-list {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    
+    .detail-item {
+      margin-bottom: 15px;
+      
+      strong {
+        display: block;
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 4px;
+      }
+      span {
+        display: block;
+        font-size: 0.95rem;
+        color: #666;
+      }
+    }
+  }
+
+  // Botones de acción
+  .action-buttons {
+    margin-top: 30px;
+    padding: 0; // Quita padding de la grid
+
+    ion-button {
+      --border-radius: 6px;
+      font-weight: bold;
+    }
+    
+    .btn-secondary {
+      --background: #fff;
+      --color: var(--ion-color-primary);
+      --border-color: var(--ion-color-primary);
+      --border-width: 2px;
+    }
+  }
+}
+
+// Columna de la imagen
+.project-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  ion-img {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+  }
+}
+
+/* ==========================================================
+   CAMBIO 7: LÓGICA DE VISIBILIDAD PARA DESKTOP Y MÓVIL
+   ========================================================== */
+
+/* Para Desktop (más de 992px) */
+@media (min-width: 992px) {
+  /* Muestra botones de desktop */
+  .desktop-only-buttons {
+    display: block; // O 'flex'
+  }
+  
+  /* Oculta botón de hamburguesa */
+  .mobile-only-button {
+    display: none;
+  }
+}
+
+/* Para Móvil (menos de 991px) */
+@media (max-width: 991px) {
+  /* Oculta botones de desktop */
+  .main-toolbar ion-buttons[slot="end"] {
+    display: none;
+  }
+
+  /* Mueve el logo a la derecha en móvil */
+  .main-toolbar .logo {
+    margin-left: auto;
+    margin-right: 20px;
+  }
+
+  /* --- Otros estilos solo para móvil --- */
+  .project-image {
+    order: -1; // Pone la imagen primero
+    margin-bottom: 30px; 
+  }
+  .project-info h1 {
+    font-size: 2rem; // Título más pequeño
+  }
+}
