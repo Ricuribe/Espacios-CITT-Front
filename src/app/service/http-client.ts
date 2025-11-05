@@ -23,4 +23,9 @@ export class ApiService {
     // Asume que tu API responde con un objeto workspace en '.../workspaces/ID/'
     return this.http.get<Workspace>(`${this.baseUrl}schedule/workspaces/${id}/`);
   }
+
+  /** Crea una nueva reserva (schedule) en el backend */
+  createSchedule(payload: any) {
+    return this.http.post(`${this.baseUrl}schedule/schedules/`, payload);
+  }
 }

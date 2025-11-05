@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/service/http-client';
 import { Workspace } from 'src/app/interfaces/workspace';
-import { ActivatedRoute, RouterLink } from '@angular/router'; // <-- CAMBIO: Añadido RouterLink
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Location, CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
-// Importaciones Standalone A La Carte
 import {
   IonHeader,
   IonToolbar,
@@ -16,10 +16,6 @@ import {
   IonImg,
   IonText,
   IonTitle,
-
-  // ==========================================================
-  // CAMBIO 7: AÑADIR LOS COMPONENTES DEL MENÚ
-  // ==========================================================
   IonMenu,
   IonMenuButton,
   IonList,
@@ -41,8 +37,8 @@ import { arrowBackOutline } from 'ionicons/icons';
   styleUrls: ['./detalle-espacio.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, // Para *ngIf
-    RouterLink,   // <-- CAMBIO: Añadido aquí
+    CommonModule, 
+    RouterLink,   
     IonHeader,
     IonToolbar,
     IonContent,
@@ -53,10 +49,6 @@ import { arrowBackOutline } from 'ionicons/icons';
     IonImg,
     IonText,
     IonTitle,
-
-    // ==========================================================
-    // CAMBIO 8: AÑADIR LOS MISMOS COMPONENTES AQUÍ
-    // ==========================================================
     IonMenu,
     IonMenuButton,
     IonList,
@@ -69,16 +61,17 @@ import { arrowBackOutline } from 'ionicons/icons';
 })
 export class DetalleEspacioPage implements OnInit {
 
-  public workspace: Workspace | undefined; // Almacenará el workspace específico
+  public workspace: Workspace | undefined;
   public isLoading = true;
   public error: any = null;
 
   constructor(
-    private route: ActivatedRoute, // Para leer la URL
+    private route: ActivatedRoute,
+    private router: Router,
     private apiService: ApiService,
-    private location: Location // Para el botón "Volver"
+    private location: Location 
   ) {
-    addIcons({ arrowBackOutline }); // Registra el icono
+    addIcons({ arrowBackOutline });
   }
 
   ngOnInit() {
@@ -110,7 +103,20 @@ export class DetalleEspacioPage implements OnInit {
     }
   }
 
-  // Función para el botón "Volver"
+  ScheduleReservation() {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) {
+      console.warn('No se proporcionó un ID de espacio.');
+      return;
+    }
+    console.log('le id', idParam)
+    const id = +idParam;
+
+    sessionStorage.setItem('workspaceId', id.toString());
+    this.router.navigate(['agendar-hora']);
+    
+  }
+
   goBack() {
     this.location.back();
   }
