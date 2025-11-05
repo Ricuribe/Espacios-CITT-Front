@@ -20,9 +20,6 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- ==========================================================
-     CAMBIO 2: AÑADIR EL BLOQUE DEL MENÚ LATERAL
-     ========================================================== -->
 <ion-menu contentId="confirmacion-content" type="overlay">
   <ion-header>
     <ion-toolbar color="primary">
@@ -31,7 +28,7 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <!-- Aquí pones los botones que quieres en el menú -->
+
       <ion-item button [routerLink]="['/inicio-usuario']">
         <ion-label>Inicio</ion-label>
       </ion-item>
@@ -44,14 +41,13 @@
       <ion-item button [routerLink]="['/home']">
         <ion-label>Cerrar Sesión</ion-label>
       </ion-item>
+
     </ion-list>
   </ion-content>
 </ion-menu>
 
 
-<!-- ==========================================================
-     CAMBIO 3: AÑADIR 'id' AL ION-CONTENT
-     ========================================================== -->
+
 <ion-content [fullscreen]="true" id="confirmacion-content">
   <ion-grid class="main-content-grid ion-justify-content-center ion-align-items-center h-100">
     
@@ -63,19 +59,23 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-md="6" size-lg="5" class="confirmation-box">
         
-        <h1>Solicitud realizada</h1>
+        <ion-title>Solicitud realizada</ion-title>
         
-        <ion-img src="/assets/img/espacio-cubo.png" alt="Área de reuniones"></ion-img>
+        <ion-img src="{{this.workspace.image}}" alt="imagen espacio"></ion-img>
 
-        <h2>El Área de Reuniones ha sido agendada con éxito</h2>
+        <ion-text> {{this.workspace.name}} ha sido agendada con éxito</ion-text>
         
-        <p>Horario: Lunes 27, Octubre 2025</p>
+        <ion-text>Horario</ion-text>
+
+        <ion-text>{{this.date}}</ion-text>
+
+        <ion-text> Desde {{this.startHour}}  hasta las {{this.endHour}} </ion-text>
 
         <ion-button expand="block" class="btn-primary">
           Ver Mis Solicitudes
         </ion-button>
         
-        <ion-button expand="block" fill="outline" class="btn-secondary">
+        <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">
           Volver a Inicio CITT
         </ion-button>
 

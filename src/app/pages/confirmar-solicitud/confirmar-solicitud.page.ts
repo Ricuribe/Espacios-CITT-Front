@@ -59,11 +59,11 @@ export class ConfirmarSolicitudPage implements OnInit {
     description: string;
     duration: number; // minutos: 30,60,90
   } = {
-    title: 'Reunión de planificación',
-    team: 'Equipo Backend',
-    attendees: 4,
-    project: 'Plataforma de agendamiento',
-    description: 'Definición de tareas y revisión de dependencias',
+    title: '',
+    team: '',
+    attendees: 0,
+    project: '',
+    description: '',
     duration: 30
   };
 
@@ -155,7 +155,7 @@ export class ConfirmarSolicitudPage implements OnInit {
         console.log('Reserva creada', res);
         // Navegar a la página de confirmación realizada si existe
         try {
-          this.router.navigate(['/confirmacion-realizada'], { state: { reserva: payload } });
+          this.router.navigate(['/confirmacion-realizada'], { state: { reserva: res, workspace: this.workspace } });
         } catch (e) {
           // fallback: volver al inicio
           this.router.navigate(['/']);
