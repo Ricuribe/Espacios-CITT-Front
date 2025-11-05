@@ -1,7 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Workspace } from '../interfaces/workspace';
+import { Workspace } from '../interfaces/workspace'; // Asume que tienes este archivo
+
+// ==========================================================
+// INTERFAZ "MEMORY" BASADA EN TU MODELS.PY
+// ==========================================================
+export interface Memory {
+  id_memo: number;
+  titulo: string;
+  imagen_display: string;
+  profesor: string;
+  descripcion: string;
+  loc_disco: string; 
+  fecha_inicio: string; 
+  fecha_termino: string; 
+  fecha_subida: string; 
+  // (Puedes añadir más campos de tu models.py si los necesitas)
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +27,10 @@ export class ApiService {
   private baseUrl = 'http://localhost:8000/api/'; // La URL base de tu API
 
   constructor(private http: HttpClient) { }
+
+  // ==========================================================
+  // FUNCIONES DE SCHEDULE (RESERVAS)
+  // ==========================================================
 
   getWorkspaces(): Observable<any> {
     return this.http.get(`${this.baseUrl}schedule/workspaces/`);
@@ -28,4 +49,20 @@ export class ApiService {
   createSchedule(payload: any) {
     return this.http.post(`${this.baseUrl}schedule/schedules/`, payload);
   }
+
+  // ==========================================================
+  // FUNCIONES DE MEMOS (PROYECTOS)
+  // ==========================================================
+
+  /** Obtiene la lista de todas las memorias/proyectos */
+  getMemories(): Observable<Memory[]> {
+    return this.http.get<Memory[]>(`${this.baseUrl}memos/memories/`);
+  }
+
+  /** Obtiene una memoria/proyecto por su ID */
+  getMemoryById(id: number): Observable<Memory> {
+    // Asume que tu API de detalle es 'memos/{id}/'
+    return this.http.get<Memory>(`${this.baseUrl}memos/${id}/`); 
+  }
+
 }

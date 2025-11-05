@@ -55,9 +55,8 @@ loadComponent: () => import('./pages/confirmar-solicitud/confirmar-solicitud.pag
     loadComponent: () => import('./pages/confirmacion-realizada/confirmacion-realizada.page').then( m => m.ConfirmacionRealizadaPage)
   },
   {
-    path: 'informacion-proyecto',
-    // CAMBIO: Volvemos a m.InformacionProyectoPage
-    loadComponent: () => import('./pages/informacion-proyecto/informacion-proyecto.page').then( m => m.InformacionProyectoPage)
+  path: 'informacion-proyecto/:id',
+  loadComponent: () => import('./pages/informacion-proyecto/informacion-proyecto.page').then( m => m.InformacionProyectoPage)
   },
   {
     path: 'registro',
