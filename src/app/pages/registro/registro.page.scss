@@ -1,0 +1,120 @@
+/* =============================================
+  NUEVOS ESTILOS DE HEADER
+  =============================================
+*/
+.auth-header {
+  .main-toolbar {
+    --background: #2C73B8; // Fondo azul
+  }
+
+  .logo { 
+    width: 150px; 
+    margin-right: 20px; // Margen para que no se pegue al borde
+  }
+
+  ion-button {
+    --color: #ffffff; // Icono de volver en blanco
+  }
+}
+
+/* =============================================
+  NUEVOS ESTILOS DE CONTENIDO
+  =============================================
+*/
+.form-page-content {
+  --background: #f9f9f9; // Un fondo gris claro
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+  /* Centrado en Desktop */
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  
+  /* Espaciado */
+  padding: 40px;
+  margin-top: 20px;
+  
+  /* Estilo de Tarjeta */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 767px) {
+    /* En móvil, quitamos el estilo de tarjeta */
+    padding: 30px;
+    background: transparent;
+    box-shadow: none;
+    margin-top: 0;
+  }
+}
+
+/* =============================================
+  ESTILOS DEL FORMULARIO (Tu código original)
+  =============================================
+*/
+
+h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.form-item {
+  --background: #f4f5f7;
+  --padding-start: 16px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  
+  &.ion-valid {
+    --highlight-color: var(--ion-color-success);
+    border: 1px solid var(--ion-color-success);
+  }
+  
+  &.ion-invalid.ion-touched {
+    --highlight-color: var(--ion-color-danger);
+    border: 1px solid var(--ion-color-danger);
+  }
+}
+
+.password-toggle {
+  --color: #666;
+}
+
+.error-message {
+  padding-left: 16px;
+  margin-bottom: 15px;
+  
+  ion-text {
+    font-size: 0.85rem;
+  }
+}
+
+.submit-button {
+  --border-radius: 8px;
+  font-weight: bold;
+  height: 50px;
+  margin-top: 30px;
+}
+
+.footer-link {
+  margin-top: 40px;
+  text-align: center;
+  
+  span {
+    color: #555;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: -5px;
+  }
+  
+  ion-button {
+    font-weight: bold;
+  }
+}

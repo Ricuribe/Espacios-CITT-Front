@@ -1,0 +1,151 @@
+<!-- 
+  =============================================
+  NUEVO HEADER DE AUTENTICACIÓN
+  =============================================
+-->
+<ion-header class="auth-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start">
+      <!-- Botón para volver al Home (página pública) -->
+      <ion-button [routerLink]="['/home']" color="light" routerDirection="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-buttons slot="primary">
+       <ion-img src="/assets/icon/logo_CITT.png" alt="Logo CITT Duoc UC" class="logo"></ion-img>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- 
+  =============================================
+  CONTENIDO PRINCIPAL (FORMULARIO CENTRADO)
+  =============================================
+-->
+<ion-content [fullscreen]="true" class="form-page-content">
+  <div class="form-container">
+    
+    <h3>Crear Cuenta</h3>
+
+    <!-- Formulario Reactivo de Registro -->
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+      
+      <!-- CAMPO: Nombre -->
+      <ion-item class="form-item">
+        <ion-input 
+          label="Nombre Completo" 
+          labelPlacement="stacked" 
+          placeholder="Ingresa tu nombre"
+          type="text"
+          formControlName="nombre"
+          [class.ion-invalid]="nombre?.invalid && nombre?.touched"
+          [class.ion-valid]="nombre?.valid && nombre?.touched">
+        </ion-input>
+      </ion-item>
+      <!-- Alertas Inline para Nombre -->
+      <div *ngIf="nombre?.invalid && nombre?.touched" class="error-message">
+        <ion-text color="danger" *ngIf="nombre?.hasError('required')">
+          Tu nombre es requerido.
+        </ion-text>
+        <ion-text color="danger" *ngIf="nombre?.hasError('minlength')">
+          Debe tener al menos 3 caracteres.
+        </ion-text>
+      </div>
+      
+      <!-- CAMPO: Email -->
+      <ion-item class="form-item">
+        <ion-input 
+          label="Email Institucional" 
+          labelPlacement="stacked" 
+          placeholder="ej: nombre.apellido@duocuc.cl"
+          type="email"
+          formControlName="email"
+          [class.ion-invalid]="email?.invalid && email?.touched"
+          [class.ion-valid]="email?.valid && email?.touched">
+        </ion-input>
+      </ion-item>
+      <!-- Alertas Inline para Email -->
+      <div *ngIf="email?.invalid && email?.touched" class="error-message">
+        <ion-text color="danger" *ngIf="email?.hasError('required')">
+          El email es requerido.
+        </ion-text>
+        <ion-text color="danger" *ngIf="email?.hasError('email')">
+          El formato del email no es válido.
+        </ion-text>
+        <ion-text color="danger" *ngIf="email?.hasError('invalidDuocEmail')">
+          Debe ser un correo @duocuc.cl, @duoc.cl o @profesor.duoc.cl.
+        </ion-text>
+      </div>
+
+      <!-- CAMPO: Contraseña -->
+      <ion-item class="form-item">
+        <ion-input 
+          label="Contraseña" 
+          labelPlacement="stacked" 
+          placeholder="Mínimo 8 caracteres"
+          [type]="passwordVisible ? 'text' : 'password'"
+          formControlName="password"
+          [class.ion-invalid]="password?.invalid && password?.touched"
+          [class.ion-valid]="password?.valid && password?.touched">
+        </ion-input>
+        <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()" class="password-toggle">
+          <ion-icon [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <!-- Alertas Inline para Contraseña -->
+      <div *ngIf="password?.invalid && password?.touched" class="error-message">
+        <ion-text color="danger" *ngIf="password?.hasError('required')">
+          La contraseña es requerida.
+        </ion-text>
+        <ion-text color="danger" *ngIf="password?.hasError('minlength')">
+          La contraseña debe tener al menos 8 caracteres.
+        </ion-text>
+      </div>
+
+      <!-- CAMPO: Confirmar Contraseña -->
+      <ion-item class="form-item">
+        <ion-input 
+          label="Confirmar Contraseña" 
+          labelPlacement="stacked" 
+          placeholder="Repite tu contraseña"
+          [type]="confirmPasswordVisible ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          [class.ion-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+          [class.ion-valid]="confirmPassword?.valid && confirmPassword?.touched">
+        </ion-input>
+        <ion-button fill="clear" slot="end" (click)="toggleConfirmPasswordVisibility()" class="password-toggle">
+          <ion-icon [name]="confirmPasswordVisible ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <!-- Alertas Inline para Confirmar Contraseña -->
+      <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="error-message">
+        <ion-text color="danger" *ngIf="confirmPassword?.hasError('required')">
+          Debes confirmar tu contraseña.
+        </ion-text>
+        <ion-text color="danger" *ngIf="confirmPassword?.hasError('passwordsDoNotMatch')">
+          Las contraseñas no coinciden.
+        </ion-text>
+      </div>
+      
+      <!-- Botón de Envío -->
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        class="submit-button"
+        [disabled]="registroForm.invalid">
+        Crear Cuenta
+      </ion-button>
+      
+    </form>
+
+    <!-- Enlace para ir a Login -->
+    <div class="footer-link">
+      <span>¿Ya tienes una cuenta?</span>
+      <ion-button fill="clear" [routerLink]="['/login']">
+        Inicia sesión aquí
+      </ion-button>
+    </div>
+
+  </div> <!-- Fin de .form-container -->
+</ion-content>

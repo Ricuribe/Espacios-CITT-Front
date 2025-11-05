@@ -14,7 +14,7 @@
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-button fill="clear" color="light">Recursos</ion-button>
       <ion-button fill="clear" color="light">Memorias</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light">Cerrar sesion</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -36,7 +36,7 @@
       <ion-item button>
         <ion-label>Memorias</ion-label>
       </ion-item>
-      <ion-item button>
+      <ion-item button [routerLink]="['/home']">
         <ion-label>Cerrar Sesión</ion-label>
       </ion-item>
     </ion-list>
