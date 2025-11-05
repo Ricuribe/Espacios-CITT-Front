@@ -100,7 +100,7 @@
   
         <p>{{ workspace.description }}</p>
   
-        <ion-button expand="block" class="btn-primary ion-margin-top" [routerLink]="['/agendar-hora']">
+        <ion-button expand="block" class="btn-primary ion-margin-top" (click)="ScheduleReservation()">
           Reservar este espacio
         </ion-button>
         

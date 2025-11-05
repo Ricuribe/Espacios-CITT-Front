@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -12,10 +12,6 @@ import {
   IonRow,
   IonCol,
   IonIcon,
-
-  // ==========================================================
-  // CAMBIO 4: AÑADIR LOS COMPONENTES DEL MENÚ
-  // ==========================================================
   IonMenu,
   IonMenuButton,
   IonList,
@@ -23,7 +19,7 @@ import {
   IonLabel
 
 } from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router'; // Importar RouterLink si usas [routerLink]
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Importar RouterLink si usas [routerLink]
 
 @Component({
   selector: 'app-confirmacion-realizada',
@@ -45,10 +41,6 @@ import { RouterLink } from '@angular/router'; // Importar RouterLink si usas [ro
     IonRow,
     IonCol,
     IonIcon,
-    
-    // ==========================================================
-    // CAMBIO 5: AÑADIR LOS MISMOS COMPONENTES AQUÍ
-    // ==========================================================
     IonMenu,
     IonMenuButton,
     IonList,
@@ -56,7 +48,24 @@ import { RouterLink } from '@angular/router'; // Importar RouterLink si usas [ro
     IonLabel
   ]
 })
-export class ConfirmacionRealizadaPage {
-  constructor() {}
+export class ConfirmacionRealizadaPage implements OnInit {
+  
+  private createdSchedule : any = null;
+  
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.createdSchedule = this.retrieveResponse();
+    console.log('La reserva creada: ', this.createdSchedule)
+  }
+
+  retrieveResponse() {
+    const response = this.router.getCurrentNavigation()?.extras.state?.['reserva'];
+    return response;
+  }
+
 }
 

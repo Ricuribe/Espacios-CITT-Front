@@ -36,7 +36,7 @@ import {
     IonRange, IonLabel, IonMenu, IonMenuButton, IonList, IonItem, IonTitle 
   ]
 })
-export class AgendarHoraPage implements OnInit { // <-- CAMBIO 1: Implementa OnInit
+export class AgendarHoraPage implements OnInit {
 
   // --- Propiedades y Signals ---
   public today: Date;
@@ -46,15 +46,11 @@ export class AgendarHoraPage implements OnInit { // <-- CAMBIO 1: Implementa OnI
   public selectedDuration = signal<number>(30);
   public selectedSlot = signal<string | null>(null);
 
-  // ==========================================================
-  // CAMBIO 3: Añadir propiedad para guardar el ID
-  // ==========================================================
   public workspaceId: number | null = null;
 
 
   public availableSlots = computed<string[]>(() => {
-    // ... (tu lógica de computed se queda igual) ...
-    // ...
+
     if (!this.selectedDate()) {
       return []; 
     }
@@ -85,14 +81,12 @@ export class AgendarHoraPage implements OnInit { // <-- CAMBIO 1: Implementa OnI
     return slotsToShow;
   });
 
-  // ==========================================================
-  // CAMBIO 4: Inyectar ActivatedRoute en el constructor
-  // ==========================================================
+
   constructor(
     private router: Router,
-    private route: ActivatedRoute // <-- Para leer la URL
+    private route: ActivatedRoute
   ) { 
-    // ... (tu lógica de fechas se queda igual) ...
+
     this.today = new Date();
     const year = this.today.getFullYear();
     const month = (this.today.getMonth() + 1).toString().padStart(2, '0');
@@ -108,15 +102,15 @@ export class AgendarHoraPage implements OnInit { // <-- CAMBIO 1: Implementa OnI
   }
 
   ngOnInit() {
-    // --- Leer el ID del espacio al cargar la página ---
-    // (Viene de la página 'detalle-espacio' o 'seleccion-espacio')
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.workspaceId = +idParam; // Convierte el string a número
+    
+    this.workspaceId = sessionStorage.getItem('workspaceId') ? +sessionStorage.getItem('workspaceId')! : null;
+
+    if (this.workspaceId != null) {
+      
       console.log('ID del espacio a reservar:', this.workspaceId);
     } else {
       console.error('¡Error! No se recibió el ID del espacio.');
-      // Aquí podrías redirigir al usuario si falta el ID
+      //this.router.navigate(['/']);
     }
   }
 
@@ -154,12 +148,9 @@ export class AgendarHoraPage implements OnInit { // <-- CAMBIO 1: Implementa OnI
     
     console.log("¡Reserva Confirmada!", datosReserva);
 
-    // ==========================================================
-    // CAMBIO 5: Enviar los 'datosReserva' a la siguiente página
-    // ==========================================================
     this.router.navigate(['/confirmar-solicitud'], {
       state: {
-        reserva: datosReserva // <-- ¡Aquí pasamos los datos!
+        reserva: datosReserva
       }
     });
   }
