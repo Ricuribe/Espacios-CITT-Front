@@ -44,14 +44,23 @@ export const routes: Routes = [
   },
   {
     path: 'confirmar-solicitud',
-    loadComponent: () => import('./pages/confirmar-solicitud/confirmar-solicitud.page').then( m => m.ConfirmarSolicitudPage)
+    // CAMBIO: Volvemos a m.ConfirmarSolicitudPage porque tu archivo NO usa 'default'
+    // ...
+loadComponent: () => import('./pages/confirmar-solicitud/confirmar-solicitud.page').then( m => m.ConfirmarSolicitudPage) // <-- ASÍ ES CORRECTO
+// ...
   },
   {
     path: 'confirmacion-realizada',
+    // CAMBIO: Volvemos a m.ConfirmacionRealizadaPage
     loadComponent: () => import('./pages/confirmacion-realizada/confirmacion-realizada.page').then( m => m.ConfirmacionRealizadaPage)
   },
   {
     path: 'informacion-proyecto',
+    // CAMBIO: Volvemos a m.InformacionProyectoPage
     loadComponent: () => import('./pages/informacion-proyecto/informacion-proyecto.page').then( m => m.InformacionProyectoPage)
   },
+
+
+
+  
 ];

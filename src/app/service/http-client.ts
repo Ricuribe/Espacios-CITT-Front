@@ -16,11 +16,11 @@ export class ApiService {
   }
 
   getSchedules(): Observable<any> {
-    return this.http.get(`${this.baseUrl}schedules/`);
+    return this.http.get(`${this.baseUrl}schedule/schedules/`);
   }
 
   getWorkspaceById(id: number): Observable<Workspace> {
     // Asume que tu API responde con un objeto workspace en '.../workspaces/ID/'
-    return this.http.get<Workspace>(`${this.baseUrl}workspaces/${id}/`);
+    return this.http.get<Workspace>(`${this.baseUrl}schedule/workspaces/${id}/`);
   }
 }

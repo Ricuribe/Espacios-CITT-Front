@@ -19,23 +19,24 @@ import {
   IonInput,
   IonTextarea,
 
-  // ==========================================================
-  // CAMBIO 4: AÑADIR LOS COMPONENTES DEL MENÚ
-  // ==========================================================
+  // --- COMPONENTES DEL MENÚ ---
   IonMenu,
   IonMenuButton
 
 } from '@ionic/angular/standalone';
 
+// ==========================================================
+// CAMBIO 1: Corregir el @Component
+// ==========================================================
 @Component({
-  selector: 'app-confirmar-solicitud',
-  templateUrl: './confirmar-solicitud.page.html',
-  styleUrls: ['./confirmar-solicitud.page.scss'],
+  selector: 'app-confirmar-solicitud', // <-- CORREGIDO
+  templateUrl: './confirmar-solicitud.page.html', // <-- CORREGIDO
+  styleUrls: ['./confirmar-solicitud.page.scss'], // <-- CORREGIDO
   standalone: true,
   
   imports: [
     CommonModule,
-    RouterLink, // Añadir RouterLink
+    RouterLink, 
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -53,13 +54,15 @@ import {
     IonInput,
     IonTextarea,
 
-    // ==========================================================
-    // CAMBIO 5: AÑADIR LOS MISMOS COMPONENTES AQUÍ
-    // ==========================================================
+    // --- COMPONENTES DEL MENÚ ---
     IonMenu,
     IonMenuButton
   ]
 })
-export class ConfirmarSolicitudPage {
+// ==========================================================
+// CAMBIO 2: Corregir el nombre de la CLASE
+// ==========================================================
+export class ConfirmarSolicitudPage { // <-- CORREGIDO
   constructor() {}
 }
+

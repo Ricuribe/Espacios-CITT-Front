@@ -1,6 +1,9 @@
-import { Component, signal } from '@angular/core'; 
+import { Component, signal, computed, OnInit } from '@angular/core'; // <-- CAMBIO 1: Añadí OnInit
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+// ==========================================================
+// CAMBIO 2: Importar ActivatedRoute
+// ==========================================================
+import { Router, RouterLink, ActivatedRoute } from '@angular/router'; 
 import {
   IonHeader,
   IonToolbar,
@@ -15,15 +18,11 @@ import {
   IonDatetime,
   IonRange,
   IonLabel,
-
-  // --- AÑADIDOS PARA EL MENÚ ---
   IonMenu,
   IonMenuButton,
   IonList,
   IonItem,
-  IonTitle // <-- AÑADE ESTA LÍNEA
-  // --- FIN DE AÑADIDOS ---
-
+  IonTitle
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -31,168 +30,138 @@ import {
   templateUrl: './agendar-hora.page.html',
   styleUrls: ['./agendar-hora.page.scss'],
   standalone: true,
-  
   imports: [
-    CommonModule,
-    RouterLink, 
-    IonHeader,
-    IonToolbar,
-    IonImg, 
-    IonButtons,
-    IonButton,
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonIcon,
-    IonDatetime,
-    IonRange,
-    IonLabel,
-
-    // --- AÑADIDOS PARA EL MENÚ ---
-    IonMenu,
-    IonMenuButton,
-    IonList,
-    IonItem,
-    IonTitle // <-- Y AÑADE ESTA LÍNEA AQUÍ TAMBIÉN
-    // --- FIN DE AÑADIDOS ---
+    CommonModule, RouterLink, IonHeader, IonToolbar, IonImg, IonButtons, 
+    IonButton, IonContent, IonGrid, IonRow, IonCol, IonIcon, IonDatetime, 
+    IonRange, IonLabel, IonMenu, IonMenuButton, IonList, IonItem, IonTitle 
   ]
 })
-export class AgendarHoraPage {
+export class AgendarHoraPage implements OnInit { // <-- CAMBIO 1: Implementa OnInit
 
-  // --- LÓGICA DEL CALENDARIO ---
-
-  // 1. Configuración de Fechas
+  // --- Propiedades y Signals ---
   public today: Date;
   public todayISO: string;
   public maxDateISO: string;
-
-  // 2. Signals para rastrear el estado
   public selectedDate = signal<string>('');
   public selectedDuration = signal<number>(30);
-  public availableSlots = signal<string[]>([]);
   public selectedSlot = signal<string | null>(null);
 
-  constructor() {
-    // --- Configura las fechas MIN y MAX ---
-    this.today = new Date();
-    
-    // --- INICIO DE LA CORRECCIÓN ---
-    // NO USAR .toISOString() porque convierte a UTC y puede saltar el día.
-    // Creamos el string 'YYYY-MM-DD' manualmente usando la fecha local.
-    
-    const year = this.today.getFullYear();
-    // getMonth() es 0-indexado (0 = Ene), por eso +1
-    const month = (this.today.getMonth() + 1).toString().padStart(2, '0');
-    const day = this.today.getDate().toString().padStart(2, '0');
-    
-    this.todayISO = `${year}-${month}-${day}`; // Ej: "2025-11-03" (Día local correcto)
-    // --- FIN DE LA CORRECCIÓN ---
+  // ==========================================================
+  // CAMBIO 3: Añadir propiedad para guardar el ID
+  // ==========================================================
+  public workspaceId: number | null = null;
 
-    
-    // Setea la fecha máxima (ej. 3 meses desde hoy)
-    const maxDate = new Date(this.today);
-    maxDate.setMonth(this.today.getMonth() + 3);
-    
-    // --- APLICAR MISMA LÓGICA AL MAX-DATE ---
-    const maxYear = maxDate.getFullYear();
-    const maxMonth = (maxDate.getMonth() + 1).toString().padStart(2, '0');
-    const maxDay = maxDate.getDate().toString().padStart(2, '0');
-    this.maxDateISO = `${maxYear}-${maxMonth}-${maxDay}`;
-    // --- FIN DE LA CORRECCIÓN ---
 
-    // --- Estado Inicial ---
-    this.selectedDate.set(this.todayISO); // Selecciona hoy por defecto
-    this.updateAvailableSlots(); // Carga las horas para "hoy" al iniciar
-  }
-
-  // --- MANEJADORES DE EVENTOS ---
-
-  /** Se llama cuando el usuario cambia la fecha en ion-datetime */
-  handleDateChange(event: any) {
-    // El valor ya viene como ISO string (YYYY-MM-DD)
-    const newDate = event.detail.value.split('T')[0];
-    this.selectedDate.set(newDate);
-    this.selectedSlot.set(null); // Resetea la hora seleccionada
-    this.updateAvailableSlots();
-  }
-
-  /** Se llama cuando el usuario cambia el slider de duración */
-  handleDurationChange(event: any) {
-    const newDuration = event.detail.value;
-    this.selectedDuration.set(newDuration);
-    this.selectedSlot.set(null); // Resetea la hora seleccionada
-    this.updateAvailableSlots();
-  }
-
-  /** Se llama al hacer clic en un botón de hora */
-  selectSlot(slot: string) {
-    this.selectedSlot.set(slot);
-    console.log(`Fecha: ${this.selectedDate()}, Duración: ${this.selectedDuration()} min, Hora: ${this.selectedSlot()}`);
-  }
-
-  // --- LÓGICA PRINCIPAL (Simulación de Backend) ---
-
-  /**
-   * Esta función simula una llamada a un backend para obtener
-   * las horas disponibles basadas en la fecha y duración.
-   */
-  updateAvailableSlots() {
-    console.log(`Buscando horas para: ${this.selectedDate()} con duración de ${this.selectedDuration()} min`);
-
-    // SIMULACIÓN: Genera horas diferentes basadas en el día
+  public availableSlots = computed<string[]>(() => {
+    // ... (tu lógica de computed se queda igual) ...
+    // ...
+    if (!this.selectedDate()) {
+      return []; 
+    }
     const allSlots_30min = [
       '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
       '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'
     ];
     const allSlots_60min = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00'];
     const allSlots_90min = ['09:00', '10:30', '14:00', '15:30'];
-    
     let slotsToShow: string[] = [];
-
-    // Lógica de simulación
-    // Días de semana tienen horas, fines de semana no.
-    // IMPORTANTE: Creamos la fecha así para evitar problemas de zona horaria 
-    // al interpretar el string YYYY-MM-DD.
     const parts = this.selectedDate().split('-').map(Number);
     const selectedDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
     const dayOfWeek = selectedDateObj.getDay();
-    
-    if (dayOfWeek === 0 || dayOfWeek === 6) { // 0 = Domingo, 6 = Sábado
-      slotsToShow = []; // Fines de semana no hay horas
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      slotsToShow = [];
     } else {
-      // Simula que "mañana" tiene menos horas
       const tomorrow = new Date(this.today);
       tomorrow.setDate(this.today.getDate() + 1);
       const tomorrowISO = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
-      
       if (this.selectedDate() === tomorrowISO) {
-        slotsToShow = ['10:00', '11:00', '12:00']; // Mañana tiene pocas horas
+        slotsToShow = ['10:00', '11:00', '12:00'];
       } else {
-        // Elige el array de horas basado en la duración
         if (this.selectedDuration() === 30) slotsToShow = allSlots_30min;
         else if (this.selectedDuration() === 60) slotsToShow = allSlots_60min;
         else slotsToShow = allSlots_90min;
       }
     }
-    
-    this.availableSlots.set(slotsToShow);
+    return slotsToShow;
+  });
+
+  // ==========================================================
+  // CAMBIO 4: Inyectar ActivatedRoute en el constructor
+  // ==========================================================
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute // <-- Para leer la URL
+  ) { 
+    // ... (tu lógica de fechas se queda igual) ...
+    this.today = new Date();
+    const year = this.today.getFullYear();
+    const month = (this.today.getMonth() + 1).toString().padStart(2, '0');
+    const day = this.today.getDate().toString().padStart(2, '0');
+    this.todayISO = `${year}-${month}-${day}`;
+    const maxDate = new Date(this.today);
+    maxDate.setMonth(this.today.getMonth() + 3);
+    const maxYear = maxDate.getFullYear();
+    const maxMonth = (maxDate.getMonth() + 1).toString().padStart(2, '0');
+    const maxDay = maxDate.getDate().toString().padStart(2, '0');
+    this.maxDateISO = `${maxYear}-${maxMonth}-${maxDay}`;
+    this.selectedDate.set(this.todayISO);
   }
+
+  ngOnInit() {
+    // --- Leer el ID del espacio al cargar la página ---
+    // (Viene de la página 'detalle-espacio' o 'seleccion-espacio')
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.workspaceId = +idParam; // Convierte el string a número
+      console.log('ID del espacio a reservar:', this.workspaceId);
+    } else {
+      console.error('¡Error! No se recibió el ID del espacio.');
+      // Aquí podrías redirigir al usuario si falta el ID
+    }
+  }
+
+  // --- (Tus otras funciones se quedan igual) ---
+  handleDateChange(event: any) {
+    const newDate = event.detail.value.split('T')[0];
+    this.selectedDate.set(newDate);
+    this.selectedSlot.set(null);
+  }
+  handleDurationChange(event: any) {
+    const newDuration = event.detail.value;
+    this.selectedDuration.set(newDuration);
+    this.selectedSlot.set(null);
+  }
+  selectSlot(slot: string) {
+    this.selectedSlot.set(slot);
+    console.log(`Fecha: ${this.selectedDate()}, Duración: ${this.selectedDuration()} min, Hora: ${this.selectedSlot()}`);
+  }
+
   
   /** Se llama al hacer clic en el botón final */
   confirmarReserva() {
-    if (!this.selectedSlot()) {
-      console.error("Debe seleccionar una hora");
+    if (!this.selectedSlot() || !this.workspaceId) {
+      console.error("Debe seleccionar una hora y debe existir un ID de espacio");
       return;
     }
-    console.log("¡Reserva Confirmada!", {
+    
+    // 1. Prepara los datos para enviar
+    const datosReserva = {
+      workspaceId: this.workspaceId,
       fecha: this.selectedDate(),
       duracion: this.selectedDuration(),
       hora: this.selectedSlot()
+    };
+    
+    console.log("¡Reserva Confirmada!", datosReserva);
+
+    // ==========================================================
+    // CAMBIO 5: Enviar los 'datosReserva' a la siguiente página
+    // ==========================================================
+    this.router.navigate(['/confirmar-solicitud'], {
+      state: {
+        reserva: datosReserva // <-- ¡Aquí pasamos los datos!
+      }
     });
-    // Navegar a la página de confirmación...
   }
 }
-
-
 
