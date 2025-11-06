@@ -81,6 +81,12 @@ export class ApiService {
     return this.http.get<Memory>(`${this.baseUrl}memos/${id}/`); 
   }
 
+  downloadMemoryPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}memos/download/${id}/`, { responseType: 'blob' });
+  }
+
+  // Eventos y actividades futuras
+
   getEvents(): Observable<any> {
     return this.http.get(`${this.baseUrl}event/events/`);
   }
