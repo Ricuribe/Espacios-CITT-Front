@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router'; // <-- Para el botón [routerLink]
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,     // <- Para la barra morada
   IonImg,
   IonButtons,
   IonButton,
@@ -11,21 +11,22 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonIcon       // <- Para el botón 'Volver' y el footer
-} from '@ionic/angular/standalone'; // Asegúrate que la importación sea de '@ionic/angular/standalone'
+  IonIcon
+  // (Ya no necesitamos IonMenu, IonMenuButton, etc.)
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons'; // <-- Para el icono
+import { arrowBackOutline } from 'ionicons/icons'; // <-- El icono de volver
 
 @Component({
   selector: 'app-guia-uso',
   templateUrl: './guia-uso.page.html',
   styleUrls: ['./guia-uso.page.scss'],
   standalone: true,
-  
-  // ¡Aquí importamos todos los componentes!
   imports: [
     CommonModule,
+    RouterLink, // <-- Añadido
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonImg,
     IonButtons,
     IonButton,
@@ -37,5 +38,8 @@ import {
   ]
 })
 export class GuiaUsoPage {
-  constructor() {}
+  constructor() {
+    // Registra el icono de la flecha de volver
+    addIcons({ arrowBackOutline });
+  }
 }

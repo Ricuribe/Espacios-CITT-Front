@@ -1,25 +1,31 @@
-<ion-header class="main-header" [translucent]="true">
+<!-- ==========================================================
+     CAMBIO 1: HEADER SIMPLIFICADO
+     Este es el header público (como el de Login/Registro)
+     ========================================================== -->
+<ion-header class="auth-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
     
-    <ion-buttons slot="end" class="desktop-only-buttons">
-      <ion-button fill="clear" color="light">Recursos</ion-button>
-      <ion-button fill="clear" color="light">Memorias</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light">Cerrar sesion</ion-button>
+    <!-- Botón de Volver (con routerLink a /home) -->
+    <ion-buttons slot="start">
+      <ion-button [routerLink]="['/home']" color="light">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
+
+    <!-- Logo en el centro -->
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="auth-logo"></ion-img>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-grid class="main-content-grid">
-    <ion-row>
-      <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
-          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          Volver
-        </ion-button>
-      </ion-col>
-    </ion-row>
+    
+    <!-- 
+      CAMBIO 2: BOTÓN "VOLVER" ELIMINADO
+      (Ya no necesitamos el <ion-row> con el <ion-button> "Volver"
+       porque ahora está en el header)
+    -->
     
     <ion-row>
       <ion-col size="12" size-md="6" class="guide-text">
@@ -32,7 +38,7 @@
         
         <div class="step">
           <h3>Selecciona un Espacio</h3>
-          <p>Navega por las diferentes opciones de salas y elige la que mejor se adapte a tus necesidades: salas de reuniones, salas de estudio o espacios con equipamiento tecnológico.</p>
+          <p>Navega por las diferentes opciones mesas y elige la que mejor se adapte a tus necesidades: mesa de reuniones, mesa de estudio o espacios con equipamiento tecnológico.</p>
         </div>
 
         <div class="step">
