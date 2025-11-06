@@ -1,0 +1,159 @@
+/* --- Estilos del Header --- */
+.main-header {
+  --box-shadow: none;
+
+  .main-toolbar {
+    --background: #2C73B8;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+  }
+  
+  .logo { 
+    width: 150px; 
+    margin-left: 20px; 
+  }
+
+  ion-buttons[slot="end"] ion-button {
+    --border-radius: 50px;
+    text-transform: none;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  
+  /* MODIFICADO: Tu HTML usa 'btn-register' 
+    así que usé esa clase
+  */
+  .btn-register {
+    --background: #ffffff;
+    --color: #2C73B8;
+  }
+}
+
+/* --- !! ESTILOS DE PÁGINA !! --- */
+
+.main-content-grid {
+  max-width: 1100px;
+  padding: 20px;
+  
+  /* ARREGLO DE CENTRADO: 
+    Esto centrará tu contenido en la versión web.
+  */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.btn-volver {
+  --border-radius: 6px;
+  --color: #666;
+  --border-color: #ccc;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.content-box {
+  border: 2px solid #5c95fd;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  background: #fff;
+  
+  > ion-label { 
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+}
+
+ion-datetime {
+  border-radius: 8px;
+  --background: #fcfcfc;
+}
+
+ion-range {
+  --bar-background: #dcdcdc;
+  --bar-background-active: var(--ion-color-primary);
+  --knob-background: var(--ion-color-primary);
+  --pin-background: var(--ion-color-primary);
+  --pin-color: #fff;
+  
+  ion-label {
+    font-size: 0.9rem;
+    color: #555;
+  }
+}
+
+.time-slot-grid {
+  ion-button {
+    --border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    
+    &[fill="outline"] {
+      --border-color: #ccc;
+      --color: #333;
+    }
+    
+    &[fill="solid"] {
+      --background: var(--ion-color-primary);
+      --color: #fff;
+    }
+  }
+
+  .no-slots-message {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px 0;
+  }
+}
+
+.btn-primary {
+  --border-radius: 6px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* AÑADIDO: Lógica de Menú Móvil/Desktop 
+  (Reemplaza tus media queries anteriores)
+*/
+
+/* Por defecto (móvil): Ocultar botones de desktop, mostrar de hamburguesa */
+.desktop-only-buttons {
+  display: none;
+}
+.mobile-only-button {
+  display: block;
+}
+
+/* Desktop (más de 991px) */
+@media (min-width: 992px) {
+  .desktop-only-buttons {
+    display: block; // Muestra el contenedor de botones de desktop
+  }
+  .mobile-only-button {
+    display: none; // Oculta el botón de hamburguesa
+  }
+}
+
+/* Móvil (menos de 991px) */
+@media (max-width: 991px) {
+  /* Mueve el logo a la derecha */
+  .main-toolbar .logo {
+    margin-left: auto;
+    margin-right: 20px;
+  }
+  /* (La regla para ocultar .desktop-only-buttons ya está por defecto) */
+}
+

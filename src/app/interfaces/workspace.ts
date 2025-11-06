@@ -6,4 +6,5 @@ export interface Workspace {
   description: string;
   max_occupancy: number;
   image: string;
+  resources: Object[];
 }

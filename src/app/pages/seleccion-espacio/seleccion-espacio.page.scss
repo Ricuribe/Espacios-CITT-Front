@@ -231,3 +231,34 @@
     }
   }
 }
+
+/*
+.card-title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.capacity {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium-shade);
+  // Evita que se reduzca
+  flex-shrink: 0; 
+}
+
+.amenities-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+ion-card-title {
+  font-size: 1.25rem; // Un poco más grande
+}
+
+*/
