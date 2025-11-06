@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Importar RouterLink si usas [routerLink]
 import { FormsModule } from '@angular/forms';
 import { IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonIcon, IonList, IonItem, IonLabel, IonInput, IonTextarea,
 // --- COMPONENTES DEL MENÚ ---
-IonMenu, IonMenuButton, IonSpinner, IonText } from '@ionic/angular/standalone';
+IonMenu, IonMenuButton, IonSpinner, IonText,
+// Card components used in the template
+IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonNote } from '@ionic/angular/standalone';
 import { ApiService } from 'src/app/service/http-client';
 
 
@@ -16,6 +18,7 @@ import { ApiService } from 'src/app/service/http-client';
   
   imports: [
     CommonModule,
+  NgIf,
     RouterLink,
     FormsModule,
     IonHeader,
@@ -38,6 +41,14 @@ import { ApiService } from 'src/app/service/http-client';
     IonMenuButton,
     IonSpinner,
     IonText
+  ,
+  // Card components
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+  IonNote
 ]
 })
 

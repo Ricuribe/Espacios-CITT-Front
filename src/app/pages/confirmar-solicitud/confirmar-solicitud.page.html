@@ -72,37 +72,41 @@
             <ion-spinner name="crescent"></ion-spinner>
             <p>Cargando detalle...</p>
           </div>
-  
+
           <div *ngIf="error" class="ion-text-center ion-padding">
             <ion-text color="danger">
               <p>Error al cargar los datos.</p>
               <p><small>{{ error.message }}</small></p>
             </ion-text>
           </div>
-        
+
           <div *ngIf="!isLoading && !error && workspace">
-            
-            <ion-img 
-              [src]="workspace.image" 
-              [alt]="workspace.name" 
-              class="detail-image"
-              (ionError)="workspace.image = '/assets/img/placeholder.png'"> <!-- CAMBIO 6: Añadido un fallback -->
-            </ion-img>
-        
-            <div class="details-padding">
-              <h2>{{ workspace.name }}</h2>
-        
-              <p>
-                <strong>Tipo:</strong> {{ workspace.space_type }}
-              </p>
-        
-              <p>
-                <strong>Capacidad:</strong> {{ workspace.max_occupancy }} personas
-              </p>
-        
-              <p>{{ workspace.description }}</p>
-              
-            </div>
+            <!-- Card for workspace details to match other pages' aesthetic -->
+            <ion-card class="workspace-card">
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="12" size-md="5">
+                    <ion-img
+                      [src]="workspace.image"
+                      [alt]="workspace.name"
+                      class="detail-image"
+                      (ionError)="workspace.image = '/assets/img/placeholder.png'">
+                    </ion-img>
+                  </ion-col>
+
+                  <ion-col size="12" size-md="7">
+                    <ion-card-header>
+                      <ion-card-title>{{ workspace.name }}</ion-card-title>
+                      <ion-card-subtitle>{{ workspace.space_type }} • {{ workspace.max_occupancy }} personas</ion-card-subtitle>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                      <p class="ion-no-margin">{{ workspace.description }}</p>
+                    </ion-card-content>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card>
           </div>
         </ion-row>
 
@@ -145,7 +149,9 @@
 
               <ion-item>
                 <ion-label position="stacked">Duración (minutos)</ion-label>
-                <ion-input type="number" [(ngModel)]="form.duration" name="duration" min="30" max="90" step="30"></ion-input>
+                <!-- Read-only: duration was defined in the previous step and must not be editable here -->
+                <ion-input [value]="form.duration" name="duration" readonly></ion-input>
+                <ion-note slot="end" color="medium">Definida anteriormente</ion-note>
               </ion-item>
 
               <ion-item>
@@ -160,7 +166,7 @@
 
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="6">
-            <ion-button expand="block" size="large" class="btn-solicitar" (click)="submitSolicitud()" [disabled]="isLoading">
+            <ion-button expand="block" size="large" class="btn-solicitar" color="primary" (click)="submitSolicitud()" [disabled]="isLoading">
               <span *ngIf="!isLoading">Solicitar espacio</span>
               <span *ngIf="isLoading">Enviando...</span>
             </ion-button>

@@ -51,13 +51,11 @@
 <ion-content [fullscreen]="true" id="confirmacion-content">
   <ion-grid class="main-content-grid ion-justify-content-center ion-align-items-center h-100">
     
-    <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
-      <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-      Volver
-    </ion-button>
+    <!-- Botón 'Volver' eliminado; se añade 'Volver a Inicio' en el bloque de evento -->
 
     <ion-row class="ion-justify-content-center">
-      <ion-col size="12" size-md="6" size-lg="5" class="confirmation-box">
+      <!-- Se muestra solo si la navegación corresponde a una reserva de espacio -->
+      <ion-col *ngIf="isWorkspace" size="12" size-md="6" size-lg="5" class="confirmation-box">
         
         <ion-title>Solicitud realizada</ion-title>
         
@@ -78,6 +76,45 @@
         <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">
           Volver a Inicio CITT
         </ion-button>
+
+      </ion-col>
+
+      <!-- Se muestra cuando la navegación contiene un evento -->
+      <ion-col *ngIf="isEvent" size="12" size-md="6" size-lg="5" class="confirmation-box event-box">
+        <div class="event-header">
+          <ion-title>Evento agendado</ion-title>
+          <ion-text class="event-type">{{ eventData?.event_type }}</ion-text>
+        </div>
+
+        <div class="event-body">
+          <h2 class="event-title">{{ eventData?.title }}</h2>
+          <p class="event-desc">{{ eventData?.description }}</p>
+
+          <div class="event-meta">
+            <div><strong>Creado por:</strong> {{ eventData?.created_by_username ?? eventData?.created_by }}</div>
+            <div><strong>Inicio:</strong> {{ eventStartFormatted }}</div>
+            <div><strong>Fin:</strong> {{ eventEndFormatted }}</div>
+          </div>
+        </div>
+
+        <div class="event-actions">
+          <!-- Botón para abrir el formulario en modo edición (solo si existe el enlace) -->
+          <ion-button *ngIf="eventEditLink" expand="block" color="primary" (click)="openEditLink()">
+            Abrir formulario (editar)
+          </ion-button>
+
+          <!-- Código QR para el enlace público del formulario (si existe) -->
+          <div *ngIf="qrValue" class="qr-container">
+            <qrcode [qrdata]="qrValue" [width]="qrWidth" [errorCorrectionLevel]="'M'" (qrCodeURL)="onQrUrl($event)"></qrcode>
+            <ion-text class="ion-text-wrap">Escanea el QR para acceder al formulario público o compártelo.</ion-text>
+            <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">Volver a Inicio</ion-button>
+          </div>
+
+          <!-- Si no hay QR pero sí el edit link, mostramos igualmente el botón volver -->
+          <div *ngIf="!qrValue && eventEditLink" style="margin-top:12px;">
+            <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">Volver a Inicio</ion-button>
+          </div>
+        </div>
 
       </ion-col>
     </ion-row>

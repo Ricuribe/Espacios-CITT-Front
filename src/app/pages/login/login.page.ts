@@ -10,16 +10,12 @@ import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../service/http-client';
 import { 
   IonContent, 
-  IonGrid, // <-- Ya no se usa, pero lo dejamos por si acaso
-  IonRow, // <-- Ya no se usa
-  IonCol, // <-- Ya no se usa
   IonImg, 
   IonItem, 
   IonInput, 
   IonButton, 
   IonIcon, 
   IonText,
-  IonToast,
   ToastController,
   
   // --- AÑADIDOS PARA EL NUEVO HEADER ---
@@ -49,17 +45,13 @@ import {
     CommonModule,
     ReactiveFormsModule, 
     RouterLink,
-    IonContent, 
-    IonGrid, 
-    IonRow, 
-    IonCol, 
-    IonImg, 
-    IonItem, 
-    IonInput, 
-    IonButton, 
-    IonIcon, 
-    IonText,
-    IonToast,
+  IonContent, 
+  IonImg, 
+  IonItem, 
+  IonInput, 
+  IonButton, 
+  IonIcon, 
+  IonText,
 
     // --- AÑADIDOS PARA EL NUEVO HEADER ---
     IonHeader,

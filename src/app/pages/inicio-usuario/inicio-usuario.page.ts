@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
 // Importa tu footer
-import { FooterComponent } from 'src/app/components/footer/footer.component';
+// FooterComponent removed from imports: not used in this page template
 
 // --- CAMBIO AQUÍ ---
 // Añadimos los componentes del Menú
@@ -41,10 +41,8 @@ import {
   imports: [
     CommonModule, 
     RouterLink,
-    FooterComponent,
-
-    // Componentes de Ionic que usa tu HTML
-    IonHeader, 
+  // Componentes de Ionic que usa tu HTML
+  IonHeader, 
     IonToolbar, 
     IonButtons, 
     IonImg, 
@@ -53,10 +51,7 @@ import {
     IonGrid,
     IonRow,
     IonCol,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
+  // (IonCard* removed — not used in template)
 
     // --- AÑADIDOS PARA EL MENÚ ---
     IonMenu,

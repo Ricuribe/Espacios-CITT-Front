@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Importar RouterLink si usas [routerLink]
 import { FormsModule } from '@angular/forms';
 import { IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonIcon, IonList, IonItem, IonLabel, IonInput, IonTextarea,
-IonMenu, IonMenuButton, IonSpinner, IonText, IonSelect, IonSelectOption, IonToggle } from '@ionic/angular/standalone';
+IonMenu, IonMenuButton, IonSpinner, IonText, IonSelect, IonSelectOption, IonToggle,
+// Card components
+IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent } from '@ionic/angular/standalone';
 import { ApiService } from 'src/app/service/http-client';
 
 @Component({
@@ -13,6 +15,7 @@ import { ApiService } from 'src/app/service/http-client';
   standalone: true,
   imports: [
     CommonModule,
+  NgIf,
     RouterLink,
     FormsModule,
     IonHeader,
@@ -38,6 +41,13 @@ import { ApiService } from 'src/app/service/http-client';
     IonMenuButton,
     IonSpinner,
     IonText
+    ,
+    // Card components
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent
 ]
 })
 
@@ -174,12 +184,12 @@ export class ConfirmarEventoPage implements OnInit {
 
     console.log('Payload preparado para enviar (evento):', payload);
     this.isLoading = true;
-    this.apiService.createSchedule(payload).subscribe({
+    this.apiService.creeateEvent(payload).subscribe({
       next: (res) => {
         this.isLoading = false;
         console.log('Evento creado', res);
         try {
-          this.router.navigate(['/confirmacion-realizada'], { state: { reserva: res} });
+          this.router.navigate(['/confirmacion-realizada'], { state: { event: res} });
         } catch (e) {
           this.router.navigate(['/']);
         }

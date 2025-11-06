@@ -90,11 +90,11 @@ export class ApiService {
   }
 
   getFutureActivities(): Observable<any> {
-    return this.http.get(`${this.baseUrl}event/future-activity/`);
+    return this.http.get(`${this.baseUrl}future-activity/`);
   }
 
   getFutureActivitiesByWorkspaceId(workspaceId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}event/future-activity/${workspaceId}/`);
+    return this.http.get(`${this.baseUrl}future-activity/${workspaceId}/`);
   }
 
 }

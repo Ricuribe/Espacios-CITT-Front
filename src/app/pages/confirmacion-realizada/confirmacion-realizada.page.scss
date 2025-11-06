@@ -131,6 +131,86 @@ ion-buttons[slot="end"] ion-button {
   }
 }
 
+/* Estilos específicos para eventos */
+.event-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: left;
+  padding: 18px;
+}
+
+.event-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+}
+
+.event-header ion-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.event-type {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+.event-body {
+  width: 100%;
+}
+
+.event-title {
+  margin: 6px 0;
+  font-size: 1.2rem;
+  color: #222;
+}
+
+.event-desc {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.event-meta {
+  font-size: 0.95rem;
+  color: #444;
+  display: grid;
+  gap: 6px;
+}
+
+.event-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.qr-container qrcode, .qr-container canvas, .qr-container img {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* QR responsive: en móvil ocupa casi todo, en desktop limitado */
+@media (max-width: 599px) {
+  .qr-container qrcode { width: 220px; }
+}
+
+@media (min-width: 600px) {
+  .qr-container qrcode { width: 280px; }
+}
+
 /* ==========================================================
    CAMBIO 7: LÓGICA DE VISIBILIDAD PARA DESKTOP Y MÓVIL
    ========================================================== */
