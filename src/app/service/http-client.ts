@@ -51,6 +51,24 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}schedule/schedules/`, payload);
   }
 
+  getSchedulesByUserId(userId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}schedule/schedules/user/${userId}/`);
+  }
+
+  /** Obtiene un schedule por su id */
+  getScheduleById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}schedule/schedules/${id}/`);
+  }
+
+  getScheduleDetailById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}schedule/schedules/${id}/details/`);
+  }
+
+  /** Actualiza campos de un schedule (patch). Usado para cambiar status, etc. */
+  updateScheduleStatus(id: number, status: number): Observable<any> {
+    return this.http.patch(`${this.baseUrl}schedule/schedules/${id}/`, { status });
+  }
+
   // Memorias y proyectos
   /** Obtiene la lista de todas las memorias/proyectos */
   getMemories(): Observable<Memory[]> {
@@ -63,7 +81,21 @@ export class ApiService {
     return this.http.get<Memory>(`${this.baseUrl}memos/${id}/`); 
   }
 
-  // TODO: Añadir endpoints eventos
+  getEvents(): Observable<any> {
+    return this.http.get(`${this.baseUrl}event/events/`);
+  }
+
+  creeateEvent(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}event/events/`, payload);
+  }
+
+  getFutureActivities(): Observable<any> {
+    return this.http.get(`${this.baseUrl}event/future-activity/`);
+  }
+
+  getFutureActivitiesByWorkspaceId(workspaceId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}event/future-activity/${workspaceId}/`);
+  }
 
 }
 

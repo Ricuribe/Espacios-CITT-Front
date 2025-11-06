@@ -1,0 +1,18 @@
+/* Styles for status labels */
+.status-rechazada { color: var(--ion-color-danger); font-weight: 700; }
+.status-agendada { color: var(--ion-color-primary); font-weight: 700; }
+.status-aprobada { color: var(--ion-color-primary); font-weight: 700; text-decoration: underline; }
+.status-asistida { color: var(--ion-color-success); font-weight: 700; }
+.status-inasistida { color: gray; font-weight: 700; }
+.status-cancelada { color: var(--ion-color-danger); font-weight: 700; text-decoration: line-through; }
+
+.workspace-image {
+	width: 100%;
+	max-height: 180px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-top: 8px;
+}
+
+.loading-center { display:flex; justify-content:center; align-items:center; padding:20px; }
+.error-msg { color: var(--ion-color-danger); }

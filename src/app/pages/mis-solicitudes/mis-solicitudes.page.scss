@@ -185,3 +185,18 @@ ion-buttons[slot="end"] ion-button {
     justify-content: center;
   }
 }
+
+/* Estado de las solicitudes */
+.status-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.status-rechazada { color: var(--ion-color-danger); }
+.status-agendada { color: var(--ion-color-primary); }
+.status-aprobada { color: var(--ion-color-primary); text-decoration: underline; }
+.status-asistida { color: var(--ion-color-success); }
+.status-inasistida { color: gray; }
+
+.schedule-card {
+  margin-bottom: 12px;
+}

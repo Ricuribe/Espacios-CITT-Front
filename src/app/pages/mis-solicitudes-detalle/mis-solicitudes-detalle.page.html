@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Detalle de Solicitud</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Detalle de Solicitud</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid class="container">
+    <ion-row>
+      <ion-col>
+  <ion-button fill="clear" color="medium" (click)="goBack()">Volver</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <div *ngIf="isLoading" class="loading-center">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+
+        <div *ngIf="!isLoading && error" class="error-msg">
+          <p>Error cargando detalle: {{ error?.message || (error | json) }}</p>
+        </div>
+
+        <ion-card *ngIf="!isLoading && schedule">
+          <ion-card-header>
+            <ion-card-title>{{ workspaceName }}</ion-card-title>
+            <ion-img *ngIf="workspaceImage" [src]="workspaceImage" class="workspace-image"></ion-img>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <ion-label>
+                  <h3>Fecha</h3>
+                  <p>{{ schedule.displayDate }}</p>
+                </ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-label>
+                  <h3>Hora</h3>
+                  <p>{{ schedule.displayStart }} - {{ schedule.displayEnd }}</p>
+                </ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-label>
+                  <h3>Estado</h3>
+                  <p [ngClass]="statusClass(schedule.status)">{{ statusLabel(schedule.status) }}</p>
+                </ion-label>
+              </ion-item>
+              <ion-item *ngIf="schedule.detail">
+                <ion-label>
+                  <h3>Detalle</h3>
+                  <pre>{{ schedule.detail | json }}</pre>
+                </ion-label>
+              </ion-item>
+
+              <ion-item *ngIf="scheduleDetails.length">
+                <ion-label>
+                  <h3>Detalles adicionales</h3>
+                </ion-label>
+              </ion-item>
+              <ion-item *ngFor="let d of scheduleDetails">
+                <ion-label>
+                  <p *ngIf="d.team"><strong>Equipo:</strong> {{ d.team }}</p>
+                  <p *ngIf="d.attendees"><strong>Asistentes:</strong> {{ d.attendees }}</p>
+                  <p *ngIf="d.project"><strong>Proyecto:</strong> {{ d.project }}</p>
+                  <p *ngIf="d.description"><strong>Descripción:</strong> {{ d.description }}</p>
+                </ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>
+                  <ion-button color="danger" (click)="confirmCancel()" [disabled]="cancelling || schedule?.status === 6">Cancelar solicitud</ion-button>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

@@ -1,6 +1,4 @@
-<!-- ==========================================================
-     CAMBIO 1: AÑADIR BOTÓN DE HAMBURGUESA Y CLASES
-     ========================================================== -->
+
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
 
@@ -20,9 +18,6 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- ==========================================================
-     CAMBIO 2: AÑADIR EL BLOQUE DEL MENÚ LATERAL
-     ========================================================== -->
 <ion-menu contentId="mis-solicitudes-content" type="overlay">
   <ion-header>
     <ion-toolbar color="primary">
@@ -47,10 +42,6 @@
     </ion-list>
   </ion-content>
 </ion-menu>
-
-<!-- ==========================================================
-     CAMBIO 3: AÑADIR 'id' AL ION-CONTENT
-     ========================================================== -->
 <ion-content [fullscreen]="true" id="mis-solicitudes-content">
   <ion-grid class="main-content-grid">
     <ion-row>
@@ -61,41 +52,37 @@
         </ion-button>
       </ion-col>
     </ion-row>
-    
+
     <ion-row class="ion-justify-content-center">
-      <ion-col size="12" size-lg="10"> 
-        <!-- El H1 está mal, debería ser "Mis Solicitudes" -->
+      <ion-col size="12" size-lg="10">
         <h1 class="page-title">Mis Solicitudes</h1>
 
-        <ion-row>
-          <ion-col size="12" size-md="5" class="details-image">
-            <ion-img src="/assets/img/espacio-cubo.png" alt="Área de reuniones"></ion-img>
-          </ion-col>
-          
-          <ion-col size="12" size-md="7" class="details-info">
-            <h2>Área de Reuniones</h2>
-            <h3>Capacidad máxima de personas: 8</h3>
-            
-            <h3>Recursos que disponen:</h3>
-            <ul>
-              <li>Pizarra Acrílica</li>
-              <li>1 Data proyector</li>
-              <li>2 iMac implementados</li>
-            </ul>
+        <div *ngIf="isLoading" class="loading-container">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
 
-            <p class="horario-info">
-              <strong>Horario: Lunes 20 Octubre 2025</strong>
-            </p>
-          </ion-col>
-        </ion-row>
+        <div *ngIf="!isLoading && schedules.length === 0" class="empty-msg">
+          <p>No tienes solicitudes registradas.</p>
+        </div>
 
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" size="large" class="btn-confirm">
-              Confirmar espacio
-            </ion-button>
-          </ion-col>
-        </ion-row>
+        <ion-list>
+          <ion-card *ngFor="let s of schedules" class="schedule-card">
+            <ion-card-header>
+              <ion-card-title>{{ s.workspaceName || ('Espacio ' + s.workspace) }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p class="status-label" [ngClass]="statusClass(s.status)">{{ statusLabel(s.status) }}</p>
+              <p><strong>Fecha:</strong> {{ s.displayDate }}</p>
+              <p><strong>Hora:</strong> {{ s.displayStart }} - {{ s.displayEnd }}</p>
+              <p *ngIf="s.detail"><small>{{ s.detail | json }}</small></p>
+              <ion-row class="ion-justify-content-end">
+                <ion-col size="6" size-sm="4" class="ion-text-end">
+                  <ion-button fill="outline" color="primary" [routerLink]="['/mis-solicitudes-detalle']" [queryParams]="{ id: s.id_schedule }">Ver detalles</ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-list>
 
       </ion-col>
     </ion-row>

@@ -81,6 +81,10 @@ loadComponent: () => import('./pages/confirmar-solicitud/confirmar-solicitud.pag
     path: 'confirmar-evento',
     loadComponent: () => import('./pages/confirmar-evento/confirmar-evento.page').then( m => m.ConfirmarEventoPage)
   },
+  {
+    path: 'mis-solicitudes-detalle',
+    loadComponent: () => import('./pages/mis-solicitudes-detalle/mis-solicitudes-detalle.page').then( m => m.MisSolicitudesDetallePage)
+  },
 
 
 
