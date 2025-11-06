@@ -28,10 +28,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  // ==========================================================
-  // FUNCIONES DE SCHEDULE (RESERVAS)
-  // ==========================================================
-
+  //Espacios y reservas
   getWorkspaces(): Observable<any> {
     return this.http.get(`${this.baseUrl}schedule/workspaces/`);
   }
@@ -50,10 +47,7 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}schedule/schedules/`, payload);
   }
 
-  // ==========================================================
-  // FUNCIONES DE MEMOS (PROYECTOS)
-  // ==========================================================
-
+  // Memorias y proyectos
   /** Obtiene la lista de todas las memorias/proyectos */
   getMemories(): Observable<Memory[]> {
     return this.http.get<Memory[]>(`${this.baseUrl}memos/memories/`);
@@ -64,5 +58,7 @@ export class ApiService {
     // Asume que tu API de detalle es 'memos/{id}/'
     return this.http.get<Memory>(`${this.baseUrl}memos/${id}/`); 
   }
+
+  // TODO: Añadir endpoints eventos
 
 }

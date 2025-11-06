@@ -1,6 +1,5 @@
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-
     <!-- 
       AÑADIDO: Botón de Hamburguesa (para móvil)
     -->
@@ -8,15 +7,25 @@
       <ion-menu-button color="light"></ion-menu-button>
     </ion-buttons>
 
-    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
-    
+    <ion-img
+      src="/assets/icon/logo_CITT.png"
+      alt="Logo Duoc UC"
+      class="logo"
+    ></ion-img>
+
     <!-- 
       MODIFICADO: Añadida la clase 'desktop-only-buttons'
     -->
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-button fill="clear" color="light">Recursos</ion-button>
       <ion-button fill="clear" color="light">Memorias</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
+      <ion-button
+        class="btn-logout"
+        fill="solid"
+        color="light"
+        [routerLink]="['/home']"
+        >Cerrar sesion</ion-button
+      >
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -45,7 +54,6 @@
   </ion-content>
 </ion-menu>
 
-
 <!-- 
   MODIFICADO: 'id' actualizado para coincidir con el contentId del menú
 -->
@@ -53,7 +61,13 @@
   <ion-grid class="main-content-grid">
     <ion-row>
       <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" [routerLink]="['/inicio-usuario']" routerDirection="back">
+        <ion-button
+          fill="outline"
+          color="medium"
+          class="btn-volver"
+          [routerLink]="['/inicio-usuario']"
+          routerDirection="back"
+        >
           <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
           Volver
         </ion-button>
@@ -68,12 +82,11 @@
 
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-lg="8">
-        
         <!-- Contenido del calendario (sin cambios) -->
         <div class="content-box">
           <ion-label>1. Elige una fecha</ion-label>
-          <ion-datetime 
-            presentation="date" 
+          <ion-datetime
+            presentation="date"
             [showDefaultButtons]="false"
             [min]="todayISO"
             [max]="maxDateISO"
@@ -84,12 +97,12 @@
 
         <div class="content-box">
           <ion-label>2. Elige la duración</ion-label>
-          <ion-range 
-            [min]="30" 
-            [max]="90" 
-            [step]="30" 
-            [snaps]="true" 
-            [ticks]="true" 
+          <ion-range
+            [min]="30"
+            [max]="90"
+            [step]="30"
+            [snaps]="true"
+            [ticks]="true"
             [value]="selectedDuration()"
             (ionChange)="handleDurationChange($event)"
           >
@@ -101,14 +114,18 @@
         <div class="content-box">
           <ion-label>3. Elige una hora</ion-label>
           <ion-grid class="time-slot-grid">
-            
             <div *ngIf="availableSlots().length > 0; else noSlotsMessage">
               <ion-row>
-                <ion-col size="4" size-md="3" *ngFor="let slot of availableSlots()">
-                  <ion-button 
-                    [fill]="selectedSlot() === slot ? 'solid' : 'outline'" 
+                <ion-col
+                  size="4"
+                  size-md="3"
+                  *ngFor="let slot of availableSlots()"
+                >
+                  <ion-button
+                    [fill]="selectedSlot() === slot ? 'solid' : 'outline'"
                     expand="block"
-                    (click)="selectSlot(slot)">
+                    (click)="selectSlot(slot)"
+                  >
                     {{ slot }}
                   </ion-button>
                 </ion-col>
@@ -120,22 +137,19 @@
                 No hay horas disponibles para la fecha y duración seleccionadas.
               </p>
             </ng-template>
-
           </ion-grid>
         </div>
-        
-        <ion-button 
-          expand="block" 
-          size="large" 
+
+        <ion-button
+          expand="block"
+          size="large"
           class="btn-primary"
           [disabled]="!selectedSlot()"
-          (click)="confirmarReserva()">
+          (click)="confirmarReserva()"
+        >
           Confirmar Reserva
         </ion-button>
-
       </ion-col>
     </ion-row>
-
   </ion-grid>
 </ion-content>
-

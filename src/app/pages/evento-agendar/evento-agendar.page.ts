@@ -49,8 +49,6 @@ export class EventoAgendarPage implements OnInit {
   public selectedDuration = signal<number>(30);
   public selectedSlot = signal<string | null>(null);
 
-  public workspaceId: number | null = null;
-
 
   public availableSlots = computed<string[]>(() => {
 
@@ -106,15 +104,8 @@ export class EventoAgendarPage implements OnInit {
 
   ngOnInit() {
     
-    this.workspaceId = sessionStorage.getItem('workspaceId') ? +sessionStorage.getItem('workspaceId')! : null;
-
-    if (this.workspaceId != null) {
-      
-      console.log('ID del espacio a reservar:', this.workspaceId);
-    } else {
-      console.error('¡Error! No se recibió el ID del espacio.');
       //this.router.navigate(['/']);
-    }
+    
   }
 
   // --- (Tus otras funciones se quedan igual) ---
@@ -136,14 +127,13 @@ export class EventoAgendarPage implements OnInit {
   
   /** Se llama al hacer clic en el botón final */
   confirmarReserva() {
-    if (!this.selectedSlot() || !this.workspaceId) {
-      console.error("Debe seleccionar una hora y debe existir un ID de espacio");
+    if (!this.selectedSlot()) {
+      console.error("Debe seleccionar una hora");
       return;
     }
     
     // 1. Prepara los datos para enviar
     const datosReserva = {
-      workspaceId: this.workspaceId,
       fecha: this.selectedDate(),
       duracion: this.selectedDuration(),
       hora: this.selectedSlot()
@@ -151,7 +141,7 @@ export class EventoAgendarPage implements OnInit {
     
     console.log("¡Reserva Confirmada!", datosReserva);
 
-    this.router.navigate(['/confirmar-solicitud'], {
+    this.router.navigate(['/confirmar-evento'], {
       state: {
         reserva: datosReserva
       }

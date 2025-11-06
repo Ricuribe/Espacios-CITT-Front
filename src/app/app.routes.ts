@@ -77,6 +77,10 @@ loadComponent: () => import('./pages/confirmar-solicitud/confirmar-solicitud.pag
     path: 'otro-agendar-espacio',
     loadComponent: () => import('./pages/otro-agendar-espacio/otro-agendar-espacio.page').then( m => m.OtroAgendarEspacioPage)
   },
+  {
+    path: 'confirmar-evento',
+    loadComponent: () => import('./pages/confirmar-evento/confirmar-evento.page').then( m => m.ConfirmarEventoPage)
+  },
 
 
 

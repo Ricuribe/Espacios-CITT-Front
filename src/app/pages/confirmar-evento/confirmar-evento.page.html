@@ -1,0 +1,166 @@
+
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+
+    <!-- CAMBIO 1.A: Añadido el botón de hamburguesa -->
+    <ion-buttons slot="start" class="mobile-only-button">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
+    
+    <!-- CAMBIO 1.B: Añadida la clase "desktop-only-buttons" -->
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light">Recursos</ion-button>
+      <ion-button fill="clear" color="light">Memorias</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-menu contentId="confirmar-solicitud-content" type="overlay">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <!-- Aquí pones los botones que quieres en el menú -->
+      <ion-item button [routerLink]="['/inicio-usuario']">
+        <ion-label>Inicio</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/recursos']">
+        <ion-label>Recursos</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/memorias']">
+        <ion-label>Memorias</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/home']">
+        <ion-label>Cerrar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content [fullscreen]="true" id="confirmar-solicitud-content">
+  <ion-grid class="main-content-grid">
+    <ion-row>
+      <ion-col>
+        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
+          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+          Volver
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-lg="10">
+        
+        <h1 class="page-title">Confirmar Solicitud</h1>
+
+        <ion-row>
+          <div *ngIf="isLoading" class="ion-text-center ion-padding">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Cargando detalle...</p>
+          </div>
+  
+          <div *ngIf="error" class="ion-text-center ion-padding">
+            <ion-text color="danger">
+              <p>Error al cargar los datos.</p>
+              <p><small>{{ error.message }}</small></p>
+            </ion-text>
+          </div>
+        
+          <div *ngIf="!isLoading && !error && workspace">
+            
+            <ion-img 
+              [src]="workspace.image" 
+              [alt]="workspace.name" 
+              class="detail-image"
+              (ionError)="workspace.image = '/assets/img/placeholder.png'"> <!-- CAMBIO 6: Añadido un fallback -->
+            </ion-img>
+        
+            <div class="details-padding">
+              <h2>{{ workspace.name }}</h2>
+        
+              <p>
+                <strong>Tipo:</strong> {{ workspace.space_type }}
+              </p>
+        
+              <p>
+                <strong>Capacidad:</strong> {{ workspace.max_occupancy }} personas
+              </p>
+        
+              <p>{{ workspace.description }}</p>
+              
+            </div>
+          </div>
+        </ion-row>
+
+        <ion-row class="form-section">
+          <ion-col>
+            <h2>Formulario de evento</h2>
+
+            <ion-list>
+              <ion-item>
+                <ion-label position="stacked">Título</ion-label>
+                <ion-input [(ngModel)]="form.title" name="title" placeholder="Ej: Charla de Mircosoft Azure"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="stacked">Tipo de evento</ion-label>
+                <ion-select [(ngModel)]="form.event_type" name="event_type" placeholder="Seleccione un tipo">
+                  <ion-select-option value="Evento Academico">Evento Academico</ion-select-option>
+                  <ion-select-option value="Evento Interno">Evento Interno</ion-select-option>
+                  <ion-select-option value="Reunión">Reunión</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="stacked">Descripción</ion-label>
+                <ion-textarea [(ngModel)]="form.description" name="description" placeholder="Breve descripción del evento"></ion-textarea>
+              </ion-item>
+
+              <!-- Mostrar datos de agendamiento ya seleccionados (solo lectura) -->
+              <ion-item *ngIf="reserva">
+                <ion-label>
+                  <h3>Datos de agendamiento</h3>
+                  <p>Inicio: {{ form.start_datetime | date:'yyyy-MM-dd HH:mm' }}</p>
+                  <p>Término: {{ form.end_datetime | date:'yyyy-MM-dd HH:mm' }}</p>
+                  <p>Duración: {{ form.duration }} minutos</p>
+                  <small>Estos datos fueron elegidos en la página anterior y no son editables aquí.</small>
+                </ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>Crear invitación</ion-label>
+                <ion-toggle [(ngModel)]="form.create_invitation" name="create_invitation"></ion-toggle>
+              </ion-item>
+
+              <!-- Mensaje de validación del formulario -->
+              <ion-item *ngIf="formError">
+                <ion-text color="danger">
+                  <p>{{ formError }}</p>
+                </ion-text>
+              </ion-item>
+
+            </ion-list>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="12" size-md="6">
+            <ion-button expand="block" size="large" class="btn-solicitar" (click)="submitSolicitud()" [disabled]="isLoading || !isFormValid()">
+              <span *ngIf="!isLoading">Solicitar espacio</span>
+              <span *ngIf="isLoading">Enviando...</span>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
