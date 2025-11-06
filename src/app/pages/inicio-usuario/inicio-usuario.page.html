@@ -57,7 +57,7 @@
           Debe ser </ion-col>
         -->
         <ion-col>
-          <h2>Bienvenido, Juan Perez</h2>
+          <h2>Bienvenido! {{userName}} {{userLastName}} </h2>
           <p>Tu centro de control para reservar espacios y organizar eventos.</p>
         </ion-col>
       </ion-row>
@@ -84,7 +84,7 @@
     <div class="promo-content">
       <h2>RESERVA UN ESPACIO</h2>
       <p>Revisa la disponibilidad y reserva el espacio ideal para estudiar o trabajar en equipo.</p>
-      <ion-button size="large" class="btn-primary" [routerLink]="['/seleccion-espacio']">Reservar Ahora</ion-button>
+      <ion-button size="large" class="btn-primary" (click)="redirectSchedule()">Reservar Ahora</ion-button>
     </div>
   </section>
 

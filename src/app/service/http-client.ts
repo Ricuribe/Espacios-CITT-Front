@@ -28,6 +28,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  login(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}user/login/`, payload);
+  }
+
   //Espacios y reservas
   getWorkspaces(): Observable<any> {
     return this.http.get(`${this.baseUrl}schedule/workspaces/`);
@@ -62,3 +66,5 @@ export class ApiService {
   // TODO: Añadir endpoints eventos
 
 }
+
+export { HttpClient };

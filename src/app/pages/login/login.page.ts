@@ -7,6 +7,7 @@ import {
   Validators 
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ApiService } from '../../service/http-client';
 import { 
   IonContent, 
   IonGrid, // <-- Ya no se usa, pero lo dejamos por si acaso
@@ -71,6 +72,7 @@ export class LoginPage {
   // --- Inyección de Servicios ---
   private router = inject(Router);
   private toastCtrl = inject(ToastController); 
+  private api = inject(ApiService);
 
   // --- Propiedades ---
   public loginForm: FormGroup;
@@ -120,23 +122,34 @@ export class LoginPage {
 
     console.log("Datos de Login:", this.loginForm.value);
 
-    // --- SIMULACIÓN DE API ---
+    // --- Llamada real al API ---
     const emailVal = this.loginForm.value.email;
     const passVal = this.loginForm.value.password;
 
-    // SIMULACIÓN DE ÉXITO
-    if (emailVal === 'test@duoc.cl' && passVal === '123456') {
-      this.mostrarAlerta('¡Bienvenido de vuelta!', 'success');
-      setTimeout(() => {
-        this.router.navigate(['/inicio-usuario']); 
-      }, 1000);
-    } 
-    // SIMULACIÓN DE ERROR
-    else {
-      console.error("Error en el login: datos incorrectos");
-      this.mostrarAlerta('Email o contraseña incorrectos.', 'danger');
-      this.password?.reset();
-    }
+    this.api.login({ email: emailVal, password: passVal }).subscribe({
+      next: (res: any) => {
+        // Guardar cada campo en sessionStorage (clave: valor)
+        try {
+          sessionStorage.setItem('userId', String(res.id ?? ''));
+          sessionStorage.setItem('userUsername', res.username ?? '');
+          sessionStorage.setItem('userEmail', res.email ?? '');
+          sessionStorage.setItem('userFirstName', res.first_name ?? '');
+          sessionStorage.setItem('userLastName', res.last_name ?? '');
+        } catch (e) {
+          console.error('No se pudo escribir en sessionStorage', e);
+        }
+
+        this.mostrarAlerta('¡Bienvenido de vuelta!', 'success');
+        setTimeout(() => {
+          this.router.navigate(['/inicio-usuario']);
+        }, 1000);
+      },
+      error: (err: any) => {
+        console.error('Error en el login:', err);
+        this.mostrarAlerta('Email o contraseña incorrectos.', 'danger');
+        this.password?.reset();
+      }
+    });
   }
 
   /**
