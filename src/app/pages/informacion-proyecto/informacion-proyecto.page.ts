@@ -19,13 +19,11 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
+  
   IonSkeletonText,
   IonText
 } from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-informacion-proyecto',
@@ -51,10 +49,7 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
+    
     IonSkeletonText,
     IonText
   ]
@@ -69,9 +64,11 @@ export class InformacionProyectoPage implements OnInit {
   // QR para "enviar al móvil"
   public qrUrl = signal<string | null>(null);
   public qrVisible = signal<boolean>(false);
+  public students = signal<any[]>([]);
 
   private route = inject(ActivatedRoute);
   private apiService = inject(ApiService);
+  private toastCtrl = inject(ToastController);
 
   constructor() {}
 
@@ -90,14 +87,29 @@ export class InformacionProyectoPage implements OnInit {
       const id = +idParam;
 
       // Llama al ApiService para obtener el detalle por id
-      // Se espera que getMemoryById(id) retorne el JSON indicado en la descripción
+      // Acepta dos formas de respuesta: (1) objeto memory directamente, (2) wrapper { memory, details }
       this.apiService.getMemoryById(id).subscribe({
-        next: (data) => {
-          // Guardamos tal cual la respuesta; el template puede usar las claves:
-          // id_memo, titulo, profesor, descripcion, imagen_display_url, fecha_inicio, fecha_termino, etc.
-          this.memory.set(data);
+        next: (data: any) => {
+          let mem: any = null;
+          let detalles: any[] = [];
+
+          if (data && data.memory) {
+            mem = data.memory;
+            detalles = data.details?.detalles ?? [];
+          } else if (data && data.id_memo) {
+            // API returned the memory object directly
+            mem = data;
+            detalles = data.details?.detalles ?? [];
+          } else {
+            // best-effort fallback
+            mem = data?.memory ?? null;
+            detalles = data?.details?.detalles ?? [];
+          }
+
+          this.memory.set(mem);
+          this.students.set(detalles);
           this.isLoading.set(false);
-          console.log('Detalle de memoria cargado:', data);
+          console.log('Detalle de memoria cargado:', mem, detalles);
         },
         error: (err) => {
           this.error.set(err);
@@ -138,6 +150,39 @@ export class InformacionProyectoPage implements OnInit {
         console.error('Error al descargar PDF:', err);
       }
     });
+  }
+
+  // Helper to determine best image URL
+  public getImageUrl(): string {
+    const mem = this.memory();
+    if (!mem) return '/assets/img/placeholder.png';
+    if (mem.imagen_display) return mem.imagen_display;
+    if (mem.imagen_display_url) return mem.imagen_display_url;
+    if (mem.imagen_display_name) return `${window.location.origin}/${mem.imagen_display_name}`;
+    return '/assets/img/placeholder.png';
+  }
+
+  // Open LinkedIn profile or show toast if missing
+  public async openLinkedin(url: string | null, studentName: string) {
+    if (!url) {
+      const t = await this.toastCtrl.create({
+        message: `No hay linkedin registrado para ${studentName}`,
+        duration: 2000,
+        position: 'bottom'
+      });
+      await t.present();
+      return;
+    }
+    try {
+      window.open(url, '_blank');
+    } catch (e) {
+      const t = await this.toastCtrl.create({
+        message: `No se pudo abrir el enlace de ${studentName}`,
+        duration: 2000,
+        position: 'bottom'
+      });
+      await t.present();
+    }
   }
 
   /**

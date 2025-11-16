@@ -1,264 +1,151 @@
-/* --- Estilos del Header (Copiados) --- */
-.main-header {
-  --box-shadow: none;
-
-  ion-buttons[slot="end"] ion-button {
-    --border-radius: 50px;
-    text-transform: none;
-    font-weight: 500;
-    margin-right: 10px;
-  }
-  // Botón "Cerrar Sesión"
-  .btn-logout {
-    --background: #ffffff;
-    --color: #2C73B8;
-  }
-
-  /* !! NUEVA !! Barra superior oscura */
-  .top-bar-dark {
-    --background: #252525; // Color oscuro del mockup
-    --color: #fff;
-    --min-height: auto;
-    padding: 4px 0;
-    
-    ion-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      text-align: left;
-      padding-left: 20px;
-    }
-  }
-
-  .main-toolbar {
-    --background: #2C73B8;
-    position: relative;
-    overflow: hidden;
-    padding: 10px 0;
-  }
-  .logo { width: 150px; margin-left: 20px; }
-  .btn-gestion { --border-radius: 6px; margin-right: 20px; }
-  
+:root {
+  --ref-primary: #030213;
+  --ref-muted: #ececf0;
+  --ref-accent: #e9ebef;
+  --ref-radius: 0.625rem;
+  --card-border: rgba(0,0,0,0.08);
 }
 
-/* ==========================================================
-   CAMBIO 7: AÑADIR CLASES DE VISIBILIDAD DEL MENÚ
-   ========================================================== */
-.desktop-only-buttons {
-  display: none; // Oculto por defecto (móvil)
+.container {
+  padding: 12px;
+  max-width: 920px;
+  margin: 12px auto;
 }
 
-.mobile-only-button {
-  display: block; // Visible por defecto (móvil)
+.page-outer {
+  border-radius: calc(var(--ref-radius) + 4px);
+  padding: 14px;
 }
 
-/* --- Estilos del Footer (Copiados) --- */
-/* --- !! NUEVOS ESTILOS PARA ESTA PÁGINA !! --- */
-
-.main-content-grid {
-  max-width: 1100px;
-  padding: 20px;
-  margin-left: auto; // <-- AÑADIDO PARA CENTRAR EN WEB
-  margin-right: auto; // <-- AÑADIDO PARA CENTRAR EN WEB
+.debug-banner {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 8px;
 }
 
-.btn-volver {
-  --border-radius: 6px;
-  --color: #666;
-  --border-color: #ccc;
-  margin-bottom: 20px;
-  font-weight: bold;
+.top-box {
+  margin-bottom: 10px;
 }
 
-.page-title { // <-- CAMBIO: Hice el h1 una clase
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 20px;
+.room-title p {
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-size: 1rem;
 }
 
-/* Estilos para la barra de filtros */
-.filter-bar {
+.loader-container {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  justify-content:center;
+  padding:16px 0;
+}
+
+.zones-grid .room-outline {
+  background: white;
+  border: 1px solid var(--card-border);
+  border-radius: var(--ref-radius);
+  padding: 12px;
   display: flex;
-  align-items: center;
-  gap: 15px;
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 50px; // Forma de píldora
-  padding: 8px 15px;
-  margin-bottom: 30px;
-
-  .filter-icon {
-    font-size: 1.5rem;
-    color: #555;
-  }
-
-  ion-item { // <-- CAMBIO: Estilizado el ion-item
-    flex: 1; // Ocupa el espacio restante
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    --background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-
-  ion-select {
-    width: 100%;
-    --padding-start: 10px;
-    --placeholder-color: #555;
-    --placeholder-opacity: 1;
-  }
-  
-  .btn-apply-filter, .btn-clear-filter {
-    --border-radius: 50px; // Botones redondos
-    font-weight: bold;
-  }
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Estilos para las Tarjetas (Cards) */
-.space-card {
-  --background: #fff;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  border-radius: 8px;
-  margin-left: 0;
-  margin-right: 0;
-  margin-bottom: 20px;
-  
-  ion-img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover; // Evita que la imagen se deforme
-  }
-  
-  ion-card-header {
-    padding-bottom: 5px;
-  }
-  
-  ion-card-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #333;
-  }
-  
-  ion-card-content {
-    p {
-      font-size: 0.95rem;
-      color: #666;
-      min-height: 45px; // Altura mínima para alinear botones
-    }
-    ion-button {
-      margin-top: 15px;
-      --border-radius: 6px;
-      font-weight: bold;
-    }
-  }
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
-/* ==========================================================
-   CAMBIO 8: ESTILOS PARA EL LOADER "IMPACTANTE"
-   ========================================================== */
-.skeleton-card {
-  box-shadow: none;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid #eee;
-
-  .skeleton-image {
-    width: 100%;
-    height: 200px;
-    border-radius: 8px 8px 0 0;
-    margin-bottom: 10px;
-  }
-  .skeleton-title {
-    width: 70%;
-    height: 20px;
-    margin-bottom: 15px;
-  }
-  .skeleton-line-1 {
-    width: 100%;
-    height: 15px;
-    margin-bottom: 8px;
-  }
-  .skeleton-line-2 {
-    width: 80%;
-    height: 15px;
-  }
-}
-
-
-/* ==========================================================
-   CAMBIO 9: LÓGICA DE VISIBILIDAD PARA DESKTOP Y MÓVIL
-   ========================================================== */
-
-/* Para Desktop (más de 992px) */
-@media (min-width: 992px) {
-  /* Muestra botones de desktop */
-  .desktop-only-buttons {
-    display: block; // O 'flex'
-  }
-  
-  /* Oculta botón de hamburguesa */
-  .mobile-only-button {
-    display: none;
-  }
-}
-
-/* Para Móvil (menos de 991px) */
-@media (max-width: 991px) {
-  /* Oculta botones de desktop */
-  .main-toolbar ion-buttons[slot="end"] {
-    display: none;
-  }
-
-  /* Mueve el logo a la derecha en móvil */
-  .main-toolbar .logo {
-    margin-left: auto;
-    margin-right: 20px;
-  }
-}
-
-/* Estilos solo para tablet y móvil */
-@media (max-width: 768px) {
-  .filter-bar {
-    flex-direction: column; // Apila los filtros
-    border-radius: 10px; // La forma de píldora no se ve bien
-    
-    ion-item { // <-- CAMBIO: Asegura que el item ocupe todo
-      width: 100%;
-    }
-    
-    .btn-apply-filter, .btn-clear-filter {
-      width: 100%;
-    }
-  }
-}
-
-/*
-.card-title-wrapper {
+.grid-item {
+  border: 1px solid #e5e7eb; /* slightly darker gray */
+  border-radius: calc(var(--ref-radius) + 2px);
+  padding: 12px;
+  min-height: 160px; /* taller on desktop */
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start;
+  background: white;
+  transition: all 160ms ease;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+}
+
+.grid-item.selected {
+  border-color: #2563eb; /* blue-500 */
+  background: #eff6ff; /* blue-50 */
+  border-width: 2px;
+}
+
+.grid-item:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.grid-item.disabled {
+  border-color: #f87171; /* red-400 */
+  background: #f3f4f6; /* gray */
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.zone-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.space-content h3 {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+}
+
+.occupancy {
+  margin: 0 0 8px 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.details-btn {
   width: 100%;
+  --border-radius: 8px;
 }
 
-.capacity {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.9rem;
-  color: var(--ion-color-medium-shade);
-  // Evita que se reduzca
-  flex-shrink: 0; 
+.leaders-area {
+  background: transparent;
+  border-radius: 6px;
+  padding: 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.amenities-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
+.leaders-rect {
+  margin-top: 12px;
+  border: 1px dashed rgba(0,0,0,0.08);
+  background: white;
+  padding: 14px;
+  border-radius: 8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-ion-card-title {
-  font-size: 1.25rem; // Un poco más grande
+.leaders-label {
+  font-weight:600;
 }
 
-*/
+.confirm-button-container {
+  margin-top: 12px;
+}
+
+@media (max-width: 520px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .grid-item {
+    min-height: 120px;
+    padding: 8px;
+  }
+}

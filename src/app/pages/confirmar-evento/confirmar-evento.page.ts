@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Importar RouterLink si usas [routerLink]
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonIcon, IonList, IonItem, IonLabel, IonInput, IonTextarea,
-IonMenu, IonMenuButton, IonSpinner, IonText, IonSelect, IonSelectOption, IonToggle,
-// Card components
-IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent } from '@ionic/angular/standalone';
+import { AlertController, IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, IonGrid, IonRow, IonCol, IonIcon, IonList, IonItem, IonLabel, IonInput, IonTextarea,
+IonMenu, IonMenuButton, IonSpinner, IonText, IonToggle } from '@ionic/angular/standalone';
 import { ApiService } from 'src/app/service/http-client';
 
 @Component({
@@ -15,7 +13,6 @@ import { ApiService } from 'src/app/service/http-client';
   standalone: true,
   imports: [
     CommonModule,
-  NgIf,
     RouterLink,
     FormsModule,
     IonHeader,
@@ -33,22 +30,13 @@ import { ApiService } from 'src/app/service/http-client';
     IonItem,
     IonLabel,
     IonInput,
-  IonTextarea,
-  IonSelect,
-  IonSelectOption,
-  IonToggle,
+    IonTextarea,
+    IonToggle,
     IonMenu,
     IonMenuButton,
     IonSpinner,
     IonText
-    ,
-    // Card components
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent
-]
+  ]
 })
 
 export class ConfirmarEventoPage implements OnInit {
@@ -59,40 +47,33 @@ export class ConfirmarEventoPage implements OnInit {
   public userId: number | null = null;
   public workspace: any = null;
   public formError: string | null = null;
+  public workspaceIds: number[] = [];
+  public maxAttendees = 0;
 
   // Modelo del formulario enlazado con ngModel
   public form: {
     title: string;
-    event_type?: string;
     description?: string;
     start_datetime?: string;
     end_datetime?: string;
     created_by?: number;
     create_invitation?: boolean;
-
-    // legacy / optional workspace fields left for backward compatibility
-    team?: string;
     attendees?: number;
-    project?: string;
-    duration?: number; // minutos: 30,60,90
   } = {
     title: '',
-    event_type: undefined,
     description: undefined,
     start_datetime: undefined,
     end_datetime: undefined,
     created_by: undefined,
     create_invitation: false,
-    team: '',
-    attendees: 0,
-    project: '',
-    duration: 30
+    attendees: 1
   };
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private alertController: AlertController
   ) {
 
   }
@@ -100,6 +81,12 @@ export class ConfirmarEventoPage implements OnInit {
   ngOnInit(): void {
 
     this.reserva = this.router.getCurrentNavigation()?.extras.state?.['reserva'];
+
+    // Obtener workspaceIds de la navegación
+    const navigation = this.router.getCurrentNavigation();
+    const navState = navigation?.extras?.state ?? (history && (history.state || {}));
+    this.workspaceIds = navState['workspaceIds'] ?? [];
+
     // Intentar obtener user id desde sessionStorage. Se aceptan dos formas: 'user' (JSON) o 'userId' (string)
     try {
       const userRaw = sessionStorage.getItem('user');
@@ -117,19 +104,14 @@ export class ConfirmarEventoPage implements OnInit {
       if (alt) this.userId = +alt;
     }
 
-    // Si la reserva viene con duracion, úsala para prellenar
-    if (this.reserva?.duracion) {
-      this.form.duration = this.reserva.duracion;
-    }
-
     // Prefill start/end datetimes from reserva if vienen listos
     if (this.reserva && this.reserva.fecha && this.reserva.hora) {
       const [year, month, day] = this.reserva.fecha.split('-').map((v: string) => +v);
       const [hourStr, minuteStr] = this.reserva.hora.split(':');
       const start = new Date(year, month - 1, day, +hourStr, +minuteStr);
-      const duration = this.form.duration ?? this.reserva.duracion ?? 30;
-        // end = start + duration minutes - 1 minute (consistente con confirmar-solicitud)
-        const end = new Date(start.getTime() + duration * 60000 - 60000);
+      const duration = this.reserva.duracion ?? 30;
+      // end = start + duration minutes
+      const end = new Date(start.getTime() + duration * 60000);
       this.form.start_datetime = this.formatForBackend(start);
       this.form.end_datetime = this.formatForBackend(end);
     }
@@ -140,13 +122,44 @@ export class ConfirmarEventoPage implements OnInit {
     } else {
       this.form.created_by = 1;
     }
+
+    // Load workspace details to calculate max attendees
+    this.loadWorkspaceDetails();
+  }
+
+  /** Carga detalles de espacios y calcula el aforo máximo total */
+  private loadWorkspaceDetails(): void {
+    if (!this.workspaceIds || this.workspaceIds.length === 0) {
+      this.maxAttendees = 0;
+      return;
+    }
+
+    let totalOccupancy = 0;
+    let pending = this.workspaceIds.length;
+
+    this.workspaceIds.forEach(id => {
+      this.apiService.getWorkspaceById(id).subscribe({
+        next: (workspace) => {
+          totalOccupancy += workspace.max_occupancy ?? 0;
+          pending--;
+          if (pending === 0) {
+            this.maxAttendees = totalOccupancy;
+            console.log('Max attendees calculado:', this.maxAttendees);
+          }
+        },
+        error: (err) => {
+          console.error(`Error cargando workspace ${id}:`, err);
+          pending--;
+        }
+      });
+    });
   }
 
   isFormValid(): boolean {
-    // Required: title, event_type, start and end datetimes
+    // Required: title, start and end datetimes, attendees must be valid
     if (!this.form.title || this.form.title.trim() === '') return false;
-    if (!this.form.event_type || this.form.event_type.trim() === '') return false;
     if (!this.form.start_datetime || !this.form.end_datetime) return false;
+    if (!this.form.attendees || this.form.attendees < 1 || this.form.attendees > this.maxAttendees) return false;
     return true;
   }
 
@@ -165,21 +178,55 @@ export class ConfirmarEventoPage implements OnInit {
     // Validación antes de construir payload
     this.formError = null;
     if (!this.isFormValid()) {
-      this.formError = 'Por favor complete el título, el tipo de evento y verifique las fechas de reserva.';
+      this.formError = 'Por favor complete el título, número de asistentes y verifique las fechas de reserva.';
       return;
     }
 
+    // Mostrar alerta de confirmación
+    this.showConfirmationAlert();
+  }
+
+  /** Muestra alerta de confirmación antes de enviar */
+  private async showConfirmationAlert(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Confirmar Agendamiento',
+      message: `¿Deseas crear este evento?\n\nTítulo: ${this.form.title}\nAsistentes: ${this.form.attendees}\nFecha: ${this.form.start_datetime}`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Agendamiento cancelado');
+          }
+        },
+        {
+          text: 'Confirmar',
+          handler: () => {
+            this.sendEventoRequest();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /** Envía la solicitud del evento al backend */
+  private sendEventoRequest() {
     const startIso = this.form.start_datetime!;
     const endIso = this.form.end_datetime!;
 
     const payload: any = {
       title: this.form.title,
-      event_type: this.form.event_type ?? 'Evento Academico',
-      description: this.form.description ?? '',
       start_datetime: startIso,
       end_datetime: endIso,
       created_by: this.form.created_by ?? this.userId ?? 1,
-      create_invitation: !!this.form.create_invitation
+      create_invitation: !!this.form.create_invitation,
+      detail: {
+        attendees: this.form.attendees ?? 1,
+        description: this.form.description ?? ''
+      },
+      spaces: this.workspaceIds && this.workspaceIds.length > 0 ? this.workspaceIds : [1]
     };
 
     console.log('Payload preparado para enviar (evento):', payload);

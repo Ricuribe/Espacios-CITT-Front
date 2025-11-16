@@ -70,19 +70,19 @@ export class InicioUsuarioPage {
   
   constructor() {
     if (!sessionStorage.getItem('userId')){
-      this.router.navigate(['/login'])
+      // this.router.navigate(['/login'])
+      
     }
   }
 
   redirectSchedule() {
-    const email = sessionStorage.getItem('userEmail') || '';
-    const domain = email.split('@')[1]?.toLowerCase() || '';
+    // Redirige a selección de espacios antes de agendar eventos
+    this.router.navigate(['/seleccion-espacio']);
+  }
 
-    if (domain === 'duoc.cl' || domain === 'profesor.duoc.cl') {
-      this.router.navigate(['/tipo-agendar']);
-    } else {
-      this.router.navigate(['/seleccion-espacio']);
-    }
+  redirectMemories() {
+    // Redirige a la página de memorias/proyectos
+    this.router.navigate(['/proyectos']);
   }
 
 }

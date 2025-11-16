@@ -1,15 +1,10 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // <-- Importante para el ion-toggle
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonDatetime, IonItem, IonLabel, IonRange, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonList, IonMenu, IonImg, IonMenuButton, IonSkeletonText } from '@ionic/angular/standalone';
-import { ApiService } from 'src/app/service/http-client';
 import { SlotService } from 'src/app/service/slot.service';
-import { Workspace } from '../otro-agendar-espacio/otro-agendar-espacio.page'; // Reutilizamos la interfaz
-import { addIcons } from 'ionicons';
-import { checkmarkCircle } from 'ionicons/icons';
-import { finalize, switchMap, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-evento-agendar',
@@ -18,7 +13,7 @@ import { of } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // <-- Necesario para [(ngModel)]
+    FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -40,10 +35,11 @@ import { of } from 'rxjs';
     IonImg,
     IonMenuButton,
     IonSkeletonText
-  ]
+  ],
+
 
 })
-export class EventoAgendarPage implements OnInit {
+export class EventoAgendarPage implements OnInit, OnDestroy {
 
  // --- Propiedades y Signals ---
   public today: Date;
@@ -54,7 +50,22 @@ export class EventoAgendarPage implements OnInit {
   public selectedSlot = signal<string | null>(null);
   public slots = signal<string[]>([]);
   public loadingSlots = signal<boolean>(false);
+  public selectedWorkspaceIds: number[] = [];
+  public allSpacesSelected = false;
+  private previousNavKey: string | null = null;
+  private routerEventsSub?: Subscription;
 
+  // Decide whether a date is selectable by the calendar (true = selectable).
+  // Disables Saturdays (6) and Sundays (0).
+  public isDateSelectable = (isoDate?: string | null) => {
+    if (!isoDate) return false;
+    const datePart = isoDate.split('T')[0];
+    const parts = datePart.split('-').map(Number);
+    if (parts.length < 3) return false;
+    const dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    const day = dt.getDay();
+    return day !== 0 && day !== 6;
+  };
 
   constructor(
     private router: Router,
@@ -77,8 +88,46 @@ export class EventoAgendarPage implements OnInit {
   }
 
   ngOnInit() {
-    // Al entrar, cargamos actividades y calculamos slots para la fecha seleccionada (force refresh)
-    this.updateSlots(true);
+    // Leer estado de navegación actual (puede venir de Router navigation extras o de history.state)
+    const navigation = this.router.getCurrentNavigation();
+    const navState = navigation?.extras?.state ?? (history && (history.state || {}));
+    this.applyNavigationState(navState, true);
+
+    // Suscribirse a re-entradas en la ruta para detectar cambios en la selección
+    this.routerEventsSub = this.router.events.subscribe(evt => {
+      if (evt instanceof NavigationEnd) {
+        // Cuando la navegación termina, leer el history.state (incluye state enviado por Router.navigate)
+        const s = history && (history.state || {});
+        this.applyNavigationState(s, false);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.routerEventsSub?.unsubscribe();
+  }
+
+  /** Aplica el state de navegación y refresca slots si la selección cambió */
+  private applyNavigationState(state: any, forceRefresh: boolean) {
+    if (!state) return;
+    const ids: number[] = state['workspaceIds'] ?? [];
+    const all = !!state['allSpaces'];
+
+    const key = `all:${all}|ids:${(ids || []).slice().sort((a,b)=>a-b).join(',')}`;
+    const changed = this.previousNavKey !== key;
+
+    this.selectedWorkspaceIds = ids;
+    this.allSpacesSelected = all;
+    this.previousNavKey = key;
+
+    if (changed || forceRefresh) {
+      if (!this.selectedWorkspaceIds.length && !this.allSpacesSelected) {
+        console.error('No se recibieron workspaceIds ni se marcó allSpaces; esto no debería ocurrir.');
+      }
+      console.log('Espacios seleccionados:', this.selectedWorkspaceIds, 'allSpaces:', this.allSpacesSelected);
+      // refresh slots when selection changed (force true to re-fetch activities)
+      this.updateSlots(true);
+    }
   }
 
   // --- (Tus otras funciones se quedan igual) ---
@@ -108,7 +157,9 @@ export class EventoAgendarPage implements OnInit {
     this.loadingSlots.set(true);
     this.selectedSlot.set(null); // prevent selecting while loading
     try {
-      const available = await this.slotService.getAvailableSlots(this.selectedDate(), this.selectedDuration(), undefined, forceRefresh);
+      // If user selected specific workspaces, pass their IDs; otherwise request global activities
+      const workspaceParam = this.selectedWorkspaceIds && this.selectedWorkspaceIds.length ? this.selectedWorkspaceIds : undefined;
+      const available = await this.slotService.getAvailableSlots(this.selectedDate(), this.selectedDuration(), workspaceParam, this.allSpacesSelected, forceRefresh);
       this.slots.set(available);
     } catch (e) {
       console.error('Error al obtener slots:', e);
@@ -129,7 +180,8 @@ export class EventoAgendarPage implements OnInit {
     // Antes de confirmar, revalida availability (re-fetch) para evitar doble-agendamiento
     this.loadingSlots.set(true);
     try {
-      const refreshed = await this.slotService.getAvailableSlots(this.selectedDate(), this.selectedDuration(), undefined, true);
+      const workspaceParam = this.selectedWorkspaceIds && this.selectedWorkspaceIds.length ? this.selectedWorkspaceIds : undefined;
+      const refreshed = await this.slotService.getAvailableSlots(this.selectedDate(), this.selectedDuration(), workspaceParam, this.allSpacesSelected, true);
       if (!refreshed.includes(this.selectedSlot()!)) {
         console.error('La hora seleccionada ya no está disponible. Por favor elija otra hora.');
         // Actualiza la lista visible
@@ -147,7 +199,8 @@ export class EventoAgendarPage implements OnInit {
 
       this.router.navigate(['/confirmar-evento'], {
         state: {
-          reserva: datosReserva
+          reserva: datosReserva,
+          workspaceIds: this.selectedWorkspaceIds
         }
       });
     } catch (e) {

@@ -24,8 +24,9 @@ export interface Memory {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8000/api/'; // La URL base de tu API
-
+  private baseUrl = 'http://localhost:8001/api/'; // La URL base de tu API
+  private baseUrl2 = 'http://localhost:8003/api/'; //agendamiento
+  private baseUrl3 = 'http://localhost:8002/api/'; //repo
   constructor(private http: HttpClient) { }
 
   login(payload: any): Observable<any> {
@@ -34,7 +35,7 @@ export class ApiService {
 
   //Espacios y reservas
   getWorkspaces(): Observable<any> {
-    return this.http.get(`${this.baseUrl}schedule/workspaces/`);
+    return this.http.get(`${this.baseUrl}manage/workspaces/`);
   }
 
   getSchedules(): Observable<any> {
@@ -43,7 +44,7 @@ export class ApiService {
 
   getWorkspaceById(id: number): Observable<Workspace> {
     // Asume que tu API responde con un objeto workspace en '.../workspaces/ID/'
-    return this.http.get<Workspace>(`${this.baseUrl}schedule/workspaces/${id}/`);
+    return this.http.get<Workspace>(`${this.baseUrl}manage/workspaces/${id}/`);
   }
 
   /** Crea una nueva reserva (schedule) en el backend */
@@ -72,35 +73,35 @@ export class ApiService {
   // Memorias y proyectos
   /** Obtiene la lista de todas las memorias/proyectos */
   getMemories(): Observable<Memory[]> {
-    return this.http.get<Memory[]>(`${this.baseUrl}memos/memories/`);
+    return this.http.get<Memory[]>(`${this.baseUrl3}memos/memories/`);
   }
 
   /** Obtiene una memoria/proyecto por su ID */
   getMemoryById(id: number): Observable<Memory> {
     // Asume que tu API de detalle es 'memos/{id}/'
-    return this.http.get<Memory>(`${this.baseUrl}memos/${id}/`); 
+    return this.http.get<Memory>(`${this.baseUrl3}memos/${id}/`); 
   }
 
   downloadMemoryPdf(id: number): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}memos/download/${id}/`, { responseType: 'blob' });
+    return this.http.get(`${this.baseUrl3}memos/download/${id}/`, { responseType: 'blob' });
   }
 
   // Eventos y actividades futuras
 
   getEvents(): Observable<any> {
-    return this.http.get(`${this.baseUrl}event/events/`);
+    return this.http.get(`${this.baseUrl2}event/events/`);
   }
 
   creeateEvent(payload: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}event/events/`, payload);
+    return this.http.post(`${this.baseUrl2}event/events/`, payload);
   }
 
   getFutureActivities(): Observable<any> {
-    return this.http.get(`${this.baseUrl}future-activity/`);
+    return this.http.get(`${this.baseUrl2}future-activity/`);
   }
 
-  getFutureActivitiesByWorkspaceId(workspaceId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}future-activity/${workspaceId}/`);
+  getFutureActivitiesByWorkspaceId(allSpaces: boolean | false ,workspaceId: number[]): Observable<any> {
+    return this.http.get(`${this.baseUrl2}future-activity/?all=${allSpaces}&spaces=${workspaceId.join(',')}`);
   }
 
 }

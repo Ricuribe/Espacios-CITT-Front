@@ -9,31 +9,56 @@ export interface ActivityResponse {
 
 @Injectable({ providedIn: 'root' })
 export class SlotService {
-  private cachedActivities: ActivityResponse | null = null;
+  // Cache keyed by request parameters to avoid cross-request contamination
+  private activitiesCache: Map<string, ActivityResponse> = new Map();
 
   constructor(private api: ApiService) {}
 
   /** Carga actividades futuras generales */
   async loadActivities(forceRefresh = false): Promise<ActivityResponse> {
-    if (this.cachedActivities && !forceRefresh) return this.cachedActivities;
+    const key = this.makeCacheKey(true, []);
+    if (this.activitiesCache.has(key) && !forceRefresh) return this.activitiesCache.get(key)!;
     const obs = this.api.getFutureActivities();
     const resp = await lastValueFrom(obs);
-    this.cachedActivities = resp;
+    this.activitiesCache.set(key, resp);
     return resp;
   }
 
   /** Carga actividades para workspace específico */
-  async loadActivitiesByWorkspace(workspaceId: number, forceRefresh = false): Promise<ActivityResponse> {
-    // For simplicity we reuse the same cache; forceRefresh will bypass it
-    if (this.cachedActivities && !forceRefresh) return this.cachedActivities;
-    const obs = this.api.getFutureActivitiesByWorkspaceId(workspaceId);
+  async loadActivitiesByWorkspace(workspaceId: number, allSpaces = false, forceRefresh = false): Promise<ActivityResponse> {
+    const key = this.makeCacheKey(allSpaces, [workspaceId]);
+    if (this.activitiesCache.has(key) && !forceRefresh) return this.activitiesCache.get(key)!;
+    const obs = this.api.getFutureActivitiesByWorkspaceId(allSpaces, [workspaceId]);
     const resp = await lastValueFrom(obs);
-    this.cachedActivities = resp;
+    this.activitiesCache.set(key, resp);
     return resp;
   }
 
-  clearCache() {
-    this.cachedActivities = null;
+  /** Carga actividades para múltiples workspaces */
+  async loadActivitiesByWorkspaces(workspaceIds: number[], allSpaces = false, forceRefresh = false): Promise<ActivityResponse> {
+    const key = this.makeCacheKey(allSpaces, workspaceIds);
+    if (this.activitiesCache.has(key) && !forceRefresh) return this.activitiesCache.get(key)!;
+    const obs = this.api.getFutureActivitiesByWorkspaceId(allSpaces, workspaceIds);
+    const resp = await lastValueFrom(obs);
+    this.activitiesCache.set(key, resp);
+    return resp;
+  }
+
+  /** Clear cache entirely or for a specific param set */
+  clearCache(key?: { allSpaces: boolean; workspaceIds?: number[] }) {
+    if (!key) {
+      this.activitiesCache.clear();
+      return;
+    }
+    const k = this.makeCacheKey(!!key.allSpaces, key.workspaceIds || []);
+    this.activitiesCache.delete(k);
+  }
+
+  /** Build a stable cache key from request params */
+  private makeCacheKey(allSpaces: boolean, workspaceIds: number[] = []) {
+    // Sort ids to produce a stable key
+    const ids = Array.isArray(workspaceIds) ? [...workspaceIds].sort((a, b) => a - b) : [];
+    return `all:${allSpaces}|ids:${ids.join(',')}`;
   }
 
   /** Genera slots a partir de 10:00 hasta 17:30 en step de 30 minutos, ajustando maxStart según duración */
@@ -143,10 +168,21 @@ export class SlotService {
   /**
    * Obtener slots filtrados. Si forceRefresh=true hará re-fetch de actividades desde el backend.
    */
-  async getAvailableSlots(dateISO: string, durationMin: number, workspaceId?: number, forceRefresh = false): Promise<string[]> {
+  async getAvailableSlots(dateISO: string, durationMin: number, workspaceId?: number | number[], allSpaces = false, forceRefresh = false): Promise<string[]> {
     let activities: ActivityResponse;
-    if (workspaceId != null) activities = await this.loadActivitiesByWorkspace(workspaceId, forceRefresh);
-    else activities = await this.loadActivities(forceRefresh);
+
+    if (Array.isArray(workspaceId)) {
+      if (workspaceId.length === 0 && !allSpaces) {
+        // empty array without allSpaces is unexpected — fall back to global
+        activities = await this.loadActivities(forceRefresh);
+      } else {
+        activities = await this.loadActivitiesByWorkspaces(workspaceId, allSpaces, forceRefresh);
+      }
+    } else if (workspaceId != null) {
+      activities = await this.loadActivitiesByWorkspace(workspaceId as number, allSpaces, forceRefresh);
+    } else {
+      activities = await this.loadActivities(forceRefresh);
+    }
 
     const slots = this.generateSlotsForDate(dateISO, durationMin);
     return this.filterSlots(slots, activities, dateISO, durationMin, true);

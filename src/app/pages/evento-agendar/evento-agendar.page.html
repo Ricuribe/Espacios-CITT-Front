@@ -13,9 +13,7 @@
       class="logo"
     ></ion-img>
 
-    <!-- 
-      MODIFICADO: Añadida la clase 'desktop-only-buttons'
-    -->
+
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-button fill="clear" color="light">Recursos</ion-button>
       <ion-button fill="clear" color="light">Memorias</ion-button>
@@ -30,9 +28,7 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- 
-  AÑADIDO: Menú Lateral
--->
+
 <ion-menu contentId="agendar-hora-content" type="overlay">
   <ion-header>
     <ion-toolbar color="primary">
@@ -54,9 +50,7 @@
   </ion-content>
 </ion-menu>
 
-<!-- 
-  MODIFICADO: 'id' actualizado para coincidir con el contentId del menú
--->
+
 <ion-content [fullscreen]="true" id="agendar-hora-content">
   <ion-grid class="main-content-grid">
     <ion-row>
@@ -82,7 +76,7 @@
 
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-lg="8">
-        <!-- Contenido del calendario (sin cambios) -->
+        <!-- Contenido del calendario -->
         <div class="content-box">
           <ion-label>1. Elige una fecha</ion-label>
           <ion-datetime
@@ -92,6 +86,7 @@
             [max]="maxDateISO"
             [value]="selectedDate()"
             [disabled]="loadingSlots()"
+            [isDateEnabled]="isDateSelectable"
             (ionChange)="handleDateChange($event)"
           ></ion-datetime>
         </div>

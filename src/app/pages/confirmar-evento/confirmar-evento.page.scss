@@ -1,32 +1,13 @@
-/* Styles for confirmar-evento page to match confirmar-solicitud */
+/* Styles for confirmar-evento page */
 
-.workspace-card {
-	--background: #fff;
-	border-radius: 12px;
-	box-shadow: 0 6px 18px rgba(44,115,184,0.08);
-	overflow: hidden;
-	margin-bottom: 18px;
+/* Expand textarea for comfortable reading and scrolling */
+ion-textarea {
+  min-height: 200px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
 }
-
-.workspace-card ion-card-header {
-	padding: 16px 18px 0 18px;
-}
-
-.workspace-card ion-card-content {
-	padding: 12px 18px 18px 18px;
-}
-
-.detail-image {
-	width: 100%;
-	height: 160px;
-	object-fit: cover;
-	border-radius: 8px;
-	display: block;
-}
-
-.btn-solicitar { --border-radius: 8px; }
 
 /* Small responsiveness tweak */
 @media (max-width: 767px) {
-	.detail-image { height: 140px; }
+	/* Responsive adjustments */
 }

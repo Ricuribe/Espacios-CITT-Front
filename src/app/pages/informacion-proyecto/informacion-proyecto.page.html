@@ -109,27 +109,41 @@
 
         <div class="details-list">
           <div class="detail-item">
-            <strong>Ejecutores del proyecto:</strong>
-            <!-- 
-              NOTA: Esta info (estudiantes) viene de 'MemoriaDetalle'.
-              Tu API 'getMemoryById' solo trae el objeto 'Memoria'.
-              Para mostrar los estudiantes, necesitarías modificar tu API
-              para que incluya los detalles.
-            -->
-            <span>(Datos de estudiantes no disponibles en esta API)</span>
+            <strong>Carrera:</strong>
+            <span>{{ memory()?.carrera }}</span>
           </div>
+
           <div class="detail-item">
             <strong>Profesor a cargo:</strong>
             <span>{{ memory()?.profesor }}</span>
           </div>
+
           <div class="detail-item">
             <strong>Fecha de desarrollo:</strong>
             <span>{{ memory()?.fecha_inicio | date:'dd/MM/yyyy' }} - {{ memory()?.fecha_termino | date:'dd/MM/yyyy' }}</span>
           </div>
+
           <div class="detail-item">
             <strong>Fecha de publicación:</strong>
             <span>{{ memory()?.fecha_subida | date:'dd/MM/yyyy' }}</span>
           </div>
+
+          <div class="detail-item">
+            <strong>Ejecutores del proyecto:</strong>
+            <div *ngIf="students() && students().length; else noStudents">
+              <div *ngFor="let s of students()" class="student-row">
+                <div class="student-name">{{ s.nombre_estudiante }} {{ s.segundo_nombre_estudiante ? s.segundo_nombre_estudiante : '' }} {{ s.apellido_estudiante }} {{ s.segundo_apellido_estudiante ? s.segundo_apellido_estudiante : '' }}</div>
+                <div class="student-meta">{{ s.rut_estudiante }}</div>
+                <ion-button fill="clear" size="small" (click)="openLinkedin(s.linkedin, (s.nombre_estudiante || '') + ' ' + (s.apellido_estudiante || ''))">
+                  <ion-icon slot="icon-only" name="logo-linkedin" src="../../../assets/icon/linkedin_icon.png"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+            <ng-template #noStudents>
+              <span>No hay ejecutores listados.</span>
+            </ng-template>
+          </div>
+
         </div>
 
        <ion-grid class="action-buttons">
@@ -153,7 +167,7 @@
       <!-- Imagen del Proyecto -->
       <ion-col size="12" size-md="5" class="project-image">
         <ion-img 
-          [src]="memory()?.imagen_display" 
+          [src]="getImageUrl()" 
           [alt]="memory()?.titulo"
           (ionError)="$event.target.src = '/assets/img/placeholder.png'"> <!-- Fallback por si la imagen falla -->
         </ion-img>

@@ -58,47 +58,19 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-lg="10">
         
-        <h1 class="page-title">Confirmar Solicitud</h1>
+        <h1 class="page-title">Confirmar Evento</h1>
 
         <ion-row>
           <div *ngIf="isLoading" class="ion-text-center ion-padding">
             <ion-spinner name="crescent"></ion-spinner>
-            <p>Cargando detalle...</p>
+            <p>Enviando evento...</p>
           </div>
   
           <div *ngIf="error" class="ion-text-center ion-padding">
             <ion-text color="danger">
-              <p>Error al cargar los datos.</p>
+              <p>Error al crear el evento.</p>
               <p><small>{{ error.message }}</small></p>
             </ion-text>
-          </div>
-        
-          <div *ngIf="!isLoading && !error && workspace">
-            <!-- Card for workspace details for a cleaner, consistent look -->
-            <ion-card class="workspace-card">
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="12" size-md="5">
-                    <ion-img
-                      [src]="workspace.image"
-                      [alt]="workspace.name"
-                      class="detail-image"
-                      (ionError)="workspace.image = '/assets/img/placeholder.png'">
-                    </ion-img>
-                  </ion-col>
-
-                  <ion-col size="12" size-md="7">
-                    <ion-card-header>
-                      <ion-card-title>{{ workspace.name }}</ion-card-title>
-                      <ion-card-subtitle>{{ workspace.space_type }} • {{ workspace.max_occupancy }} personas</ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <p class="ion-no-margin">{{ workspace.description }}</p>
-                    </ion-card-content>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-card>
           </div>
         </ion-row>
 
@@ -113,17 +85,14 @@
               </ion-item>
 
               <ion-item>
-                <ion-label position="stacked">Tipo de evento</ion-label>
-                <ion-select [(ngModel)]="form.event_type" name="event_type" placeholder="Seleccione un tipo">
-                  <ion-select-option value="Evento Academico">Evento Academico</ion-select-option>
-                  <ion-select-option value="Evento Interno">Evento Interno</ion-select-option>
-                  <ion-select-option value="Reunión">Reunión</ion-select-option>
-                </ion-select>
+                <ion-label position="stacked">Descripción</ion-label>
+                <ion-textarea [(ngModel)]="form.description" name="description" placeholder="Breve descripción del evento" rows="6"></ion-textarea>
               </ion-item>
 
               <ion-item>
-                <ion-label position="stacked">Descripción</ion-label>
-                <ion-textarea [(ngModel)]="form.description" name="description" placeholder="Breve descripción del evento"></ion-textarea>
+                <ion-label position="stacked">Número de Asistentes</ion-label>
+                <ion-input [(ngModel)]="form.attendees" name="attendees" type="number" [min]="1" [max]="maxAttendees" placeholder="Ej: 20"></ion-input>
+                <small *ngIf="maxAttendees > 0" slot="helper">Máximo: {{ maxAttendees }} asistentes</small>
               </ion-item>
 
               <!-- Mostrar datos de agendamiento ya seleccionados (solo lectura) -->
@@ -132,7 +101,6 @@
                   <h3>Datos de agendamiento</h3>
                   <p>Inicio: {{ form.start_datetime | date:'yyyy-MM-dd HH:mm' }}</p>
                   <p>Término: {{ form.end_datetime | date:'yyyy-MM-dd HH:mm' }}</p>
-                  <p>Duración: {{ form.duration }} minutos</p>
                   <small>Estos datos fueron elegidos en la página anterior y no son editables aquí.</small>
                 </ion-label>
               </ion-item>
@@ -156,7 +124,7 @@
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="6">
             <ion-button expand="block" size="large" class="btn-solicitar" color="primary" (click)="submitSolicitud()" [disabled]="isLoading || !isFormValid()">
-              <span *ngIf="!isLoading">Solicitar espacio</span>
+              <span *ngIf="!isLoading">Crear Evento</span>
               <span *ngIf="isLoading">Enviando...</span>
             </ion-button>
           </ion-col>
