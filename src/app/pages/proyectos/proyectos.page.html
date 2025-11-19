@@ -48,13 +48,22 @@
   <ion-grid class="main-content-grid">
     <ion-row>
       <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
+        <ion-button fill="outline" color="medium" class="btn-volver" [routerLink]="['/inicio-usuario']" routerDirection="root" aria-label="Volver a Inicio CITT">
           <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
           Volver
         </ion-button>
       </ion-col>
     </ion-row>
     
+    <ion-row>
+      <ion-col class="ion-text-center ion-padding">
+        <ion-title>Memorias de Proyectos</ion-title>
+        <ion-text class="">
+          <p>Aquí puedes explorar las memorias de proyectos realizados por nuestros estudiantes.</p>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+
     <!-- ==========================================================
          CAMBIO 4: LOADER "IMPACTANTE" (SKELETON)
          ========================================================== -->

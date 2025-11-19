@@ -72,10 +72,6 @@
         <ion-button expand="block" class="btn-primary">
           Ver Mis Solicitudes
         </ion-button>
-        
-        <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">
-          Volver a Inicio CITT
-        </ion-button>
 
       </ion-col>
 
@@ -116,6 +112,15 @@
           </div>
         </div>
 
+      </ion-col>
+    </ion-row>
+
+    <!-- Botón siempre visible para volver al inicio -->
+    <ion-row class="ion-justify-content-center ion-padding-top">
+      <ion-col size="12" size-md="6" size-lg="5" class="ion-text-center">
+        <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']" routerDirection="root" aria-label="Volver a Inicio CITT">
+          Volver a Inicio CITT
+        </ion-button>
       </ion-col>
     </ion-row>
 

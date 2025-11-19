@@ -39,7 +39,7 @@ export class ApiService {
   }
 
   getSchedules(): Observable<any> {
-    return this.http.get(`${this.baseUrl}schedule/schedules/`);
+    return this.http.get(`${this.baseUrl3}event/events/`);
   }
 
   getWorkspaceById(id: number): Observable<Workspace> {
@@ -49,11 +49,11 @@ export class ApiService {
 
   /** Crea una nueva reserva (schedule) en el backend */
   createSchedule(payload: any) {
-    return this.http.post(`${this.baseUrl}schedule/schedules/`, payload);
+    return this.http.post(`${this.baseUrl2}schedule/schedules/`, payload);
   }
 
   getSchedulesByUserId(userId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}schedule/schedules/user/${userId}/`);
+    return this.http.get(`${this.baseUrl2}event/events/user/${userId}/`);
   }
 
   /** Obtiene un schedule por su id */

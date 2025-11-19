@@ -49,7 +49,7 @@
   <ion-grid class="main-content-grid">
     <ion-row>
       <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
+        <ion-button fill="outline" color="medium" class="btn-volver" [routerLink]="['/proyectos']" routerDirection="root" aria-label="Volver a Proyectos">
           <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
           Volver
         </ion-button>
@@ -157,7 +157,7 @@
            <ion-col size="12" size-md="6">
              <ion-button expand="block" class="btn-secondary">
                <ion-icon slot="start" name="videocam-outline"></ion-icon>
-               Breve proyecto (video)
+               Enviar Proyecto al Móvil
              </ion-button>
            </ion-col> 
          </ion-row>
