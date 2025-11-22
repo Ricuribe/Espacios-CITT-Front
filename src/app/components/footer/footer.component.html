@@ -1,34 +1,34 @@
-<ion-footer>
-  <ion-toolbar class="footer-toolbar">
-    <ion-grid>
-      <ion-row class="ion-align-items-center">
-        
-        <ion-col size="12" size-md="4" class="footer-col-logo">
-          <ion-img src="/assets/icon/logo.webp" alt="Logo Duoc UC" class="footer-logo"></ion-img>
-          <p class="copyright">© 2025 Duoc UC. Todos los derechos reservados.</p>
-        </ion-col>
-        
-        <ion-col size="6" size-md="4" class="footer-links">
-          <h4>Navegación</h4>
-          <ion-button fill="clear" [routerLink]="['/home']">Inicio</ion-button>
-          <ion-button fill="clear" [routerLink]="['/guia']">Guía de Uso</ion-button>
-          <ion-button fill="clear" [routerLink]="['/recursos']">Recursos</ion-button>
-        </ion-col>
-        
-        <ion-col size="6" size-md="4" class="footer-social">
-          <h4>Síguenos</h4>
-          <ion-button fill="clear" href="httpsa://www.duoc.cl" target="_blank">
-            <ion-icon slot="icon-only" name="globe-outline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" href="httpsa://www.instagram.com/duocuc" target="_blank">
-            <ion-icon slot="icon-only" name="logo-instagram"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" href="httpsa://www.linkedin.com/school/duoc-uc" target="_blank">
-            <ion-icon slot="icon-only" name="logo-linkedin"></ion-icon>
-          </ion-button>
-        </ion-col>
+<ion-footer class="dark-footer">
+  <div class="footer-content">
+    
+    <!-- 1. Enlaces de Navegación (Arriba) -->
+    <nav class="footer-links">
+      <a [routerLink]="['/home']">Inicio</a>
+      <a [routerLink]="['/guia-uso']">Guía de Uso</a>
+      <a [routerLink]="['/recursos']">Recursos</a>
+      <!-- Agregamos estos para que se vea completo como en la foto -->
+      <a href="#">Términos</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Contacto</a>
+    </nav>
 
-      </ion-row>
-    </ion-grid>
-  </ion-toolbar>
+    <!-- 2. Iconos Sociales (Centro) -->
+    <div class="footer-social">
+      <a href="https://www.facebook.com" target="_blank" aria-label="Facebook">
+        <ion-icon name="logo-facebook"></ion-icon>
+      </a>
+      <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+        <ion-icon name="logo-twitter"></ion-icon>
+      </a>
+      <a href="https://www.instagram.com/duocuc" target="_blank" aria-label="Instagram">
+        <ion-icon name="logo-instagram"></ion-icon>
+      </a>
+    </div>
+
+    <!-- 3. Copyright (Abajo) -->
+    <div class="footer-copyright">
+      <p>© 2025 Duoc UC. Todos los derechos reservados.</p>
+    </div>
+
+  </div>
 </ion-footer>

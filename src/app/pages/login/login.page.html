@@ -1,113 +1,91 @@
-<!-- 
-  =============================================
-  NUEVO HEADER DE AUTENTICACIÓN
-  Reemplaza el diseño split-screen
-  =============================================
--->
-<ion-header class="auth-header" [translucent]="true">
-  <ion-toolbar class="main-toolbar">
+<!-- HEADER FLOTANTE -->
+<ion-header class="auth-header">
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <!-- Botón para volver al Home (página pública) -->
-      <ion-button [routerLink]="['/home']" color="light" routerDirection="back">
+      <ion-button [routerLink]="['/home']" color="light" fill="clear">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     
-    <!-- 
-      Usamos slot="primary" (derecha) para el logo,
-      copiando el estilo del header de tu app.
-    -->
-    <ion-buttons slot="primary">
-       <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo"></ion-img>
+    <ion-buttons slot="end">
+      <!-- Logo alineado a la derecha como en la foto -->
+      <div class="header-logo-container">
+        <img src="/assets/icon/Gemvirt_logo.png" alt="GemVirt" class="logo-img">
+      </div>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<!-- 
-  =============================================
-  CONTENIDO PRINCIPAL (FORMULARIO CENTRADO)
-  =============================================
--->
-<ion-content [fullscreen]="true" class="form-page-content">
-    <div class="form-container">
-      
-      <!-- El logo-mobile ya no se necesita, el header lo reemplaza -->
-      
-      <h3>Iniciar Sesión</h3>
+<ion-content [fullscreen]="true" class="login-content">
+  
+  <div class="login-wrapper">
+    
+    <!-- TÍTULOS -->
+    <div class="text-center mb-4">
+      <h1>Iniciar Sesión</h1>
+      <p class="subtitle">Ingresa a tu cuenta para continuar</p>
+    </div>
 
-      <!-- Formulario Reactivo de Login (Tu código original) -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        
-        <!-- CAMPO: Email -->
-        <ion-item class="form-item">
-          <ion-input 
-            label="Email Institucional" 
-            labelPlacement="stacked" 
-            placeholder="ej: nombre.apellido@duocuc.cl"
-            type="email"
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <!-- INPUT EMAIL (Estilo Píldora) -->
+      <div class="pill-input-group">
+        <div class="input-container" [class.error-border]="email?.invalid && email?.touched">
+          <ion-icon name="mail-outline" class="field-icon"></ion-icon>
+          <input 
+            type="email" 
+            placeholder="Email Institucional" 
             formControlName="email"
-            [class.ion-invalid]="email?.invalid && email?.touched"
-            [class.ion-valid]="email?.valid && email?.touched">
-          </ion-input>
-        </ion-item>
-        <!-- Alertas Inline para Email -->
-        <div *ngIf="email?.invalid && email?.touched" class="error-message">
-          <ion-text color="danger" *ngIf="email?.hasError('required')">
-            El email es requerido.
-          </ion-text>
-          <ion-text color="danger" *ngIf="email?.hasError('email')">
-            El formato del email no es válido.
-          </ion-text>
+            class="native-input">
         </div>
-
-        <!-- CAMPO: Contraseña -->
-        <ion-item class="form-item">
-          <ion-input 
-            label="Contraseña" 
-            labelPlacement="stacked" 
-            placeholder="Ingresa tu contraseña"
-            [type]="passwordVisible ? 'text' : 'password'"
-            formControlName="password"
-            [class.ion-invalid]="password?.invalid && password?.touched"
-            [class.ion-valid]="password?.valid && password?.touched">
-          </ion-input>
-          <!-- Botón para ver/ocultar contraseña -->
-          <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()" class="password-toggle">
-            <ion-icon [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
-          </ion-button> 
-        </ion-item>
-        <!-- Alertas Inline para Contraseña -->
-        <div *ngIf="password?.invalid && password?.touched" class="error-message">
-          <ion-text color="danger" *ngIf="password?.hasError('required')">
-            La contraseña es requerida.
-          </ion-text>
+        <!-- Error msg -->
+        <div class="error-msg" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.hasError('required')">Email requerido</span>
+          <span *ngIf="email?.hasError('email')">Formato inválido</span>
         </div>
-
-        <!-- Link de Olvidé Contraseña (Opcional) -->
-        <div class="forgot-password-link">
-          <ion-button fill="clear" size="small" [routerLink]="['/recuperar-pass']">
-            ¿Olvidaste tu contraseña?
-          </ion-button>
-        </div>
-
-        <!-- Botón de Envío -->
-        <ion-button 
-          type="submit" 
-          expand="block" 
-          class="submit-button"
-          [disabled]="loginForm.invalid">
-          Iniciar Sesión
-        </ion-button>
-        
-      </form>
-
-      <!-- Enlace para ir a Registrarse -->
-      <div class="footer-link">
-        <span>¿No tienes una cuenta?</span>
-        <ion-button fill="clear" [routerLink]="['/registro']">
-          Regístrate aquí
-        </ion-button>
       </div>
 
-    </div> <!-- Fin de .form-container -->
+      <!-- INPUT PASSWORD (Estilo Píldora) -->
+      <div class="pill-input-group">
+        <div class="input-container" [class.error-border]="password?.invalid && password?.touched">
+          <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>
+          <input 
+            [type]="passwordVisible ? 'text' : 'password'" 
+            placeholder="Contraseña" 
+            formControlName="password"
+            class="native-input">
+          <ion-icon 
+            [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'" 
+            class="eye-toggle"
+            (click)="togglePasswordVisibility()">
+          </ion-icon>
+        </div>
+        <!-- Error msg -->
+        <div class="error-msg" *ngIf="password?.invalid && password?.touched">
+          Contraseña requerida
+        </div>
+      </div>
+
+      <!-- LINK OLVIDASTE CONTRASEÑA -->
+      <div class="forgot-pass text-end">
+        <a [routerLink]="['/recuperar-pass']">¿OLVIDASTE TU CONTRASEÑA?</a>
+      </div>
+
+      <!-- BOTÓN INICIAR SESIÓN -->
+      <ion-button expand="block" type="submit" class="btn-login-pill" [disabled]="loginForm.invalid">
+        INICIAR SESIÓN
+      </ion-button>
+
+    </form>
+
+    <!-- FOOTER LINK -->
+    <div class="register-link text-center">
+      <p>¿No tienes una cuenta? <a [routerLink]="['/registro']">REGÍSTRATE AQUÍ</a></p>
+    </div>
+
+  </div>
+
+  <!-- FOOTER GLOBAL -->
+  <app-footer></app-footer>
+
 </ion-content>

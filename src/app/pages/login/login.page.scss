@@ -1,135 +1,195 @@
-/* =============================================
-  NUEVOS ESTILOS DE HEADER
-  (Inspirados en el header de tu app)
-  =============================================
-*/
+/* VARIABLES ESTÉTICAS (Basadas en la foto) */
+$bg-dark-blue: #020b26;    // Azul muy oscuro de fondo
+$input-bg: rgba(10, 25, 60, 0.6); // Fondo input semitransparente
+$border-blue: #1e4b8a;     // Borde azul de los inputs
+$text-white: #ffffff;
+$text-subtitle: #8b9bb4;   // Gris azulado para subtítulos
+$accent-white: #ffffff;    // Botón blanco
+
+:host {
+  ion-content {
+    /* Fondo degradado radial sutil como en la foto */
+    --background: radial-gradient(circle at center top, #0f2550 0%, #020b26 80%);
+  }
+}
+
+/* --- HEADER --- */
 .auth-header {
-  .main-toolbar {
-    --background: #2C73B8; // Fondo azul
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  --background: transparent;
+  --border-width: 0;
+  --box-shadow: none;
+  z-index: 10;
+
+  ion-toolbar {
+    --background: transparent;
   }
 
-  .logo { 
-    width: 150px; 
-    margin-right: 20px; // Margen para que no se pegue al borde
-  }
+  .header-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 15px;
 
-  ion-button {
-    --color: #ffffff; // Icono de volver en blanco
+    .logo-img {
+      height: 28px;
+      width: auto;
+      // Si tu logo es negro, esto lo vuelve blanco. Si ya es blanco, quítalo.
+      filter: brightness(0) invert(1); 
+    }
   }
 }
 
-/* =============================================
-  NUEVOS ESTILOS DE CONTENIDO
-  (Centra el formulario)
-  =============================================
-*/
-.form-page-content {
-  --background: #f9f9f9; // Un fondo gris claro
-}
-
-.form-container {
+/* --- WRAPPER PRINCIPAL --- */
+.login-wrapper {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  
-  /* Centrado en Desktop */
+  padding: 0 30px;
   max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  
-  /* Espaciado */
-  padding: 40px;
-  margin-top: 20px;
-  
-  /* Estilo de Tarjeta */
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-
-  @media (max-width: 767px) {
-    /* En móvil, quitamos el estilo de tarjeta */
-    padding: 30px;
-    background: transparent;
-    box-shadow: none;
-    margin-top: 0;
-  }
+  margin: 0 auto;
+  padding-top: 60px; // Espacio para el header
+  padding-bottom: 100px; // Espacio para el footer
 }
 
-/* =============================================
-  ESTILOS DEL FORMULARIO (Tu código original)
-  =============================================
-*/
-
-h3 {
-  font-size: 2rem;
+/* --- TEXTOS --- */
+h1 {
+  color: $text-white;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #222;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.form-item {
-  --background: #f4f5f7;
-  --padding-start: 16px;
-  border-radius: 8px;
-  margin-bottom: 5px;
-  
-  &.ion-valid {
-    --highlight-color: var(--ion-color-success);
-    border: 1px solid var(--ion-color-success);
-  }
-  
-  &.ion-invalid.ion-touched {
-    --highlight-color: var(--ion-color-danger);
-    border: 1px solid var(--ion-color-danger);
-  }
-}
-
-.password-toggle {
-  --color: #666;
-}
-
-.error-message {
-  padding-left: 16px;
-  margin-bottom: 15px;
-  
-  ion-text {
-    font-size: 0.85rem;
-  }
-}
-
-.forgot-password-link {
-  display: flex;
-  justify-content: flex-end; 
-  margin-top: -10px;
   margin-bottom: 10px;
-
-  ion-button {
-    --padding-end: 0;
-    font-size: 0.9rem;
-    font-weight: bold;
-  }
-}
-
-.submit-button {
-  --border-radius: 8px;
-  font-weight: bold;
-  height: 50px;
-  margin-top: 20px;
-}
-
-.footer-link {
-  margin-top: 40px;
   text-align: center;
-  
-  span {
-    color: #555;
+}
+
+.subtitle {
+  color: $text-subtitle;
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* --- INPUTS ESTILO PÍLDORA --- */
+.pill-input-group {
+  margin-bottom: 20px;
+
+  .input-container {
+    display: flex;
+    align-items: center;
+    background: $input-bg;
+    border: 1px solid $border-blue;
+    border-radius: 50px; /* Borde completamente redondeado */
+    padding: 0 20px;
+    height: 55px;
+    transition: all 0.3s ease;
+
+    /* Efecto al enfocar */
+    &:focus-within {
+      border-color: #3b82f6; /* Azul más brillante */
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    }
+
+    &.error-border {
+      border-color: #ef4444;
+    }
+
+    /* Icono Izquierda */
+    .field-icon {
+      color: #5da3f5; /* Azul clarito icónico */
+      font-size: 1.2rem;
+      margin-right: 12px;
+    }
+
+    /* Input Nativo */
+    .native-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      flex: 1;
+      font-size: 1rem;
+      width: 100%;
+
+      &::placeholder {
+        color: #5c6b85;
+      }
+    }
+
+    /* Icono Ojo */
+    .eye-toggle {
+      color: #5da3f5;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+  }
+
+  .error-msg {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    padding-left: 20px;
+  }
+}
+
+/* --- LINK OLVIDASTE CONTRASEÑA --- */
+.forgot-pass {
+  text-align: right;
+  margin-bottom: 30px;
+
+  a {
+    color: #7aaae4; /* Azul pastel */
+    font-size: 0.8rem;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover {
+      color: white;
+      text-decoration: underline;
+    }
+  }
+}
+
+/* --- BOTÓN BLANCO GRANDE --- */
+.btn-login-pill {
+  --background: #ffffff;
+  --color: #020b26; /* Texto oscuro */
+  --border-radius: 50px; /* Botón píldora */
+  font-weight: 800;
+  text-transform: uppercase;
+  height: 55px;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  --box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+  margin-bottom: 30px;
+}
+
+/* --- LINK REGISTRO --- */
+.register-link {
+  p {
+    color: $text-subtitle;
     font-size: 0.9rem;
-    display: block;
-    margin-bottom: -5px;
+
+    a {
+      color: white;
+      text-decoration: underline;
+      font-weight: 700;
+      margin-left: 5px;
+      text-transform: uppercase;
+    }
   }
-  
-  ion-button {
-    font-weight: bold;
+}
+
+/* RESPONSIVE */
+@media (max-height: 700px) {
+  .login-wrapper {
+    padding-top: 40px; // Menos espacio en pantallas bajas
   }
+  h1 { font-size: 2rem; }
+  .subtitle { margin-bottom: 25px; }
 }

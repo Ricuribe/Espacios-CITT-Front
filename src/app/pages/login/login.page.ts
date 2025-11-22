@@ -17,24 +17,22 @@ import {
   IonIcon, 
   IonText,
   ToastController,
-  
-  // --- AÑADIDOS PARA EL NUEVO HEADER ---
   IonHeader,
   IonToolbar,
   IonButtons
-
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   eyeOutline, 
   eyeOffOutline, 
+  arrowBackOutline,
+  mailOutline,       // Icono email
+  lockClosedOutline, // Icono candado
   checkmarkCircleOutline, 
-  alertCircleOutline,
-
-  // --- AÑADIDO PARA EL BOTÓN DE VOLVER ---
-  arrowBackOutline
-
+  alertCircleOutline
 } from 'ionicons/icons';
+
+import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 @Component({
   selector: 'app-login',
@@ -45,108 +43,86 @@ import {
     CommonModule,
     ReactiveFormsModule, 
     RouterLink,
-  IonContent, 
-  IonImg, 
-  IonItem, 
-  IonInput, 
-  IonButton, 
-  IonIcon, 
-  IonText,
-
-    // --- AÑADIDOS PARA EL NUEVO HEADER ---
+    IonContent, 
+    IonImg, 
+    IonItem, 
+    IonInput, 
+    IonButton, 
+    IonIcon, 
+    IonText,
     IonHeader,
     IonToolbar,
-    IonButtons
+    IonButtons,
+    FooterComponent // <-- Footer agregado
   ]
 })
 export class LoginPage {
 
-  // --- Inyección de Servicios ---
   private router = inject(Router);
   private toastCtrl = inject(ToastController); 
   private api = inject(ApiService);
 
-  // --- Propiedades ---
   public loginForm: FormGroup;
   public passwordVisible = false;
 
   constructor() {
-    // --- AÑADIDO EL NUEVO ICONO ---
     addIcons({ 
       eyeOutline, 
       eyeOffOutline, 
       checkmarkCircleOutline, 
       alertCircleOutline,
-      arrowBackOutline // <-- Añadido
+      arrowBackOutline,
+      mailOutline,
+      lockClosedOutline
     });
 
-    // 2. Definición del Formulario Reactivo
     this.loginForm = new FormGroup({
-      email: new FormControl('', [
-        Validators.required,
-        Validators.email
-      ]),
-      password: new FormControl('', [
-        Validators.required
-      ]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required]),
     });
   }
 
-  // --- Getters ---
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
 
-  // --- Métodos de UI ---
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  // --- Lógica Principal ---
-
-  /** Se llama al enviar el formulario */
   async onSubmit() {
     this.loginForm.markAllAsTouched();
 
     if (this.loginForm.invalid) {
-      console.log("Formulario de login inválido");
       return;
     }
 
-    console.log("Datos de Login:", this.loginForm.value);
-
-    // --- Llamada real al API ---
+    // --- LOGICA DE LOGIN (Simulada o Real) ---
     const emailVal = this.loginForm.value.email;
     const passVal = this.loginForm.value.password;
 
+    // Aquí usamos tu servicio API, o simulamos si falla
     this.api.login({ email: emailVal, password: passVal }).subscribe({
       next: (res: any) => {
-        // Guardar cada campo en sessionStorage (clave: valor)
         try {
           sessionStorage.setItem('userId', String(res.id ?? ''));
           sessionStorage.setItem('userUsername', res.username ?? '');
           sessionStorage.setItem('userEmail', res.email ?? '');
-          sessionStorage.setItem('userFirstName', res.first_name ?? '');
-          sessionStorage.setItem('userLastName', res.last_name ?? '');
         } catch (e) {
-          console.error('No se pudo escribir en sessionStorage', e);
+          console.error('Error storage', e);
         }
 
-        this.mostrarAlerta('¡Bienvenido de vuelta!', 'success');
+        this.mostrarAlerta('¡Bienvenido!', 'success');
         setTimeout(() => {
           this.router.navigate(['/inicio-usuario']);
         }, 1000);
       },
       error: (err: any) => {
-        console.error('Error en el login:', err);
-        this.mostrarAlerta('Email o contraseña incorrectos.', 'danger');
-        this.password?.reset();
+        console.error('Login error:', err);
+        this.mostrarAlerta('Credenciales incorrectas.', 'danger');
       }
     });
   }
 
-  /**
-   * Muestra un mensaje Toast (alerta pop-up)
-   */
   async mostrarAlerta(message: string, color: 'success' | 'danger') {
     const toast = await this.toastCtrl.create({
       message: message,

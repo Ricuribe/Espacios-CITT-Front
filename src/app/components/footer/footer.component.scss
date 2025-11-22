@@ -1,99 +1,84 @@
-/* ==============================================================
-  PASO 1: FIJAR EL FOOTER
-  ==============================================================
-  :host se refiere a la etiqueta <app-footer>
-*/
 :host {
-  position: fixed;  /* <-- Lo saca del flujo normal y lo fija */
-  bottom: 0;        /* <-- Lo pega al borde inferior */
-  left: 0;
+  display: block;
   width: 100%;
-  z-index: 10;      /* <-- Se asegura de que esté por encima del contenido */
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Opcional: una sombra bonita */
 }
 
-/* El resto de tus estilos del footer.
-  (Los ajusté un poco para que funcionen con :host)
-*/
-:host {
-  position: fixed;
-  bottom: 0;
-  /* ... etc ... */
-}
+.dark-footer {
+  /* Fondo oscuro profundo (match con el resto de tu Dark Mode) */
+  background-color: #0b1120; 
+  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Línea sutil arriba */
+  padding: 50px 20px;
+  color: #94a3b8; /* Gris azulado suave para textos secundarios */
+  font-family: 'Inter', sans-serif; /* O la fuente que uses */
 
-.footer-toolbar {
-  --background: #2C73B8; // El mismo azul de tu header
-  --color: #ffffff;     // Texto blanco
-  padding: 20px 0;       // Espaciado interno
-}
-
-.footer-col-logo {
-  text-align: left;
-}
-
-.footer-logo {
-  width: 120px;
-  margin-bottom: 10px;
-}
-
-.copyright {
-  font-size: 0.85rem;
-  color: #f0f0f0; 
-  margin: 0;
-}
-
-.footer-links,
-.footer-social {
-  h4 {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #ffffff;
+  .footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px; /* Espacio entre filas (Links, Iconos, Copyright) */
   }
 
-  ion-button[fill="clear"] {
-    --color: #f0f0f0;
-    display: block; 
-    margin: 0;
-    text-transform: none; 
-    font-weight: 400;
-    --padding-start: 0;
-  }
-}
+  /* --- 1. Estilos de Links --- */
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
 
-.footer-social {
-  ion-button {
-    display: inline-block;
-    font-size: 1.5rem;
-    --color: #ffffff;
-    --padding-start: 10px;
-    --padding-end: 10px;
-  }
-}
+    a {
+      color: #e2e8f0; /* Blanco hueso */
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      opacity: 0.8;
 
-/* Ajustes para Móvil */
-@media (max-width: 767px) {
-  .footer-col-logo,
-  .footer-links,
+      &:hover {
+        color: #3b82f6; /* Azul brillante al pasar el mouse */
+        opacity: 1;
+      }
+    }
+  }
+
+  /* --- 2. Estilos Iconos Sociales --- */
   .footer-social {
-    text-align: center; 
-    margin-bottom: 25px;
-  }
-  
-  /* Arreglo para la última columna en móvil */
-  .footer-social {
-    margin-bottom: 0;
+    display: flex;
+    gap: 20px;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cbd5e1;
+      font-size: 1.4rem;
+      transition: transform 0.2s, color 0.2s;
+
+      &:hover {
+        color: #ffffff;
+        transform: translateY(-3px); /* Pequeño salto hacia arriba */
+      }
+    }
   }
 
-  .footer-logo {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .footer-links ion-button {
-    margin-left: auto;
-    margin-right: auto;
+  /* --- 3. Estilos Copyright --- */
+  .footer-copyright {
+    margin-top: 10px;
+    p {
+      margin: 0;
+      font-size: 0.8rem;
+      opacity: 0.5; /* Más tenue para no distraer */
+      text-align: center;
+    }
   }
 }
 
+/* RESPONSIVE: En móvil ponemos los links en columna si son muchos, 
+   o dejamos que 'flex-wrap' haga el trabajo */
+@media (max-width: 600px) {
+  .footer-links {
+    gap: 15px;
+    padding: 0 10px;
+  }
+}

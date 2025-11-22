@@ -1,282 +1,424 @@
-/* ... Aquí abajo va el resto de tu código CSS (.main-header, .top-bar, etc) ... */
-/* ... aquí va el resto de tu código SCSS para el header, footer, etc. ... */
-/* --- Header --- */
-.main-header {
-  // Saca la sombra de abajo del header
-  --box-shadow: none;
-
-  .top-bar {
-    --background: #f5f5f5;
-    --min-height: auto; // Hace la barra más delgada
-    padding: 2px 0;
-    --border-width: 0;
-    border-bottom: 1px solid #ffffff;
-
-    ion-chip {
-      background: #2C73B8;
-      font-size: 0.8rem;
-    }
-  }
-
-  .main-toolbar {
-    --background: #2C73B8;
-    position: relative;
-    overflow: hidden; // Necesario para la forma azul
-    padding: 10px 0;
-  }
-
-  .logo {
-    width: 150px;
-    margin-left: 20px;
-  }
-  
- ion-buttons[slot="end"] ion-button {
-    --border-radius: 50px;  /* <-- CAMBIO: Todos los botones redondos */
-    text-transform: none;   /* Opcional: quita las mayúsculas */
-    font-weight: 500;
-    margin-right: 10px;
-  }
-
-  /* Botón Principal (Registrarse) */
-  .btn-register {
-    --background: #ffffff; /* Fondo blanco */
-    --color: #2C73B8;      /* Texto azul (color del fondo del header) */
-  }
-
-  /* Botón Secundario (Iniciar Sesión) */
-  .btn-login {
-    --border-color: #ffffff; /* Borde blanco */
-    --color: #ffffff;        /* Texto blanco */
-    margin-right: 20px;      /* Margen extra al final */
-  }
-
-  /* --- FIN DE CAMBIOS EN BOTONES --- */
-}
-
-/* VISTA MÓVIL (Por defecto) 
-  - Escondemos los botones de desktop
-  - Mostramos el botón de hamburguesa
-*/
-.desktop-only-buttons {
-  display: none;
-}
-.mobile-only-button {
-  display: block; /* O 'flex' si prefieres */
-}
-
-/* VISTA DESKTOP (Pantallas más anchas que 991px) 
-  - Escondemos el botón de hamburguesa
-  - Mostramos los botones de desktop
-*/
-@media (min-width: 992px) {
-  .desktop-only-buttons {
-    display: block; /* O 'flex' */
-  }
-  
-  .mobile-only-button {
-    display: none;
-  }
-}
-
-/* (Tus otras reglas @media (max-width: 991px) 
-  para centrar texto pueden quedar igual)
-*/
-@media (max-width: 991px) {
-  /* Centra el texto en móvil */
-  .promo-text, .partners ion-card {
-    text-align: center;
-  }
-  .partners ion-card ion-card-header {
-    padding-left: 16px; /* Reset */
-  }
-  .partners ion-card ion-card-content {
-    padding-left: 16px; /* Reset */
-  }
-}
-
-
-/* --- Contenido Principal --- */
-ion-content {
-  // Asegura que el contenido no sea tapado por el header
-  --padding-top: 10px;
-}
-
-/* --- 3. Sección Hero --- */
-.hero {
-  padding-bottom: 0;
-  text-align: left;
-
-  ion-grid {
-    padding-left: 20px;
-  }
-
-  h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 15px;
-    line-height: 1.2;
-  }
-
-  p {
-    font-size: 1.1rem;
-    color: #666;
-    max-width: 600px;
-  }
-  
-  .hero-image {
-    width: 100%;
-    margin-top: 30px;
-  }
-}
-
-/* --- 4. Sección Calendario --- */
-.calendar-promo {
-  padding: 60px 20px;
-  background-color: #fdfdfd;
-
-  .promo-image {
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-
-  .promo-text {
-    h2 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #222;
-      margin-bottom: 20px;
-    }
-    p {
-      font-size: 1.1rem;
-      color: #555;
-      margin-bottom: 30px;
-    }
-    
-    // Estilo del botón azul
-    .btn-primary {
-      --border-radius: 6px;
-      font-weight: bold;
-    }
-  }
-}
-
-
-/* --- 5. Sección Empresas --- */
-.partners {
-  padding: 60px 20px;
-  
-  h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 50px;
-  }
-  
-  ion-card {
-    // Saca la sombra y bordes por defecto
-    --background: #fff;
-    box-shadow: none;
-    text-align: left;
-    
-    margin-bottom: 24px; /* Añade separación vertical entre cards */
-    
-    ion-card-header {
-      padding-left: 0;
-    }
-    
-    ion-card-title {
-      font-size: 1.3rem;
-    }
-    
-    ion-img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 1px solid #eee;
-      padding: 5px;
-      margin-bottom: 15px;
-      // Centrar la imagen si la columna es más ancha
-      margin-left: auto;
-      margin-right: auto;
-    }
-    
-    ion-card-content {
-      padding-left: 0;
-      font-size: 0.95rem;
-      color: #666;
-    }
-  }
-}
-
-
-/* --- Arreglos para Desktop y Móvil --- */
-
-/* VISTA MÓVIL (Por defecto) 
-  - Escondemos los botones de desktop
-  - Mostramos el botón de hamburguesa
-*/
-.desktop-only-buttons {
-  display: none;
-}
-.mobile-only-button {
-  display: block; /* O 'flex' si prefieres */
-}
-
-/* VISTA DESKTOP (Pantallas más anchas que 991px) 
-  - Escondemos el botón de hamburguesa
-  - Mostramos los botones de desktop
-*/
-@media (min-width: 992px) {
-  .desktop-only-buttons {
-    display: block; /* O 'flex' */
-  }
-  
-  .mobile-only-button {
-    display: none;
-  }
-}
-
-/* (Tus otras reglas @media (max-width: 991px) 
-  para centrar texto pueden quedar igual)
-*/
-@media (max-width: 991px) {
-  /* Centra el texto en móvil */
-  .promo-text, .partners ion-card {
-    text-align: center;
-  }
-  .partners ion-card ion-card-header {
-    padding-left: 16px; /* Reset */
-  }
-  .partners ion-card ion-card-content {
-    padding-left: 16px; /* Reset */
-  }
-}
+/* =========================================
+   VARIABLES GLOBALES
+   ========================================= */
+$brand-blue: #2563eb;
+$brand-dark: #0f172a; 
+$text-light: #ffffff;
+$text-dim: #94a3b8;
 
 :host {
   ion-content {
-    --padding-bottom: 190px;
+    --background: #{$brand-dark}; 
   }
 }
 
-/*
-  Ajuste para mover el logo a la derecha en MÓVIL
-  (Pantallas de 991px o menos)
-*/
-@media (max-width: 991px) {
+/* ==================================================================
+   HEADER TRANSPARENTE Y RESPONSIVE
+   ================================================================== */
 
-  /* Usamos .main-toolbar .logo para ser más específicos
-    y sobreescribir el 'margin-left: 20px' que ya tenías.
-  */
-  .main-toolbar .logo {
-    /* 'margin-left: auto' es un truco de flexbox que
-      "empuja" el elemento lo más a la derecha posible.
-    */
-    margin-left: auto;
+.main-header {
+  position: absolute; /* Hace que el header flote sobre el contenido */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10; /* Asegura que esté siempre encima */
+  --box-shadow: none;
+
+  .main-toolbar {
+    --min-height: 80px; /* Un poco más alto para elegancia */
+    --background: transparent; /* Fondo transparente */
+    --border-width: 0;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* LOGO */
+  .logo {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+    cursor: pointer;
+    // filter: brightness(0) invert(1); 
+  }
+
+  /* BOTÓN DE HAMBURGUESA (MÓVIL) */
+  ion-menu-button {
+    --color: #ffffff; /* Color blanco para las líneas */
+    font-size: 1.2rem;
+  }
+
+  /* BOTONES DE ESCRITORIO */
+  .desktop-only-buttons {
+    ion-button {
+      font-family: 'Inter', sans-serif; 
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0.3px;
+      --padding-start: 20px;
+      --padding-end: 20px;
+      
+      /* BOTONES REDONDOS EN EL HEADER */
+      --border-radius: 50px; 
+
+      /* Estilo para enlaces normales (Guia de Uso) */
+      &.btn-link {
+        --color: #ffffff;
+        --color-hover: #bfdbfe;
+        --background-hover: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Estilo para botón destacado (Registrarse) */
+      &.btn-register {
+        --background: #ffffff;
+        --color: #1e40af; /* Azul oscuro para el texto */
+        --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+        margin-left: 10px;
+        
+        &:hover {
+          --background: #f8fafc;
+        }
+      }
+      
+      /* Estilo para botón bordeado (Iniciar Sesión) */
+      &.btn-login {
+        --color: #ffffff;
+        --border-color: rgba(255,255,255,0.5);
+        --border-width: 1px;
+        margin-left: 10px;
+        
+        &:hover {
+           --background: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+  }
+}
+
+/* ==================================================================
+   LÓGICA RESPONSIVE (MEDIA QUERIES)
+   ================================================================== */
+
+/* VISTA MÓVIL (< 992px) */
+@media (max-width: 991px) {
+  .main-header {
+    .desktop-only-buttons { display: none; }
+    .mobile-only-button { display: block; margin-right: 0; }
+    .logo { margin-left: auto; }
+  }
+}
+
+/* VISTA ESCRITORIO (>= 992px) */
+@media (min-width: 992px) {
+  .main-header {
+    .mobile-only-button { display: none; }
+    .desktop-only-buttons { display: flex; align-items: center; }
+    .logo { margin-right: auto; margin-left: 0; }
+  }
+}
+
+
+/* =========================================
+   CONTENIDO PRINCIPAL (HERO, SECCIONES)
+   ========================================= */
+
+/* --- 1. HERO SECTION --- */
+.hero-section {
+  padding: 140px 20px 100px 20px; 
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  min-height: 80vh; 
+
+  .hero-content {
+    max-width: 800px;
     
-    /* Le damos un margen derecho para que no se pegue
-      totalmente al borde de la pantalla.
-    */
-    margin-right: 20px;
+    h1 {
+      font-size: 3.5rem; 
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 25px;
+      letter-spacing: -1px;
+      span { color: #93c5fd; display: block; }
+    }
+
+    p {
+      font-size: 1.25rem;
+      color: #e0f2fe;
+      margin-bottom: 45px;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      font-weight: 300;
+    }
+
+    .btn-hero {
+      --background: #ffffff;
+      --color: #1e40af;
+      --border-radius: 50px;
+      font-weight: 700;
+      text-transform: none;
+      font-size: 1.1rem;
+      --padding-top: 25px; 
+      --padding-bottom: 25px;
+      
+      /* <--- CORREGIDO: USAR --box-shadow EN LUGAR DE box-shadow */
+      --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+/* --- 2. SPLIT SECTION (Calendario) --- */
+.split-section {
+  background-color: $brand-dark;
+  color: white;
+  padding: 100px 0;
+
+  .text-col {
+    padding: 30px;
+    
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+    p {
+      color: $text-dim;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 35px;
+    }
+  }
+
+  .btn-blue-gradient {
+    --background: linear-gradient(90deg, #3b82f6, #2563eb);
+    --border-radius: 50px;
+    --padding-start: 35px;
+    --padding-end: 35px;
+    font-weight: 600;
+    text-transform: none;
+    height: 50px;
+    
+    /* <--- CORREGIDO: USAR --box-shadow EN LUGAR DE box-shadow */
+    --box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+  }
+
+  .images-col {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    min-height: 450px; 
+    margin-top: 20px;
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 550px;
+  }
+
+  .img-back {
+    width: 85%;
+    border-radius: 20px;
+    opacity: 0.7; 
+    display: block;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-floating {
+    position: absolute;
+    top: 25%;
+    right: 0;
+    width: 55%;
+    background: #1e293b; 
+    padding: 12px;
+    border-radius: 16px;
+    box-shadow: -10px 20px 30px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255,255,255,0.05);
+
+    .img-front {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .caption {
+      padding: 12px 5px 5px 5px;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #bfdbfe;
+      font-weight: 500;
+    }
+  }
+}
+
+/* --- 3. PARTNERS CAROUSEL --- */
+.partners-carousel {
+  background-color: #020617; 
+  padding: 60px 0;
+  overflow: hidden; 
+  border-top: 1px solid rgba(255,255,255,0.05);
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 50px;
+    h3 {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+    }
+  }
+
+  .slider {
+    background: transparent;
+    height: 100px;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    
+    &::before,
+    &::after {
+      background: linear-gradient(to right, #020617 0%, rgba(0,0,0,0) 100%);
+      content: "";
+      height: 100px;
+      position: absolute;
+      width: 150px; 
+      z-index: 2;
+    }
+    &::after {
+      right: 0;
+      top: 0;
+      transform: rotateZ(180deg);
+    }
+    &::before {
+      left: 0;
+      top: 0;
+    }
+    
+    .slide-track {
+      animation: scroll 40s linear infinite; 
+      display: flex;
+      width: calc(250px * 10); 
+    }
+    
+    .slide {
+      height: 80px;
+      width: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 30px;
+      
+      img {
+        max-height: 50px; 
+        filter: grayscale(100%) brightness(300%); 
+        opacity: 0.5;
+        transition: all 0.4s ease;
+        
+        &:hover {
+          filter: none; 
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+      
+      h2 {
+        color: #475569; 
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-250px * 5)); } 
+}
+
+/* RESPONSIVE TWEAKS */
+@media (max-width: 768px) {
+  .hero-section {
+     padding-top: 120px; 
+     
+     .hero-content h1 { font-size: 2.5rem; }
+  }
+  
+  .split-section { 
+    text-align: center; 
+    padding: 60px 0;
+    
+    .images-col { 
+      justify-content: center; 
+      margin-top: 50px; 
+      min-height: 350px;
+    }
+    
+    .card-floating {
+      width: 70%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -20%);
+      right: auto;
+    }
+  }
+}
+
+/* =========================================
+   ESTILOS DEL MENÚ LATERAL
+   ========================================= */
+
+ion-menu {
+  /* Estilo del Header del Menú ("Menú") */
+  ion-header {
+    ion-toolbar {
+      --background: #1e40af; /* Azul oscuro para combinar con el header principal */
+      --color: #ffffff;
+      --border-width: 0;
+    }
+  }
+
+  /* Fondo Oscuro para toda la lista */
+  ion-content {
+    --background: #0f172a; /* Mismo color que $brand-dark */
+  }
+
+  /* La lista en sí misma */
+  ion-list {
+    background: transparent; /* Importante para quitar el fondo blanco nativo */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Estilo de cada botón (Item) */
+  ion-item {
+    --background: transparent; /* Fondo transparente */
+    --color: #e2e8f0;          /* Texto gris claro/blanco */
+    --border-color: rgba(255,255,255,0.05); /* Línea separadora muy sutil */
+    --padding-start: 20px;
+
+    /* Iconos dentro del menú (si los tienes) */
+    ion-icon {
+      color: #93c5fd; /* Azul clarito */
+      margin-right: 15px;
+    }
+
+    /* Texto de la opción */
+    ion-label {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    /* Efecto Hover (cuando pasas el mouse) */
+    &:hover {
+      --background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+    }
   }
 }

@@ -1,10 +1,10 @@
-// src/app/pages/home/home.page.ts
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FooterComponent } from 'src/app/components/footer/footer.component';
+import { RouterLink } from '@angular/router';
+// Asegúrate de que la ruta sea correcta según tu estructura de carpetas
+import { FooterComponent } from 'src/app/components/footer/footer.component'; 
+
 import {
-  // --- Módulos que ya tenías ---
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -16,36 +16,28 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
   IonIcon,
-  
-  // --- !! AQUÍ: AÑADE ESTOS 5 COMPONENTES DEL MENÚ !! ---
   IonMenu,
   IonMenuButton,
   IonList,
   IonItem,
   IonLabel
-
-} from '@ionic/angular/standalone'; 
-import { RouterLink } from '@angular/router';
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { arrowForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  
   imports: [
     CommonModule,
-    RouterLink, // Lo puse junto a CommonModule por orden
-
-    // Módulos que ya tenías
+    RouterLink,
+    FooterComponent, // <--- CRUCIAL para que funcione <app-footer>
     IonHeader,
     IonToolbar,
-    IonTitle, // <-- Ya tenías IonTitle, pero te daba error por el menú, ahora funcionará
+    IonTitle,
     IonContent,
     IonChip,
     IonImg,
@@ -54,14 +46,7 @@ import { RouterLink } from '@angular/router';
     IonGrid,
     IonRow,
     IonCol,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
     IonIcon,
-    FooterComponent,
-    
-    // --- !! Y AQUÍ: AÑADE LOS MISMOS 5 COMPONENTES !! ---
     IonMenu,
     IonMenuButton,
     IonList,
@@ -70,5 +55,8 @@ import { RouterLink } from '@angular/router';
   ]
 })
 export class HomePage {
-  constructor() {}
+  constructor() {
+    // Registramos el icono de la flechita
+    addIcons({ arrowForwardOutline });
+  }
 }
