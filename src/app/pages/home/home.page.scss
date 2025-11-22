@@ -13,39 +13,52 @@ $text-dim: #94a3b8;
 }
 
 /* ==================================================================
-   HEADER TRANSPARENTE Y RESPONSIVE
+   HEADER TRANSPARENTE Y RESPONSIVE (LOGO Y ALINEACIÓN)
    ================================================================== */
 
 .main-header {
-  position: absolute; /* Hace que el header flote sobre el contenido */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 10; /* Asegura que esté siempre encima */
+  z-index: 10;
   --box-shadow: none;
 
   .main-toolbar {
-    --min-height: 80px; /* Un poco más alto para elegancia */
-    --background: transparent; /* Fondo transparente */
+    /* Aumentamos la altura de la barra para dar espacio al logo grande */
+    --min-height: 100px; 
+    --background: transparent;
     --border-width: 0;
     padding: 0 20px;
     display: flex;
     align-items: center;
   }
 
-  /* LOGO */
+  /* --- CONFIGURACIÓN DEL LOGO --- */
   .logo {
-    height: 45px;
-    width: auto;
+    /* Altura base grande */
+    height: 90px; 
+    width: auto; 
     object-fit: contain;
     cursor: pointer;
-    // filter: brightness(0) invert(1); 
+    
+    /* TRUCO: Si tu imagen 500x500 tiene mucho borde vacío,
+       esto la "acerca" visualmente un 30% más */
+    transform: scale(1.4); 
+    transform-origin: center; /* Mantiene el centro al escalar */
+    
+    /* Ajuste fino para que no se corte al escalar */
+    margin-top: 5px;
+    margin-bottom: 5px;
+    
+    /* Filtro para asegurarnos que resalte (opcional) */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   }
 
   /* BOTÓN DE HAMBURGUESA (MÓVIL) */
   ion-menu-button {
-    --color: #ffffff; /* Color blanco para las líneas */
-    font-size: 1.2rem;
+    --color: #ffffff;
+    font-size: 1.8rem; /* Icono más grande para móvil */
   }
 
   /* BOTONES DE ESCRITORIO */
@@ -58,20 +71,18 @@ $text-dim: #94a3b8;
       --padding-start: 20px;
       --padding-end: 20px;
       
-      /* BOTONES REDONDOS EN EL HEADER */
+      /* TODOS LOS BOTONES REDONDOS */
       --border-radius: 50px; 
 
-      /* Estilo para enlaces normales (Guia de Uso) */
       &.btn-link {
         --color: #ffffff;
         --color-hover: #bfdbfe;
         --background-hover: rgba(255, 255, 255, 0.1);
       }
 
-      /* Estilo para botón destacado (Registrarse) */
       &.btn-register {
         --background: #ffffff;
-        --color: #1e40af; /* Azul oscuro para el texto */
+        --color: #1e40af;
         --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         font-weight: 700;
         margin-left: 10px;
@@ -81,7 +92,6 @@ $text-dim: #94a3b8;
         }
       }
       
-      /* Estilo para botón bordeado (Iniciar Sesión) */
       &.btn-login {
         --color: #ffffff;
         --border-color: rgba(255,255,255,0.5);
@@ -97,15 +107,29 @@ $text-dim: #94a3b8;
 }
 
 /* ==================================================================
-   LÓGICA RESPONSIVE (MEDIA QUERIES)
+   LOGICA DE ALINEACIÓN (IZQUIERDA PC / DERECHA MÓVIL)
    ================================================================== */
 
 /* VISTA MÓVIL (< 992px) */
 @media (max-width: 991px) {
   .main-header {
     .desktop-only-buttons { display: none; }
-    .mobile-only-button { display: block; margin-right: 0; }
-    .logo { margin-left: auto; }
+    
+    /* Menú Hamburguesa a la IZQUIERDA */
+    .mobile-only-button { 
+      display: block; 
+      margin-right: auto; /* Empuja todo lo demás a la derecha */
+      margin-left: 0;
+      order: -1; 
+    }
+
+    /* LOGO A LA DERECHA EN MÓVIL */
+    .logo {
+      margin-left: auto; /* Se va a la derecha */
+      margin-right: 10px; /* Un pequeño margen del borde */
+      /* IMPORTANTE: Resetear el origen de la transformación para que no se salga de pantalla */
+      transform-origin: right center; 
+    }
   }
 }
 
@@ -113,8 +137,15 @@ $text-dim: #94a3b8;
 @media (min-width: 992px) {
   .main-header {
     .mobile-only-button { display: none; }
+    
     .desktop-only-buttons { display: flex; align-items: center; }
-    .logo { margin-right: auto; margin-left: 0; }
+
+    /* LOGO A LA IZQUIERDA EN PC */
+    .logo {
+      margin-right: auto; /* Empuja botones a la derecha */
+      margin-left: 0;     
+      transform-origin: left center; /* Escala desde la izquierda */
+    }
   }
 }
 
@@ -125,7 +156,8 @@ $text-dim: #94a3b8;
 
 /* --- 1. HERO SECTION --- */
 .hero-section {
-  padding: 140px 20px 100px 20px; 
+  /* Más espacio arriba por el header de 100px */
+  padding: 180px 20px 100px 20px; 
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   display: flex;
   align-items: center;
@@ -156,6 +188,7 @@ $text-dim: #94a3b8;
       font-weight: 300;
     }
 
+    /* BOTÓN HERO */
     .btn-hero {
       --background: #ffffff;
       --color: #1e40af;
@@ -165,8 +198,6 @@ $text-dim: #94a3b8;
       font-size: 1.1rem;
       --padding-top: 25px; 
       --padding-bottom: 25px;
-      
-      /* <--- CORREGIDO: USAR --box-shadow EN LUGAR DE box-shadow */
       --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
     }
   }
@@ -195,6 +226,7 @@ $text-dim: #94a3b8;
     }
   }
 
+  /* BOTÓN CALENDARIO */
   .btn-blue-gradient {
     --background: linear-gradient(90deg, #3b82f6, #2563eb);
     --border-radius: 50px;
@@ -203,8 +235,6 @@ $text-dim: #94a3b8;
     font-weight: 600;
     text-transform: none;
     height: 50px;
-    
-    /* <--- CORREGIDO: USAR --box-shadow EN LUGAR DE box-shadow */
     --box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
   }
 
@@ -345,8 +375,7 @@ $text-dim: #94a3b8;
 /* RESPONSIVE TWEAKS */
 @media (max-width: 768px) {
   .hero-section {
-     padding-top: 120px; 
-     
+     padding-top: 140px; /* Ajuste para header más alto */
      .hero-content h1 { font-size: 2.5rem; }
   }
   
@@ -375,47 +404,35 @@ $text-dim: #94a3b8;
    ========================================= */
 
 ion-menu {
-  /* Estilo del Header del Menú ("Menú") */
   ion-header {
     ion-toolbar {
-      --background: #1e40af; /* Azul oscuro para combinar con el header principal */
+      --background: #1e40af; 
       --color: #ffffff;
       --border-width: 0;
     }
   }
-
-  /* Fondo Oscuro para toda la lista */
   ion-content {
-    --background: #0f172a; /* Mismo color que $brand-dark */
+    --background: #0f172a; 
   }
-
-  /* La lista en sí misma */
   ion-list {
-    background: transparent; /* Importante para quitar el fondo blanco nativo */
+    background: transparent; 
     padding-top: 0;
     padding-bottom: 0;
   }
-
-  /* Estilo de cada botón (Item) */
   ion-item {
-    --background: transparent; /* Fondo transparente */
-    --color: #e2e8f0;          /* Texto gris claro/blanco */
-    --border-color: rgba(255,255,255,0.05); /* Línea separadora muy sutil */
+    --background: transparent; 
+    --color: #e2e8f0;          
+    --border-color: rgba(255,255,255,0.05); 
     --padding-start: 20px;
 
-    /* Iconos dentro del menú (si los tienes) */
     ion-icon {
-      color: #93c5fd; /* Azul clarito */
+      color: #93c5fd; 
       margin-right: 15px;
     }
-
-    /* Texto de la opción */
     ion-label {
       font-weight: 500;
       font-size: 1rem;
     }
-
-    /* Efecto Hover (cuando pasas el mouse) */
     &:hover {
       --background: rgba(255, 255, 255, 0.05);
       cursor: pointer;
