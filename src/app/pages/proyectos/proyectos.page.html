@@ -1,153 +1,144 @@
-<!-- ==========================================================
-     CAMBIO 1: AÑADIR BOTÓN DE HAMBURGUESA Y CLASES
-     ========================================================== -->
+<!-- HEADER -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
     <ion-buttons slot="start" class="mobile-only-button">
-      <ion-menu-button color="light"></ion-menu-button>
+      <ion-menu-button color="light" menu="menu-proyectos"></ion-menu-button>
     </ion-buttons>
     <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo"></ion-img>
     <ion-buttons slot="end" class="desktop-only-buttons">
-      <ion-button class="btn-start" fill="clear" color="light" [routerLink]="['/inicio-usuario']">inicio</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
+      <ion-button class="btn-start" fill="clear" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar Sesión</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<!-- ==========================================================
-     CAMBIO 2: AÑADIR EL BLOQUE DEL MENÚ LATERAL
-     ========================================================== -->
-<ion-menu contentId="proyectos-content" type="overlay">
+<!-- MENÚ LATERAL (Azul) -->
+<ion-menu contentId="proyectos-content" type="overlay" menuId="menu-proyectos">
   <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-list>
-      <ion-item button [routerLink]="['/inicio-usuario']">
-        <ion-label>Inicio</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/recursos']">
-        <ion-label>Recursos</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/proyectos']">
-        <ion-label>Memorias</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/home']">
-        <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
+    <ion-list lines="none">
+      <ion-item button [routerLink]="['/inicio-usuario']"><ion-label>Inicio</ion-label></ion-item>
+      <ion-item button [routerLink]="['/recursos']"><ion-label>Recursos</ion-label></ion-item>
+      <ion-item button [routerLink]="['/proyectos']"><ion-label>Memorias</ion-label></ion-item>
+      <ion-item button [routerLink]="['/home']"><ion-label>Cerrar Sesión</ion-label></ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<!-- ==========================================================
-     CAMBIO 3: AÑADIR 'id' AL ION-CONTENT
-     ========================================================== -->
-<ion-content [fullscreen]="true" id="proyectos-content">
-  <ion-grid class="main-content-grid">
-    <ion-row>
-      <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" [routerLink]="['/inicio-usuario']" routerDirection="root" aria-label="Volver a Inicio CITT">
-          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          Volver
-        </ion-button>
-      </ion-col>
-    </ion-row>
+<!-- CONTENIDO PRINCIPAL -->
+<ion-content [fullscreen]="true" id="proyectos-content" class="memorias-content">
+  
+  <div class="page-container">
     
-    <ion-row>
-      <ion-col class="ion-text-center ion-padding">
-        <ion-title>Memorias de Proyectos</ion-title>
-        <ion-text class="">
-          <p>Aquí puedes explorar las memorias de proyectos realizados por nuestros estudiantes.</p>
-        </ion-text>
-      </ion-col>
-    </ion-row>
+    <!-- BOTÓN VOLVER -->
+    <div class="nav-header">
+      <ion-button [routerLink]="['/inicio-usuario']" fill="clear" class="back-btn">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+        <span class="back-text">Volver</span>
+      </ion-button>
+    </div>
 
-    <!-- ==========================================================
-         CAMBIO 4: LOADER "IMPACTANTE" (SKELETON)
-         ========================================================== -->
-    <div *ngIf="isLoading()">
-      <ion-row>
-        <!-- Genera 3 tarjetas "fantasma" -->
-        <ion-col size="12" size-md="4" *ngFor="let i of [1,2,3]">
-          <ion-card class="skeleton-card">
-            <ion-skeleton-text animated class="skeleton-image"></ion-skeleton-text>
+    <!-- CABECERA -->
+    <div class="header-section">
+      <h1>Nuestras Memorias Digitales</h1>
+      <p>Explora el legado y los hitos de nuestra institución a través de los años.</p>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <ion-searchbar 
+          placeholder="Buscar por palabra clave" 
+          class="custom-searchbar"
+          [debounce]="500"
+          (ionInput)="onSearchChange($event)">
+        </ion-searchbar>
+      </div>
+
+      <div class="year-filters">
+        <ion-button fill="outline" class="btn-filter-dropdown" disabled="true">
+          Filtrar por año <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
+        </ion-button>
+
+        <ion-button 
+          *ngFor="let year of filterYears"
+          [fill]="selectedYear() === year ? 'solid' : 'outline'" 
+          [color]="selectedYear() === year ? 'primary' : 'medium'"
+          class="btn-year"
+          (click)="filtrarPorAnio(year)">
+          {{ year }}
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- GRILLA -->
+    <ion-grid class="memories-grid">
+      
+      <!-- LOADER -->
+      <ion-row *ngIf="isLoading()">
+        <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let i of [1,2,3,4]">
+          <ion-card class="memory-card skeleton-card">
+            <ion-skeleton-text animated class="skeleton-img"></ion-skeleton-text>
             <ion-card-header>
-              <ion-skeleton-text animated class="skeleton-label"></ion-skeleton-text>
-              <ion-skeleton-text animated class="skeleton-title"></ion-skeleton-text>
-              <ion-skeleton-text animated class="skeleton-subtitle"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 40%; height: 15px;"></ion-skeleton-text>
             </ion-card-header>
-            <ion-card-content>
-              <ion-skeleton-text animated class="skeleton-button"></ion-skeleton-text>
-            </ion-card-content>
           </ion-card>
         </ion-col>
       </ion-row>
-    </div>
 
-    <!-- ==========================================================
-         CAMBIO 5: MENSAJE DE ERROR
-         ========================================================== -->
-    <div *ngIf="!isLoading() && error()">
-      <ion-row>
-        <ion-col class="ion-text-center ion-padding">
+      <!-- MENSAJE ERROR -->
+      <ion-row *ngIf="!isLoading() && error()">
+        <ion-col class="ion-text-center">
           <ion-text color="danger">
-            <h3>Error al cargar los proyectos</h3>
-            <p>Por favor, intenta de nuevo más tarde.</p>
+            <p>Error al cargar memorias. Intenta de nuevo.</p>
           </ion-text>
         </ion-col>
       </ion-row>
-    </div>
 
-    <!-- ==========================================================
-         CAMBIO 6: CONTENIDO REAL (DINÁMICO)
-         ¡AQUÍ ESTÁ EL ARREGLO!
-         ========================================================== -->
-    <ion-row *ngIf="!isLoading() && !error()">
-      
-      <ion-col *ngIf="memories().length === 0" class="ion-text-center ion-padding">
-        <ion-text>
-          <p>Aún no hay proyectos (memorias) para mostrar.</p>
-        </ion-text>
-      </ion-col>
+      <!-- TARJETAS REALES -->
+      <ion-row *ngIf="!isLoading() && !error()">
+        <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let memo of filteredMemories()">
+          <ion-card class="memory-card">
+            
+            <div class="card-image" 
+                 [style.backgroundImage]="'url(' + (memo.imagen_display || '/assets/icon/portadapagina.jpg') + ')'">
+              <div class="overlay"></div>
+            </div>
 
-      <!-- Itera sobre las memorias -->
-      <ion-col size="12" size-md="4" *ngFor="let memory of memories()">
-        <ion-card class="project-card">
-          
-          <!-- CAMBIO 6.A: Usar 'memory.imagen_display' -->
-          <ion-img 
-            [src]="memory.imagen_display" 
-            class="project-image"
-            (ionError)="$event.target.src = '/assets/img/placeholder.png'">
-          </ion-img>
-          
-          <ion-card-header>
-            <!-- CAMBIO 6.B: Usar 'memory.profesor' -->
-            <ion-label class="category-label">{{ memory.profesor | uppercase }}</ion-label>
-            <!-- CAMBIO 6.C: Usar 'memory.titulo' -->
-            <ion-card-title>{{ memory.titulo }}</ion-card-title>
-            <!-- CAMBIO 6.D: Usar 'memory.descripcion' -->
-            <ion-card-subtitle>{{ memory.descripcion }}</ion-card-subtitle>
-          </ion-card-header>
+            <ion-card-header>
+              <ion-card-title>{{ memo.titulo }}</ion-card-title>
+              <ion-card-subtitle>Prof. {{ memo.profesor }}</ion-card-subtitle>
+              <ion-card-subtitle>Año {{ memo.fecha_inicio | date:'yyyy' }}</ion-card-subtitle>
+            </ion-card-header>
 
-          <ion-card-content>
-            <!-- 
-              CAMBIO 6.E (EL ARREGLO DEL BUG): 
-              Usar 'memory.id_memo' 
-            -->
-            <ion-button 
-              expand="block" 
-              class="btn-primary" 
-              (click)="verDetalle(memory.id_memo)"> 
-              Ver detalles
-            </ion-button>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
+            <ion-card-content>
+              <div class="card-actions">
+                <ion-button fill="solid" color="medium" class="action-btn" (click)="verDetalle(memo.id_memo)">
+                  <ion-icon slot="start" name="eye-outline"></ion-icon> Ver
+                </ion-button>
+                <ion-button fill="solid" color="medium" class="action-btn" (click)="descargarPDF(memo.id_memo, $event)">
+                  <ion-icon slot="start" name="download-outline"></ion-icon> PDF
+                </ion-button>
+              </div>
+            </ion-card-content>
 
-    </ion-row>
+          </ion-card>
+        </ion-col>
 
-  </ion-grid>
+        <!-- Sin resultados -->
+        <ion-col size="12" *ngIf="filteredMemories().length === 0" class="ion-text-center">
+          <ion-text color="medium"><p>No se encontraron resultados.</p></ion-text>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+
+  </div>
+
+  <app-footer></app-footer>
 </ion-content>

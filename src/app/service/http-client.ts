@@ -26,7 +26,7 @@ export interface Memory {
 export class ApiService {
   private baseUrl = 'http://localhost:8001/api/'; // La URL base de tu API
   private baseUrl2 = 'http://localhost:8003/api/'; //agendamiento
-  private baseUrl3 = 'http://localhost:8002/api/'; //repo
+  private baseUrl3 = 'http://localhost:8002/api/'; //repositorio 
   constructor(private http: HttpClient) { }
 
   login(payload: any): Observable<any> {

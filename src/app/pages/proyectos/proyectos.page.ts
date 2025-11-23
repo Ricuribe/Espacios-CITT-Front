@@ -1,87 +1,73 @@
-import { Component, OnInit, signal, inject } from '@angular/core'; // <-- CAMBIO: Añadidos
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router'; // <-- CAMBIO: Añadidos
-import { ApiService, Memory } from 'src/app/service/http-client'; // <-- CAMBIO: Añadido
+import { FormsModule } from '@angular/forms'; 
+import { Router, RouterLink } from '@angular/router';
+
+// CORRECCIÓN 1: Importamos desde tu archivo real
+import { ApiService, Memory } from 'src/app/service/http-client'; 
+import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonImg,
-  IonButtons,
-  IonButton,
-  IonContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonIcon,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonLabel,
-
-  // --- CAMBIO: AÑADIDOS PARA EL MENÚ Y LOADER ---
-  IonMenu,
-  IonMenuButton,
-  IonList,
-  IonItem,
-  IonSkeletonText, // <-- Para el loader
-  IonText // <-- Para el error
-  
-} from '@ionic/angular/standalone'; 
+  IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, 
+  IonGrid, IonRow, IonCol, IonIcon, IonCard, IonCardHeader, IonCardTitle, 
+  IonCardSubtitle, IonCardContent, IonLabel, IonMenu, IonMenuButton, IonList, 
+  IonItem, IonSkeletonText, IonText, 
+  IonSearchbar, // CORRECCIÓN 2: Importado
+  IonChip,      // CORRECCIÓN 2: Importado
+  MenuController 
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { 
+  eyeOutline, downloadOutline, searchOutline, filterOutline, 
+  arrowForwardOutline, chevronDownOutline, chevronBackOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-proyectos',
   templateUrl: './proyectos.page.html',
   styleUrls: ['./proyectos.page.scss'],
   standalone: true,
-  
   imports: [
-    CommonModule,
-    RouterLink, // <-- CAMBIO: Añadido
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonImg,
-    IonButtons,
-    IonButton,
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonIcon,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonCardContent,
-    IonLabel,
-
-    // --- CAMBIO: AÑADIDOS PARA EL MENÚ Y LOADER ---
-    IonMenu,
-    IonMenuButton,
-    IonList,
-    IonItem,
-    IonSkeletonText,
-    IonText
+    CommonModule, FormsModule, RouterLink, 
+    FooterComponent, 
+    IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, 
+    IonGrid, IonRow, IonCol, IonIcon, IonCard, IonCardHeader, IonCardTitle, 
+    IonCardSubtitle, IonCardContent, IonLabel, IonMenu, IonMenuButton, IonList, 
+    IonItem, IonSkeletonText, IonText, 
+    IonSearchbar, 
+    IonChip       
   ]
 })
-export class ProyectosPage implements OnInit { // <-- CAMBIO: Añadido OnInit
+export class ProyectosPage implements OnInit {
   
-  // --- CAMBIO: Lógica de Carga y Signals ---
-  public memories = signal<Memory[]>([]);
-  public isLoading = signal<boolean>(true);
-  public error = signal<any>(null);
-
   private apiService = inject(ApiService);
   private router = inject(Router);
+  private menuCtrl = inject(MenuController);
 
-  constructor() {}
+  // --- ESTADO ---
+  public memories = signal<Memory[]>([]);
+  public filteredMemories = signal<Memory[]>([]); 
+  public isLoading = signal<boolean>(true);
+  public error = signal<any>(null);
+  
+  // --- FILTROS (Variables que el HTML busca) ---
+  public searchTerm = signal<string>('');
+  public selectedYear = signal<number | null>(null);
+  public filterYears = [2024, 2023, 2022, 2021, 2020];
+
+  constructor() {
+    addIcons({ 
+      eyeOutline, downloadOutline, searchOutline, filterOutline, 
+      arrowForwardOutline, chevronDownOutline, chevronBackOutline 
+    });
+  }
 
   ngOnInit() {
     this.loadMemories();
+  }
+
+  ionViewWillEnter() {
+    this.menuCtrl.enable(true, 'menu-proyectos');
   }
 
   loadMemories() {
@@ -89,12 +75,12 @@ export class ProyectosPage implements OnInit { // <-- CAMBIO: Añadido OnInit
     this.error.set(null);
 
     this.apiService.getMemories().subscribe({
-      next: (data) => {
+      next: (data: Memory[]) => {
         this.memories.set(data);
+        this.applyFilters(); 
         this.isLoading.set(false);
-        console.log('Memorias cargadas:', data);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error.set(err);
         this.isLoading.set(false);
         console.error('Error al cargar memorias:', err);
@@ -102,10 +88,67 @@ export class ProyectosPage implements OnInit { // <-- CAMBIO: Añadido OnInit
     });
   }
 
-  /** Navega a la página de detalle del proyecto */
+  applyFilters() {
+    let result = this.memories();
+
+    // 1. Filtro Texto
+    const term = this.searchTerm().toLowerCase();
+    if (term) {
+      result = result.filter((m: Memory) => 
+        (m.titulo && m.titulo.toLowerCase().includes(term)) ||
+        (m.profesor && m.profesor.toLowerCase().includes(term)) ||
+        (m.descripcion && m.descripcion.toLowerCase().includes(term))
+      );
+    }
+
+    // 2. Filtro Año
+    if (this.selectedYear()) {
+      const yearStr = String(this.selectedYear());
+      result = result.filter((m: Memory) => 
+        m.fecha_inicio && m.fecha_inicio.startsWith(yearStr)
+      );
+    }
+
+    this.filteredMemories.set(result);
+  }
+
+  // --- MÉTODOS QUE EL HTML NECESITA ---
+
+  onSearchChange(event: any) {
+    this.searchTerm.set(event.detail.value);
+    this.applyFilters();
+  }
+
+  filtrarPorAnio(anio: number) {
+    if (this.selectedYear() === anio) {
+      this.selectedYear.set(null);
+    } else {
+      this.selectedYear.set(anio);
+    }
+    this.applyFilters();
+  }
+
   verDetalle(id: number) {
-    // Asume que tu página de detalle se llama 'informacion-proyecto'
-    // y recibe un 'id'
+    if (!id) return;
     this.router.navigate(['/informacion-proyecto', id]);
+  }
+
+  descargarPDF(id: number, event: Event) {
+    event.stopPropagation();
+    
+    // Usamos 'any' para evitar problemas si tu interfaz Memory no tiene el tipo Blob explícito en el servicio
+    this.apiService.downloadMemoryPdf(id).subscribe({
+      next: (blob: any) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `memoria_${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      },
+      error: (err: any) => console.error('Error descarga', err)
+    });
   }
 }

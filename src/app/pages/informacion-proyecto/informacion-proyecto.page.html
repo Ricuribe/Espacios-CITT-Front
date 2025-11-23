@@ -1,178 +1,150 @@
-<!-- ==========================================================
-     HEADER (Sin cambios, ya tiene el menú)
-     ========================================================== -->
+<!-- HEADER (Igual que en las otras páginas) -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
     <ion-buttons slot="start" class="mobile-only-button">
-      <ion-menu-button color="light"></ion-menu-button>
+      <ion-menu-button color="light" menu="menu-info-proyecto"></ion-menu-button>
     </ion-buttons>
-    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo"></ion-img>
+    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo"></ion-img>
     <ion-buttons slot="end" class="desktop-only-buttons">
-      <ion-button class="btn-start" fill="clear" color="light" [routerLink]="['/inicio-usuario']">inicio</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
+      <ion-button class="btn-start" fill="clear" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar Sesión</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<!-- ==========================================================
-     MENÚ (Sin cambios)
-     ========================================================== -->
-<ion-menu contentId="info-proyecto-content" type="overlay">
+<!-- MENÚ LATERAL (Azul) -->
+<ion-menu contentId="info-proyecto-content" type="overlay" menuId="menu-info-proyecto">
   <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-list>
-      <!-- (Tu lista de ion-item del menú va aquí) -->
-      <ion-item button [routerLink]="['/inicio-usuario']">
-        <ion-label>Inicio</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/recursos']">
-        <ion-label>Recursos</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/proyectos']">
-        <ion-label>Memorias</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/home']">
-        <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
+    <ion-list lines="none">
+      <ion-item button [routerLink]="['/inicio-usuario']"><ion-label>Inicio</ion-label></ion-item>
+      <ion-item button [routerLink]="['/proyectos']"><ion-label>Memorias</ion-label></ion-item>
+      <ion-item button [routerLink]="['/home']"><ion-label>Cerrar Sesión</ion-label></ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<!-- ==========================================================
-     CONTENIDO (¡AHORA DINÁMICO!)
-     ========================================================== -->
-<ion-content [fullscreen]="true" id="info-proyecto-content">
-  <ion-grid class="main-content-grid">
-    <ion-row>
-      <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" [routerLink]="['/proyectos']" routerDirection="root" aria-label="Volver a Proyectos">
-          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          Volver
-        </ion-button>
-      </ion-col>
-    </ion-row>
-
-    <!-- ==========================================================
-         CAMBIO 1: SKELETON LOADER (ESTADO DE CARGA)
-         ========================================================== -->
-    <div *ngIf="isLoading()">
+<!-- CONTENIDO -->
+<ion-content [fullscreen]="true" id="info-proyecto-content" class="project-detail-content">
+  
+  <!-- LOADER -->
+  <div *ngIf="isLoading()" class="loader-container">
+    <ion-grid>
       <ion-row>
-        <ion-col size="12" size-md="7" class="project-info">
-          <!-- Loader para Texto -->
-          <ion-skeleton-text animated class="skeleton-h1"></ion-skeleton-text>
-          <ion-skeleton-text animated class="skeleton-author"></ion-skeleton-text>
-          <ion-skeleton-text animated class="skeleton-line"></ion-skeleton-text>
-          <ion-skeleton-text animated class="skeleton-line"></ion-skeleton-text>
-          <ion-skeleton-text animated class="skeleton-line-half"></ion-skeleton-text>
-          <div class="details-list-skeleton">
-            <ion-skeleton-text animated class="skeleton-line-half"></ion-skeleton-text>
-            <ion-skeleton-text animated class="skeleton-line-half"></ion-skeleton-text>
-          </div>
-        </ion-col>
-        <ion-col size="12" size-md="5" class="project-image">
-          <!-- Loader para Imagen -->
-          <ion-skeleton-text animated class="skeleton-image"></ion-skeleton-text>
+        <ion-col size="12">
+          <ion-skeleton-text animated style="width: 100%; height: 300px; border-radius: 12px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%; height: 40px; margin-top: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100%; height: 20px; margin-top: 10px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100%; height: 20px; margin-top: 10px;"></ion-skeleton-text>
         </ion-col>
       </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="!isLoading() && error()" class="error-container">
+    <ion-text color="danger">
+      <h2>Error al cargar el proyecto</h2>
+      <p>Por favor intenta nuevamente.</p>
+    </ion-text>
+    <ion-button fill="outline" color="light" [routerLink]="['/proyectos']">Volver a Memorias</ion-button>
+  </div>
+
+  <!-- CONTENIDO REAL -->
+  <div *ngIf="!isLoading() && !error() && memory()">
+    
+    <!-- HERO DEL PROYECTO (Imagen de fondo + Título) -->
+    <div class="project-hero" [style.backgroundImage]="'url(' + getImageUrl() + ')'">
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <div class="breadcrumbs">
+            <span [routerLink]="['/proyectos']" class="link">Memorias</span> / <span>{{ memory().titulo }}</span>
+          </div>
+          <h1>{{ memory().titulo }}</h1>
+          
+          <div class="meta-info">
+            <span class="author"><ion-icon name="person-outline"></ion-icon> {{ memory().profesor }}</span>
+            <span class="separator">|</span>
+            <span class="date"><ion-icon name="calendar-outline"></ion-icon> {{ memory().fecha_subida | date:'dd MMMM, yyyy' }}</span>
+          </div>
+
+          <div class="hero-actions">
+            <ion-button class="btn-download" (click)="descargarArchivo('informe')">
+              <ion-icon slot="start" name="download-outline"></ion-icon> Descargar Memoria
+            </ion-button>
+            <ion-button class="btn-back" fill="outline" [routerLink]="['/proyectos']">
+              <ion-icon slot="start" name="chevron-back-outline"></ion-icon> Volver
+            </ion-button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- ==========================================================
-         CAMBIO 2: MENSAJE DE ERROR
-         ========================================================== -->
-    <div *ngIf="!isLoading() && error()">
-      <ion-row>
-        <ion-col class="ion-text-center ion-padding">
-          <ion-text color="danger">
-            <h3>Error al cargar el proyecto</h3>
-            <p>{{ error().message }}</p>
-          </ion-text>
-        </ion-col>
-      </ion-row>
-    </div>
+    <!-- DETALLES DEL PROYECTO -->
+    <div class="project-body">
+      <ion-grid>
+        <ion-row>
+          <!-- Columna Izquierda: Descripción y Texto -->
+          <ion-col size="12" size-md="8">
+            <div class="text-section">
+              <h3>Resumen del Proyecto</h3>
+              <p class="description">{{ memory().descripcion }}</p>
+              
+              <!-- Aquí podrías agregar más texto estático o dinámico si tu API lo tiene -->
+              <h3>Desafíos y Soluciones</h3>
+              <p>
+                Uno de los mayores desafíos fue la integración de los componentes de hardware con el software de control. 
+                Se resolvió utilizando una arquitectura modular que permitió probar cada sensor de forma independiente.
+                (Texto de ejemplo, ya que tu API actual solo devuelve una descripción general).
+              </p>
+            </div>
 
-    <!-- ==========================================================
-         CAMBIO 3: CONTENIDO REAL (DINÁMICO)
-         ========================================================== -->
-    <ion-row *ngIf="!isLoading() && !error() && memory()">
-      
-      <!-- Información del Proyecto -->
-      <ion-col size="12" size-md="7" class="project-info">
-        
-        <!-- Datos Reales -->
-        <h1>{{ memory()?.titulo }}</h1>
-        <p class="author">{{ memory()?.profesor }}</p>
-        <p class="description">{{ memory()?.descripcion }}</p>
+            <!-- SECCIÓN DE DOCUMENTOS -->
+            <div class="documents-section">
+              <h3>Documentos Adjuntos</h3>
+              
+              <div class="doc-card" (click)="descargarArchivo('informe')">
+                <div class="doc-icon"><ion-icon name="document-text-outline"></ion-icon></div>
+                <div class="doc-info">
+                  <span class="doc-name">Informe del Proyecto.pdf</span>
+                </div>
+                <ion-button fill="clear" size="small">Descargar</ion-button>
+              </div>
 
-        <div class="details-list">
-          <div class="detail-item">
-            <strong>Carrera:</strong>
-            <span>{{ memory()?.carrera }}</span>
-          </div>
+              <div class="doc-card" (click)="descargarArchivo('presentacion')">
+                <div class="doc-icon"><ion-icon name="easel-outline"></ion-icon></div>
+                <div class="doc-info">
+                  <span class="doc-name">Presentación Final.pptx</span>
+                </div>
+                <ion-button fill="clear" size="small">Descargar</ion-button>
+              </div>
 
-          <div class="detail-item">
-            <strong>Profesor a cargo:</strong>
-            <span>{{ memory()?.profesor }}</span>
-          </div>
-
-          <div class="detail-item">
-            <strong>Fecha de desarrollo:</strong>
-            <span>{{ memory()?.fecha_inicio | date:'dd/MM/yyyy' }} - {{ memory()?.fecha_termino | date:'dd/MM/yyyy' }}</span>
-          </div>
-
-          <div class="detail-item">
-            <strong>Fecha de publicación:</strong>
-            <span>{{ memory()?.fecha_subida | date:'dd/MM/yyyy' }}</span>
-          </div>
-
-          <div class="detail-item">
-            <strong>Ejecutores del proyecto:</strong>
-            <div *ngIf="students() && students().length; else noStudents">
-              <div *ngFor="let s of students()" class="student-row">
-                <div class="student-name">{{ s.nombre_estudiante }} {{ s.segundo_nombre_estudiante ? s.segundo_nombre_estudiante : '' }} {{ s.apellido_estudiante }} {{ s.segundo_apellido_estudiante ? s.segundo_apellido_estudiante : '' }}</div>
-                <div class="student-meta">{{ s.rut_estudiante }}</div>
-                <ion-button fill="clear" size="small" (click)="openLinkedin(s.linkedin, (s.nombre_estudiante || '') + ' ' + (s.apellido_estudiante || ''))">
-                  <ion-icon slot="icon-only" name="logo-linkedin" src="../../../assets/icon/linkedin_icon.png"></ion-icon>
-                </ion-button>
+              <div class="doc-card" (click)="descargarArchivo('codigo')">
+                <div class="doc-icon"><ion-icon name="code-slash-outline"></ion-icon></div>
+                <div class="doc-info">
+                  <span class="doc-name">Código Fuente.zip</span>
+                </div>
+                <ion-button fill="clear" size="small">Descargar</ion-button>
               </div>
             </div>
-            <ng-template #noStudents>
-              <span>No hay ejecutores listados.</span>
-            </ng-template>
-          </div>
+          </ion-col>
 
-        </div>
-
-       <ion-grid class="action-buttons">
-         <ion-row>
-           <ion-col size="12" size-md="6">
-             <!-- Botón de descarga ahora funcional -->
-             <ion-button expand="block" class="btn-primary" (click)="descargarProyecto()">
-               Descargar proyecto
-             </ion-button>
-           </ion-col>
-           <ion-col size="12" size-md="6">
-             <ion-button expand="block" class="btn-secondary">
-               <ion-icon slot="start" name="videocam-outline"></ion-icon>
-               Enviar Proyecto al Móvil
-             </ion-button>
-           </ion-col> 
-         </ion-row>
+          <!-- Columna Derecha: Imagen Secundaria o Detalles Extra -->
+          <ion-col size="12" size-md="4">
+            <div class="side-image-container">
+              <img [src]="getImageUrl()" alt="Detalle Proyecto" class="side-image">
+              <div class="image-caption">Visualización del proyecto</div>
+            </div>
+          </ion-col>
+        </ion-row>
       </ion-grid>
-      </ion-col>
+    </div>
 
-      <!-- Imagen del Proyecto -->
-      <ion-col size="12" size-md="5" class="project-image">
-        <ion-img 
-          [src]="getImageUrl()" 
-          [alt]="memory()?.titulo"
-          (ionError)="$event.target.src = '/assets/img/placeholder.png'"> <!-- Fallback por si la imagen falla -->
-        </ion-img>
-      </ion-col>
+  </div>
 
-    </ion-row>
-  </ion-grid>
+  <app-footer></app-footer>
 </ion-content>
