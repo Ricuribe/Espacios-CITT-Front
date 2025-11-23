@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-// Asegúrate de que la ruta sea correcta según tu estructura de carpetas
 import { FooterComponent } from 'src/app/components/footer/footer.component'; 
 
 import {
@@ -21,7 +20,8 @@ import {
   IonMenuButton,
   IonList,
   IonItem,
-  IonLabel
+  IonLabel,
+  MenuController // <--- Importante
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline } from 'ionicons/icons';
@@ -34,7 +34,7 @@ import { arrowForwardOutline } from 'ionicons/icons';
   imports: [
     CommonModule,
     RouterLink,
-    FooterComponent, // <--- CRUCIAL para que funcione <app-footer>
+    FooterComponent,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -55,8 +55,15 @@ import { arrowForwardOutline } from 'ionicons/icons';
   ]
 })
 export class HomePage {
+  
+  private menuCtrl = inject(MenuController);
+
   constructor() {
-    // Registramos el icono de la flechita
     addIcons({ arrowForwardOutline });
+  }
+
+  // Se ejecuta cada vez que entras a la página
+  ionViewWillEnter() {
+    this.menuCtrl.enable(true, 'menu-home');
   }
 }

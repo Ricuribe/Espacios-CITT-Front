@@ -1,0 +1,334 @@
+/* VARIABLES GLOBALES */
+$brand-blue: #2563eb; 
+$brand-dark: #020617; 
+$card-bg: #0f172a;    
+$text-blue: #3b82f6;  
+$text-grey: #94a3b8;  
+
+:host {
+  ion-content {
+    --background: #{$brand-dark};
+  }
+}
+
+/* --- HEADER PRINCIPAL DE LA PÁGINA --- */
+.main-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  --box-shadow: none;
+
+  .main-toolbar {
+    --min-height: 90px; 
+    --background: transparent; 
+    --border-width: 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .logo {
+    height: 70px; 
+    width: auto; 
+    object-fit: contain;
+    cursor: pointer;
+    padding: 5px 0;
+  }
+
+  ion-buttons[slot="start"] {
+    margin-right: 10px;
+  }
+
+  ion-menu-button {
+    --color: #ffffff;
+    font-size: 2rem; 
+  }
+
+  .desktop-only-buttons {
+    ion-button {
+      font-family: 'Inter', sans-serif; 
+      font-weight: 500;
+      text-transform: none;
+      --border-radius: 50px; 
+
+      &.btn-link {
+        --color: #ffffff;
+        --color-hover: #bfdbfe;
+      }
+      &.btn-register {
+        --background: #ffffff;
+        --color: #1e40af;
+        --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+        margin-left: 10px;
+      }
+      &.btn-login {
+        --color: #ffffff;
+        --border-color: rgba(255,255,255,0.5);
+        --border-width: 1px;
+        margin-left: 10px;
+      }
+    }
+  }
+}
+
+/* ============================================================== 
+   ESTILOS DEL MENÚ LATERAL (SOLUCIÓN DEFINITIVA AZUL)
+   ============================================================== */
+   
+/* Aplicamos estilos al ion-menu DIRECTAMENTE sin clase extra, 
+   ya que es el único menú en esta página */
+ion-menu {
+  /* 1. Fondo Azul Degradado para TODO el panel lateral */
+  --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
+  
+  /* 2. Cabecera del Menú */
+  ion-header {
+    ion-toolbar {
+      /* Transparente para que se vea el degradado del padre */
+      --background: transparent !important; 
+      --color: #ffffff;
+      --border-width: 0;
+      
+      ion-title {
+        font-weight: 700;
+        font-size: 1.4rem;
+        padding-inline-start: 20px;
+        margin-top: 15px;
+        /* Línea separadora blanca sutil */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 15px;
+      }
+    }
+  }
+
+  /* 3. Cuerpo del Menú */
+  ion-content {
+    /* Transparente para ver el azul de fondo */
+    --background: transparent !important; 
+    --color: #ffffff;
+  }
+
+  /* 4. Lista de Opciones */
+  ion-list {
+    background: transparent !important; 
+    padding-top: 10px;
+    padding-bottom: 0;
+  }
+
+  /* 5. Items Individuales */
+  ion-item {
+    /* Transparente para no tapar el azul */
+    --background: transparent !important; 
+    --color: #ffffff;          
+    --border-color: rgba(255, 255, 255, 0.1); /* Separadores muy finos */
+    font-size: 1rem;
+    font-weight: 500;
+    --min-height: 55px;
+    --padding-start: 20px;
+
+    /* Iconos (si los hubiera) */
+    ion-icon {
+      color: #bfdbfe; 
+      margin-right: 15px;
+    }
+
+    /* Efecto Hover: Azul un poco más claro */
+    &:hover, &.item-has-focus {
+      --background: rgba(255, 255, 255, 0.1) !important;
+      cursor: pointer;
+    }
+  }
+}
+
+/* --- RESPONSIVE HEADER --- */
+@media (max-width: 991px) {
+  .main-header {
+    .desktop-only-buttons { display: none; }
+    .mobile-only-button { display: block; }
+    .logo { margin-left: auto; margin-right: 0; }
+  }
+}
+@media (min-width: 992px) {
+  .main-header {
+    .mobile-only-button { display: none; }
+    .desktop-only-buttons { display: flex; align-items: center; }
+    .logo { margin-right: auto; margin-left: 0; }
+  }
+}
+
+/* --- CONTENIDO PAGINA --- */
+.page-wrapper {
+  padding: 120px 20px 80px 20px; 
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: 90vh;
+}
+
+/* Navegación superior interna (Flecha volver) */
+.nav-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .back-btn {
+    --color: #ffffff;
+    --padding-start: 0;
+    font-size: 1.2rem;
+    
+    ion-icon {
+      font-size: 2rem;
+      margin-right: 5px;
+    }
+    
+    .back-text {
+      display: none; 
+      font-size: 1rem;
+      font-weight: 600;
+      
+      @media(min-width: 768px) {
+        display: inline; 
+      }
+    }
+  }
+}
+
+.section-header {
+  margin-bottom: 50px;
+  
+  h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  p {
+    color: $text-grey;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+/* EVENTOS Y TARJETAS */
+.events-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px; 
+}
+
+.event-card {
+  background-color: $card-bg;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex; 
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 250px;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .card-image {
+    flex: 0 0 35%; 
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    background-color: #1e293b; 
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to right, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.8));
+    }
+  }
+
+  .card-body {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .event-title {
+      color: $text-blue; 
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .event-meta {
+      display: flex;
+      gap: 25px;
+      margin-bottom: 20px;
+      color: $text-grey;
+      font-size: 0.9rem;
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        ion-icon {
+          font-size: 1.1rem;
+          color: #64748b;
+        }
+      }
+    }
+
+    .event-desc {
+      color: #cbd5e1; 
+      line-height: 1.6;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    .category-badge {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.1);
+      color: $text-blue;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      align-self: flex-start;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .event-card {
+    flex-direction: column; 
+    min-height: auto;
+
+    .card-image {
+      height: 200px; 
+      width: 100%;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+    
+    .event-title {
+      font-size: 1.5rem;
+    }
+    
+    .event-meta {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  .section-header h1 {
+    font-size: 2rem;
+  }
+}

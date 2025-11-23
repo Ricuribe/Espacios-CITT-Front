@@ -62,7 +62,11 @@ export const routes: Routes = [
   {
     path: 'mis-solicitudes-detalle',
     loadComponent: () => import('./pages/mis-solicitudes-detalle/mis-solicitudes-detalle.page').then( m => m.MisSolicitudesDetallePage)
+  },  {
+    path: 'ver-eventos',
+    loadComponent: () => import('./ver-eventos/ver-eventos.page').then( m => m.VerEventosPage)
   },
+
 
 
 
