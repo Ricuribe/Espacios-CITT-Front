@@ -1,93 +1,179 @@
-/* ==========================================================
-   CAMBIO 1: ESTILOS DEL HEADER DE AUTENTICACIÓN
-   (Igual que en la página de Login/Registro)
-   ========================================================== */
+/* VARIABLES DE COLOR (Consistentes con tu app) */
+$brand-blue: #2563eb; 
+$brand-dark: #0f172a; 
+$card-bg: #1e293b;    
+$text-white: #ffffff;
+$text-grey: #94a3b8;
+
+:host {
+  ion-content {
+    --background: #{$brand-dark};
+  }
+}
+
+/* --- HEADER (Estilo Auth) --- */
 .auth-header {
   --box-shadow: none;
+  position: absolute; top: 0; width: 100%; z-index: 10;
   
   .main-toolbar {
-    --background: #2C73B8;
+    --background: transparent;
+    --border-width: 0;
+    padding-top: 10px;
   }
 
   .auth-logo {
-    width: 150px;
-    // Centra el logo moviéndolo al área principal
-    margin: 0 auto; 
+    height: 50px; /* Ajustado para que no sea gigante */
+    width: auto;
+    margin: 0 auto;
   }
 
   ion-button {
-    --color: #ffffff; // Asegura que la flecha sea blanca
+    --color: #ffffff;
   }
 }
 
-/* ==========================================================
-   CAMBIO 2: ESTILOS DEL CONTENIDO (Centrado)
-   ========================================================== */
-.main-content-grid {
+/* --- CONTENIDO --- */
+.page-container {
+  padding: 120px 20px 80px 20px; /* Padding top alto para el header */
   max-width: 1100px;
-  padding: 20px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  min-height: 90vh;
 }
 
-/* (Ya no necesitamos el .btn-volver de antes)
-*/
-
-.guide-text {
-  padding-right: 20px;
-
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 30px;
-    line-height: 1.2;
-  }
-
-  .step {
-    margin-bottom: 25px;
-    
-    h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--ion-color-primary); // Color azul
-      margin-bottom: 8px;
-    }
-    
-    p {
-      font-size: 1rem;
-      color: #555;
-      line-height: 1.6;
-    }
-  }
-}
-
-.guide-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* TEXTO HERO */
+.hero-text {
+  margin-bottom: 60px;
   
-  ion-img {
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  h1 {
+    color: $text-white;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+  }
+  
+  p {
+    color: $text-grey;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
   }
 }
 
-/* ==========================================================
-   CAMBIO 3: MEDIA QUERIES
-   (Ya no necesitamos la lógica de mostrar/ocultar botones)
-   ========================================================== */
+/* TARJETAS DE PASOS */
+.step-card {
+  background-color: $card-bg;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 40px 20px;
+  text-align: center;
+  height: 100%;
+  transition: transform 0.3s ease;
 
-@media (max-width: 768px) {
-  // En móvil, la imagen se va para arriba
-  .guide-image {
-    order: -1; // Pone la imagen primero
-    margin-bottom: 30px; 
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(37, 99, 235, 0.5);
   }
-  .guide-text h1 {
-    font-size: 2rem; // Título más pequeño
+
+  .icon-circle {
+    width: 60px;
+    height: 60px;
+    background: rgba(37, 99, 235, 0.2); /* Azul transparente */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    
+    ion-icon {
+      font-size: 1.8rem;
+      color: #60a5fa; /* Azul claro */
+    }
   }
-  .guide-text {
-    padding-right: 0;
+
+  h3 {
+    color: $text-white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: $text-grey;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+/* BANNER CTA (REGISTRO) */
+.cta-banner {
+  margin-top: 60px;
+  background: rgba(37, 99, 235, 0.1); /* Fondo azul muy suave */
+  border: 1px solid #2563eb; /* Borde azul brillante */
+  border-radius: 50px; /* Borde muy redondeado estilo "Pill" grande */
+  padding: 30px 40px;
+
+  .cta-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .cta-icon {
+    font-size: 3rem;
+    color: #60a5fa;
+    display: flex;
+    align-items: center;
+  }
+
+  .cta-text {
+    flex: 1;
+    h3 {
+      color: $text-white;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    p {
+      color: $text-grey;
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+
+  .cta-action {
+    .btn-register {
+      --color: #0f172a; /* Texto oscuro */
+      font-weight: 700;
+      text-transform: none;
+      --box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 991px) {
+  .hero-text h1 { font-size: 2.2rem; }
+  
+  .steps-grid ion-col {
+    margin-bottom: 20px;
+  }
+
+  .cta-banner {
+    border-radius: 20px; /* Menos radio en móvil */
+    padding: 30px 20px;
+    
+    .cta-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 20px;
+    }
+    
+    .cta-action {
+      width: 100%;
+      ion-button { width: 100%; }
+    }
   }
 }

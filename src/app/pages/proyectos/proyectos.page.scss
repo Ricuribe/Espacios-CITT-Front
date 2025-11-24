@@ -27,22 +27,13 @@ $text-grey: #94a3b8;
   }
 }
 
-/* Estilo Menú Azul Forzado */
+/* Estilo Menú Azul */
 ion-menu {
   --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
-  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
-
-  ion-header ion-toolbar { 
-    --background: transparent !important; background: transparent !important; --color: white; --border-width: 0; 
-  }
-  ion-content { 
-    --background: transparent !important; background: transparent !important; --color: white; 
-  }
-  ion-list { 
-    background: transparent !important; 
-  }
-  ion-item { 
-    --background: transparent !important; background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); 
+  ion-header ion-toolbar { --background: transparent !important; --color: white; --border-width: 0; }
+  ion-content { --background: transparent !important; --color: white; }
+  ion-list { background: transparent !important; }
+  ion-item { --background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); 
     &:hover { --background: rgba(255,255,255,0.1) !important; }
   }
 }
@@ -92,30 +83,65 @@ ion-menu {
   }
 }
 
-/* TARJETAS */
+/* --- TARJETAS (AQUÍ ESTÁ EL ARREGLO DE ALTURA) --- */
 .memories-grid { padding: 0; }
+
 .memory-card {
-  background-color: $card-bg; border-radius: 12px; margin: 0 0 25px 0;
+  background-color: $card-bg; 
+  border-radius: 12px; 
+  margin: 0 0 25px 0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  overflow: hidden; transition: transform 0.2s;
+  overflow: hidden; 
+  transition: transform 0.2s;
+  
+  /* 1. Forzamos altura completa dentro de la columna */
+  height: 100%; 
+  /* 2. Usamos flexbox vertical para distribuir el contenido */
+  display: flex;
+  flex-direction: column;
+
   &:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.1); }
 
   .card-image {
-    height: 200px; width: 100%;
-    background-size: cover; background-position: center;
-    background-color: #0f172a; position: relative;
+    height: 200px; 
+    width: 100%;
+    background-size: cover; 
+    background-position: center;
+    background-color: #0f172a; 
+    position: relative;
+    /* Evitamos que la imagen se encoja */
+    flex-shrink: 0; 
+    
     .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent 0%, rgba(30, 41, 59, 0.8) 100%); }
   }
 
   ion-card-header {
     padding: 15px 15px 5px 15px;
-    ion-card-title { color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
+    /* Hacemos que el header crezca si es necesario, pero no demasiado */
+    flex-grow: 1; 
+    
+    ion-card-title { 
+      color: white; 
+      font-size: 1.1rem; 
+      font-weight: 700; 
+      margin-bottom: 5px; 
+      
+      /* Opcional: Limitar el título a 2 líneas para uniformidad estricta */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
     ion-card-subtitle { color: $text-grey; font-size: 0.85rem; text-transform: none; }
   }
 
   ion-card-content {
     padding: 10px 15px 20px 15px;
+    /* Asegura que el contenido (botones) siempre esté al final */
+    margin-top: auto; 
+
     .card-actions {
       display: flex; gap: 10px;
       .action-btn {
@@ -129,6 +155,7 @@ ion-menu {
 
 /* SKELETON */
 .skeleton-card {
+  height: 100%; /* También altura completa para el skeleton */
   .skeleton-img { width: 100%; height: 200px; margin-bottom: 10px; }
   ion-skeleton-text { border-radius: 4px; background: rgba(255,255,255,0.1); }
 }

@@ -1,89 +1,78 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FooterComponent } from 'src/app/components/footer/footer.component';
 
-// Importa tu footer
-// FooterComponent removed from imports: not used in this page template
-
-// --- CAMBIO AQUÍ ---
-// Añadimos los componentes del Menú
-import { 
-  IonHeader, 
-  IonToolbar, 
-  IonButtons, 
-  IonImg, 
-  IonButton, 
-  IonContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-
-  // --- AÑADIDOS PARA EL MENÚ ---
-  IonMenu,
-  IonMenuButton,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonTitle
+import {
+  IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, IonImg, 
+  IonMenu, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, 
+  IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon, IonText, 
+  IonAvatar, IonLabel, IonList, IonItem, MenuController, IonChip, 
+  IonSegment, IonSegmentButton, IonTitle
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { 
+  personCircleOutline, settingsOutline, logOutOutline, 
+  documentTextOutline, calendarOutline, peopleOutline, 
+  addCircleOutline, statsChartOutline, libraryOutline,
+  timeOutline, cloudUploadOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-inicio-usuario',
   templateUrl: './inicio-usuario.page.html',
   styleUrls: ['./inicio-usuario.page.scss'],
   standalone: true,
-
-  // --- Y LOS AÑADIMOS AQUÍ ---
   imports: [
-    CommonModule, 
-    RouterLink,
-  // Componentes de Ionic que usa tu HTML
-  IonHeader, 
-    IonToolbar, 
-    IonButtons, 
-    IonImg, 
-    IonButton, 
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-  // (IonCard* removed — not used in template)
-
-    // --- AÑADIDOS PARA EL MENÚ ---
-    IonMenu,
-    IonMenuButton,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonTitle
+    CommonModule, RouterLink, FooterComponent,
+    IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, IonImg, 
+    IonMenu, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, 
+    IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon, IonText, 
+    IonAvatar, IonLabel, IonList, IonItem, IonChip,
+    IonSegment, IonSegmentButton, IonTitle
   ]
 })
-export class InicioUsuarioPage {
+export class InicioUsuarioPage implements OnInit {
 
-  public userName: string | null = sessionStorage.getItem('userFirstName');
-  public userLastName: string | null = sessionStorage.getItem('userLastName');
-  private router = inject(Router)
+  private router = inject(Router);
+  private menuCtrl = inject(MenuController);
+
+  // Estado del Usuario
+  public userName = signal<string>('Rodrigo Alvarez');
   
+  // Rol inicial (Cámbialo aquí o usa el selector en pantalla para probar)
+  public userRole = signal<'admin' | 'docente' | 'alumno'>('alumno'); 
+
   constructor() {
-    if (!sessionStorage.getItem('userId')){
-      // this.router.navigate(['/login'])
-      
+    addIcons({ 
+      personCircleOutline, settingsOutline, logOutOutline, 
+      documentTextOutline, calendarOutline, peopleOutline, 
+      addCircleOutline, statsChartOutline, libraryOutline,
+      timeOutline, cloudUploadOutline
+    });
+  }
+
+  ngOnInit() {
+    const storedName = sessionStorage.getItem('userFirstName');
+    const storedLastName = sessionStorage.getItem('userLastName');
+    
+    if (storedName) {
+      this.userName.set(`${storedName} ${storedLastName || ''}`);
     }
   }
 
-  redirectSchedule() {
-    // Redirige a selección de espacios antes de agendar eventos
-    this.router.navigate(['/seleccion-espacio']);
+  ionViewWillEnter() {
+    // Activa el menú específico de esta página
+    this.menuCtrl.enable(true, 'menu-inicio');
   }
 
-  redirectMemories() {
-    // Redirige a la página de memorias/proyectos
-    this.router.navigate(['/proyectos']);
+  // Método para cambiar de rol desde el selector (Solo pruebas)
+  cambiarRol(event: any) {
+    this.userRole.set(event.detail.value);
   }
 
+  logout() {
+    sessionStorage.clear();
+    this.router.navigate(['/home']);
+  }
 }
-

@@ -1,179 +1,126 @@
-/* --- Estilos del Header (Copiados de home.page.scss) --- */
+/* VARIABLES */
+$brand-blue: #2563eb; 
+$brand-dark: #0f172a; 
+$card-bg: #1e293b;    
+$text-white: #ffffff;
+$text-grey: #94a3b8;
+
+:host {
+  ion-content {
+    --background: #{$brand-dark};
+  }
+}
+
+/* HEADER Y MENÚ */
 .main-header {
-  --box-shadow: none;
-
-  .main-toolbar {
-    --background: #2C73B8;
-    position: relative;
-    overflow: hidden;
-    padding: 10px 0;
-  }
-
-  .logo {
-    width: 150px;
-    margin-left: 20px;
-  }
+  position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
+  .main-toolbar { --min-height: 90px; --background: transparent; --border-width: 0; padding: 0 10px; display: flex; align-items: center; }
+  .logo { height: 70px; width: auto; object-fit: contain; cursor: pointer; padding: 5px 0; }
+  ion-menu-button { --color: #ffffff; font-size: 2rem; }
   
-  ion-buttons[slot="end"] ion-button {
-    --border-radius: 50px;
-    text-transform: none;
-    font-weight: 500;
-    margin-right: 10px;
-  }
-
-  .btn-register { // Tu botón de "Cerrar Sesión" usa esta clase
-    --background: #ffffff; /* Fondo blanco */
-    --color: #2C73B8;      /* Texto azul (color del fondo del header) */
+  .desktop-user-info {
+    .user-chip {
+      --background: rgba(255,255,255,0.1); --color: white; font-weight: 600;
+      ion-avatar { width: 24px; height: 24px; margin-right: 8px; }
+    }
   }
 }
 
-/* --- !! NUEVOS ESTILOS PARA ESTA PÁGINA !! --- */
-
-// Botón azul genérico
-.btn-primary {
-  --border-radius: 6px;
-  font-weight: bold;
+/* Menú Azul Forzado (Igual que Home) */
+ion-menu {
+  --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
+  ion-header ion-toolbar { --background: transparent !important; background: transparent !important; --color: white; --border-width: 0; }
+  ion-content { --background: transparent !important; background: transparent !important; --color: white; }
+  ion-list { background: transparent !important; }
+  ion-item { --background: transparent !important; background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); 
+    ion-icon { color: #bfdbfe; margin-right: 10px; }
+    &:hover { --background: rgba(255,255,255,0.1) !important; }
+  }
+  .logout-item { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; ion-icon { color: #ffadad; } }
 }
 
-// Sección 1: Bienvenida
+/* ========================================================
+   LÓGICA RESPONSIVE (AQUÍ ESTÁ EL ARREGLO DEL BOTÓN)
+   ======================================================== */
+
+/* MÓVIL: Pantallas pequeñas (menos de 992px) */
+@media (max-width: 991px) { 
+  .main-header { 
+    .desktop-user-info { display: none; } /* Oculta info de usuario */
+    .mobile-only-button { display: block; } /* MUESTRA botón hamburguesa */
+    .logo { margin-left: auto; margin-right: 0; } /* Logo a la derecha */
+  } 
+}
+
+/* DESKTOP: Pantallas grandes (más de 992px) */
+@media (min-width: 992px) { 
+  .main-header { 
+    .mobile-only-button { display: none; } /* OCULTA botón hamburguesa */
+    .desktop-user-info { display: flex; }  /* Muestra info de usuario */
+    .logo { margin-right: auto; margin-left: 0; } /* Logo a la izquierda */
+  } 
+}
+
+/* CONTENIDO */
+.page-container {
+  padding: 140px 20px 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 90vh;
+}
+
+/* Role Switcher */
+.role-switcher {
+  margin-bottom: 30px;
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 12px;
+  .switcher-label { text-align: center; margin-bottom: 5px; font-size: 0.9rem; }
+  ion-segment { 
+    --background: rgba(0,0,0,0.2);
+    ion-segment-button { --color: #94a3b8; --color-checked: white; --indicator-color: #2563eb; }
+  }
+}
+
 .welcome-section {
-  padding: 20px;
-
-  h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 10px;
-  }
-
-  p {
-    font-size: 1.1rem;
-    color: #666;
-  }
-
-  ion-img {
-    width: 100%;
-    margin-top: 20px;
-  }
+  margin-bottom: 40px;
+  h1 { color: $text-white; font-size: 2.5rem; font-weight: 800; margin-bottom: 5px; }
+  .role-badge { display: inline-block; background: rgba(37, 99, 235, 0.2); color: #60a5fa; padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; }
+  .subtitle { color: $text-grey; font-size: 1.1rem; }
 }
 
-// Sección 2: CTA "Mis Reservas"
-.cta-section {
-  padding: 40px 20px;
-  background-color: #f9f9f9;
-
-  h3 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    line-height: 1.4;
-    color: #333;
-    max-width: 600px;
-    margin: 0 auto 30px auto;
-  }
+.section-title {
+  color: $text-white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  border-left: 4px solid $brand-blue;
+  padding-left: 10px;
 }
 
-// Sección 3 y 4: Tarjetas Promocionales
-.promo-card {
-  position: relative;
-  min-height: 450px;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 30px;
-  color: #fff;
+/* TARJETAS */
+.action-card {
+  background-color: $card-bg; border-radius: 16px; margin: 0 0 20px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s, border-color 0.2s; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px;
 
-  // El overlay oscuro
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); // Sombra
-    z-index: 1;
+  &:hover { transform: translateY(-5px); border-color: rgba(37, 99, 235, 0.5); background-color: lighten($card-bg, 5%); }
+
+  .card-icon {
+    width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 15px;
+    &.primary { background: rgba(37, 99, 235, 0.15); color: #60a5fa; }
+    &.success { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    &.warning { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+    &.admin { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    &.info { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    &.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
   }
 
-  // El contenido de texto (encima del overlay)
-  .promo-content {
-    position: relative;
-    z-index: 2;
-    max-width: 500px;
-
-    h2 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 15px;
-    }
-
-    p {
-      font-size: 1.1rem;
-      margin-bottom: 30px;
-    }
+  ion-card-header {
+    padding: 0;
+    ion-card-title { color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
+    ion-card-subtitle { color: $text-grey; font-size: 0.9rem; text-transform: none; }
   }
 }
-
-// Clases para las imágenes de fondo
-.reserva-bg {
-  // Reemplaza con la ruta a tu imagen
-  background-image: url('/assets/icon/segundafotoini-usuario.jpg'); 
-}
-
-.historial-bg {
-  // Reemplaza con la ruta a tu imagen
-  background-image: url('/assets/icon/3ra-fto-ini-usuario.jpg');
-}
-
-/* --- LÓGICA DE VISIBILIDAD MÓVIL/DESKTOP --- */
-
-/* Por defecto (móvil): Oculta botones de desktop, muestra hamburguesa */
-.desktop-only-buttons {
-  display: none;
-}
-.mobile-only-button {
-  display: block; 
-}
-
-
-/* --- Arreglos para Desktop --- */
-@media (min-width: 992px) {
-  ion-grid {
-    max-width: 1100px;
-  }
-
-  /* AQUÍ: Muestra los botones de desktop y 
-    oculta el de hamburguesa en pantallas grandes 
-  */
-  .main-toolbar ion-buttons[slot="end"] {
-    display: block;
-  }
-  .mobile-only-button {
-    display: none;
-  }
-  .desktop-only-buttons {
-    display: block;
-  }
-}
-
-/* --- Arreglos para Móvil --- */
-@media (max-width: 991px) {
-  /* AQUÍ: Oculta los botones de desktop y 
-    mueve el logo a la derecha en pantallas pequeñas
-  */
-  .main-toolbar ion-buttons[slot="end"] {
-    display: none;
-  }
-
-  .promo-card .promo-content h2 {
-    font-size: 2rem;
-  }
-
-  .main-toolbar .logo {
-    margin-left: auto;
-    margin-right: 20px;
-  }
-}
-

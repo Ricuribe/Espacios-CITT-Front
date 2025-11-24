@@ -1,60 +1,92 @@
-<!-- ==========================================================
-     CAMBIO 1: HEADER SIMPLIFICADO
-     Este es el header público (como el de Login/Registro)
-     ========================================================== -->
+<!-- HEADER PÚBLICO SIMPLE -->
 <ion-header class="auth-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-    
-    <!-- Botón de Volver (con routerLink a /home) -->
+    <!-- Botón Volver -->
     <ion-buttons slot="start">
       <ion-button [routerLink]="['/home']" color="light">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <!-- Logo en el centro -->
-    <ion-img src="/assets/icon/gemvirtlogo1.png" alt="Logo GemVirt" class="auth-logo"></ion-img>
-
+    <!-- Logo Centro -->
+    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="auth-logo"></ion-img>
+    
+    <!-- Espaciador para centrar logo (truco visual) -->
+    <ion-buttons slot="end" style="width: 48px;"></ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-grid class="main-content-grid">
+<ion-content [fullscreen]="true" class="guide-content">
+  
+  <div class="page-container">
     
-    <!-- 
-      CAMBIO 2: BOTÓN "VOLVER" ELIMINADO
-      (Ya no necesitamos el <ion-row> con el <ion-button> "Volver"
-       porque ahora está en el header)
-    -->
-    
-    <ion-row>
-      <ion-col size="12" size-md="6" class="guide-text">
-        <h1>Cómo reservar</h1>
+    <!-- SECCIÓN TÍTULO -->
+    <div class="hero-text ion-text-center">
+      <h1>Cómo Funciona</h1>
+      <p>Esta guía te ayudará a navegar por nuestra plataforma, desde explorar eventos públicos hasta desbloquear el repositorio de memorias digitales.</p>
+    </div>
+
+    <!-- SECCIÓN DE PASOS (3 TARJETAS) -->
+    <ion-grid class="steps-grid">
+      <ion-row>
         
-        <div class="step">
-          <h3>Inicia Sesión en tu Cuenta</h3>
-          <p>Para acceder a las reservas, inicia sesión con tu cuenta de estudiante de DUOC. Si aún no tienes una, regístrate en pocos segundos.</p>
-        </div>
-        
-        <div class="step">
-          <h3>Selecciona un Espacio</h3>
-          <p>Navega por las diferentes opciones mesas y elige la que mejor se adapte a tus necesidades: mesa de reuniones, mesa de estudio o espacios con equipamiento tecnológico.</p>
-        </div>
+        <!-- PASO 1: EVENTOS -->
+        <ion-col size="12" size-md="4">
+          <div class="step-card">
+            <div class="icon-circle">
+              <ion-icon name="calendar-clear-outline"></ion-icon>
+            </div>
+            <h3>Explora Eventos</h3>
+            <p>Visualiza los próximos talleres, charlas y actividades. Esta sección es pública para que todos los alumnos estén informados.</p>
+          </div>
+        </ion-col>
 
-        <div class="step">
-          <h3>Elige tu Horario</h3>
-          <p>"Utiliza el calendario interactivo para revisar la disponibilidad de la sala y selecciona la fecha y hora que más te convenga. Verás las horarios libres y ocupados."</p>
-        </div>
+        <!-- PASO 2: MEMORIAS -->
+        <ion-col size="12" size-md="4">
+          <div class="step-card">
+            <div class="icon-circle">
+              <ion-icon name="images-outline"></ion-icon>
+            </div>
+            <h3>Accede a Memorias</h3>
+            <p>Navega por nuestra colección exclusiva de proyectos pasados. <strong>Requiere inicio de sesión</strong> para descargar los recursos.</p>
+          </div>
+        </ion-col>
 
-        <div class="step">
-          <h3>Confirma la Reserva</h3>
-          <p>Completa un breve formulario con los detalles de tu reserva y confírmala. Recibirás una confirmación en tu correo electrónico con todos los datos.</p>
-        </div>
-      </ion-col>
+        <!-- PASO 3: PERFIL -->
+        <ion-col size="12" size-md="4">
+          <div class="step-card">
+            <div class="icon-circle">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <h3>Gestiona tu Perfil</h3>
+            <p>Mantén tu información actualizada y accede a tu historial de descargas y participación en eventos.</p>
+          </div>
+        </ion-col>
 
-      <ion-col size="12" size-md="6" class="guide-image">
-        <ion-img src="/assets/icon/guiausofto.PNG" alt="Estudiantes usando espacios"></ion-img>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </ion-row>
+    </ion-grid>
+
+    <!-- SECCIÓN CTA (REGISTRO REQUERIDO) -->
+    <div class="cta-banner">
+      <div class="cta-content">
+        <div class="cta-icon">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <div class="cta-text">
+          <h3>Desbloquea las Memorias: Registro Requerido</h3>
+          <p>Por privacidad y para ofrecer una experiencia personalizada, nuestro repositorio digital está disponible exclusivamente para usuarios registrados. Únete hoy para acceder a la colección completa.</p>
+        </div>
+        <div class="cta-action">
+          <ion-button shape="round" color="light" [routerLink]="['/registro']" class="btn-register">
+            Registrarse
+            <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <app-footer></app-footer>
+
 </ion-content>
