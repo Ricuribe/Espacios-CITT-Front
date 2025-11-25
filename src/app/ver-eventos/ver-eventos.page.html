@@ -1,26 +1,20 @@
-<!-- HEADER -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
     
-    <!-- IZQUIERDA: Botón Menú (SOLO MÓVIL) -->
     <ion-buttons slot="start" class="mobile-only-button">
       <ion-menu-button color="light" menu="menu-eventos"></ion-menu-button>
     </ion-buttons>
 
-    <!-- LOGO (Posición controlada por CSS: Izq en Desktop / Der en Móvil) -->
     <img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo">
 
-    <!-- DERECHA: Botones Escritorio (DINÁMICOS) -->
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-button fill="clear" color="light" class="btn-link" [routerLink]="['/guia-uso']">Guia de Uso</ion-button>
       
-      <!-- SI NO ESTÁ LOGUEADO -->
       @if (!isLoggedIn()) {
         <ion-button class="btn-register" fill="solid" color="light" [routerLink]="['/registro']">Registrarse</ion-button>
         <ion-button class="btn-login" fill="outline" color="light" [routerLink]="['/login']">Iniciar Sesión</ion-button>
       }
 
-      <!-- SI ESTÁ LOGUEADO -->
       @if (isLoggedIn()) {
         <ion-button class="btn-start" fill="outline" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
         <ion-button class="btn-logout" fill="solid" color="light" (click)="logout()">Cerrar Sesión</ion-button>
@@ -29,7 +23,6 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- MENÚ LATERAL (Azul Degradado) -->
 <ion-menu contentId="main-content-events" type="overlay" menuId="menu-eventos">
   <ion-header>
     <ion-toolbar>
@@ -38,56 +31,44 @@
   </ion-header>
   <ion-content>
     <ion-list lines="none">
-      
-      <!-- Opciones Comunes -->
       <ion-item button [routerLink]="isLoggedIn() ? ['/inicio-usuario'] : ['/home']">
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label>{{ isLoggedIn() ? 'Inicio' : 'Home' }}</ion-label>
       </ion-item>
-
       <ion-item button [routerLink]="['/guia-uso']">
         <ion-icon slot="start" name="folder-open-outline"></ion-icon>
         <ion-label>Guia de Uso</ion-label>
       </ion-item>
-
-      <!-- SI ESTÁ LOGUEADO: Ver Memorias -->
       @if (isLoggedIn()) {
         <ion-item button [routerLink]="['/proyectos']">
           <ion-icon slot="start" name="library-outline"></ion-icon>
           <ion-label>Memorias</ion-label>
         </ion-item>
       }
-
-      <!-- SI NO ESTÁ LOGUEADO -->
       @if (!isLoggedIn()) {
         <ion-item button [routerLink]="['/registro']">
           <ion-icon slot="start" name="person-circle-outline"></ion-icon>
           <ion-label>Registrarse</ion-label>
         </ion-item>
         <ion-item button [routerLink]="['/login']">
-          <ion-icon slot="start" name="log-in-outline"></ion-icon> <!-- Asegúrate de tener este icono importado si lo usas, o usa otro -->
+          <ion-icon slot="start" name="log-in-outline"></ion-icon>
           <ion-label>Iniciar Sesión</ion-label>
         </ion-item>
       }
-
-      <!-- SI ESTÁ LOGUEADO -->
       @if (isLoggedIn()) {
         <ion-item button (click)="logout()" class="logout-item">
           <ion-icon slot="start" name="log-out-outline"></ion-icon>
           <ion-label>Cerrar Sesión</ion-label>
         </ion-item>
       }
-      
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<!-- CONTENIDO PRINCIPAL -->
 <ion-content [fullscreen]="true" id="main-content-events" class="events-content">
   
   <div class="page-wrapper">
     
-    <!-- Botón Volver (Condicional) -->
     <div class="nav-header">
       <ion-button [routerLink]="isLoggedIn() ? ['/inicio-usuario'] : ['/home']" fill="clear" class="back-btn">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
@@ -95,33 +76,75 @@
       </ion-button>
     </div>
 
-    <!-- Título -->
     <div class="section-header ion-text-center">
-      <h1>Próximos Talleres y Eventos</h1>
-      <p>Explora los próximos eventos, conoce todos los detalles y prepárate para participar.</p>
+      <h1>{{ filterToday() ? 'Eventos de Hoy' : 'Próximos Talleres y Eventos' }}</h1>
+      <p>
+        {{ filterToday() 
+           ? 'Revisa qué está pasando hoy en nuestros espacios.' 
+           : 'Explora los próximos eventos, conoce todos los detalles y prepárate para participar.' 
+        }}
+      </p>
     </div>
 
-    <!-- Eventos -->
-    <div class="events-container">
-      @for (evento of eventos; track $index) {
-        <div class="event-card">
-          <div class="card-image" [style.backgroundImage]="'url(' + evento.imagen + ')'">
-            <div class="overlay"></div>
-          </div>
-          <div class="card-body">
-            <h2 class="event-title">{{ evento.titulo }}</h2>
-            <div class="event-meta">
-              <div class="meta-item"><ion-icon name="calendar-outline"></ion-icon><span>{{ evento.fecha }}</span></div>
-              <div class="meta-item"><ion-icon name="time-outline"></ion-icon><span>{{ evento.hora }}</span></div>
-            </div>
-            <p class="event-desc">{{ evento.descripcion }}</p>
-            <div class="card-actions">
-               <span class="category-badge">{{ evento.categoria }}</span>
-            </div>
-          </div>
+    <div class="filter-container ion-padding-horizontal ion-margin-bottom">
+      <ion-segment [value]="filterToday() ? 'today' : 'future'" (ionChange)="segmentChanged($event)" color="primary">
+        <ion-segment-button value="future">
+          <ion-label>Próximos Eventos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="today">
+          <ion-label>Eventos de Hoy</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    @if (isLoading()) {
+      <div class="ion-text-center ion-padding">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p><ion-text color="medium">Cargando eventos...</ion-text></p>
+      </div>
+    }
+
+    @if (!isLoading()) {
+      
+      @if (eventos().length === 0) {
+        <div class="empty-state ion-text-center ion-padding">
+          <ion-icon name="alert-circle-outline" style="font-size: 48px; color: var(--ion-color-medium);"></ion-icon>
+          <h3>No hay eventos programados {{ filterToday() ? 'para hoy' : 'próximamente' }}.</h3>
+          <p>Vuelve a consultar más tarde.</p>
         </div>
       }
-    </div>
+
+      <div class="events-container">
+        @for (evento of eventos(); track evento.id) {
+          <div class="event-card">
+            <div class="card-image" [style.backgroundImage]="'url(' + evento.imagen + ')'">
+              <div class="overlay"></div>
+            </div>
+            
+            <div class="card-body">
+              <h2 class="event-title">{{ evento.titulo }}</h2>
+              
+              <div class="event-meta">
+                <div class="meta-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>{{ evento.fecha }}</span>
+                </div>
+                <div class="meta-item">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>{{ evento.hora }}</span>
+                </div>
+              </div>
+              
+              <p class="event-desc">{{ evento.descripcion }}</p>
+              
+              <div class="card-actions">
+                 <span class="category-badge">{{ evento.categoria }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
 
   </div>
 

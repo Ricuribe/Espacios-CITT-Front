@@ -153,6 +153,14 @@ export class ApiService {
     return this.http.get(`${this.baseUrl2}future-activity/?all=${allSpaces}&spaces=${workspaceId.join(',')}`);
   }
 
+  /**
+   * Obtiene eventos programados.
+   * @param today Si es true, trae eventos del día. Si es false, trae futuros.
+   */
+  getScheduledEvents(today: boolean): Observable<any> {
+    return this.http.get(`${this.baseUrl2}scheduled-events/?today=${today}`);
+  }
+
 }
 
 export { HttpClient };
