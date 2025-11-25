@@ -1,20 +1,21 @@
-/* VARIABLES COLORES (Misma paleta Home) */
-$bg-gradient-start: #0f172a; // Azul muy oscuro
-$bg-gradient-end: #1e3a8a;   // Azul un poco más claro
-$card-bg: rgba(15, 23, 42, 0.6); // Fondo tarjeta semitransparente
-$input-bg: rgba(30, 41, 59, 0.5); // Fondo inputs
-$text-cyan: #38bdf8; // Color título (Cyan)
+/* VARIABLES COLORES */
+$bg-gradient-start: #0f172a; 
+$bg-gradient-end: #1e3a8a;   
+$card-bg: rgba(15, 23, 42, 0.6); 
+$input-bg: rgba(30, 41, 59, 0.5); 
+$text-cyan: #38bdf8; 
 $text-white: #ffffff;
 $border-color: rgba(255, 255, 255, 0.1);
 
 :host {
   ion-content {
-    /* Fondo Degradado Profundo */
     --background: linear-gradient(180deg, #020617 0%, #172554 100%);
   }
 }
 
-/* HEADER TRANSPARENTE */
+/* ===================================================== 
+   HEADER TRANSPARENTE (ESTILO HOME)
+   ===================================================== */
 .auth-header {
   position: absolute;
   top: 0;
@@ -25,30 +26,50 @@ $border-color: rgba(255, 255, 255, 0.1);
   --box-shadow: none;
   z-index: 10;
 
-  ion-toolbar {
+  .main-toolbar {
+    /* Altura grande para que el logo respire igual que en Home */
+    --min-height: 100px; 
     --background: transparent;
+    padding: 0 10px;
   }
   
-  .header-logo {
-    height: 30px;
-    margin-right: 15px;
-    opacity: 0.8;
+  /* --- LOGO (Mismo tamaño que Home) --- */
+  .logo {
+    height: 80px; /* Tamaño Grande */
+    width: auto;
+    object-fit: contain;
+    
+    /* Filtro para sombra (opcional, ayuda en fondos claros) */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    
+    /* Ajuste para que no toque los bordes */
+    margin-right: 10px;
+  }
+  
+  /* Estilo del botón volver */
+  ion-button {
+    --color: #ffffff;
+    font-size: 1.2rem;
   }
 }
 
-/* WRAPPER PRINCIPAL */
+/* ===================================================== 
+   RESTO DEL CONTENIDO 
+   ===================================================== */
+
 .main-wrapper {
-  min-height: 100vh; /* Ocupa toda la pantalla */
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 20px 40px 20px; /* Padding top para compensar header */
+  /* Aumentamos el padding-top porque el header ahora es más alto (100px) */
+  padding: 120px 20px 60px 20px; 
 }
 
 /* TARJETA GLASSMORPHISM */
 .auth-card {
   background: $card-bg;
-  backdrop-filter: blur(10px); /* Efecto vidrio borroso */
+  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid $border-color;
   border-radius: 16px;
@@ -62,21 +83,21 @@ $border-color: rgba(255, 255, 255, 0.1);
     margin-bottom: 30px;
 
     h2 {
-      color: $text-cyan; /* Color Cyan de la foto */
+      color: $text-cyan;
       font-size: 1.8rem;
       font-weight: 700;
       margin-bottom: 8px;
     }
 
     p {
-      color: #94a3b8; /* Gris azulado */
+      color: #94a3b8;
       font-size: 0.95rem;
       margin: 0;
     }
   }
 }
 
-/* INPUTS PERSONALIZADOS (Estilo Caja Oscura) */
+/* INPUTS PERSONALIZADOS */
 .custom-input-group {
   margin-bottom: 20px;
 
@@ -95,57 +116,25 @@ $border-color: rgba(255, 255, 255, 0.1);
       box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
     }
 
-    /* Icono Izquierda */
-    .input-icon {
-      color: #64748b;
-      font-size: 1.2rem;
-      margin-right: 10px;
-    }
+    .input-icon { color: #64748b; font-size: 1.2rem; margin-right: 10px; }
 
-    /* Input Nativo (Sin estilos raros de Ionic) */
     .native-input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: white;
-      flex: 1;
-      font-size: 0.95rem;
-      width: 100%;
-      
-      &::placeholder {
-        color: #64748b;
-      }
+      background: transparent; border: none; outline: none; color: white; flex: 1; font-size: 0.95rem; width: 100%;
+      &::placeholder { color: #64748b; }
     }
 
-    /* Icono Ojo (Password) */
-    .eye-icon {
-      color: #64748b;
-      font-size: 1.2rem;
-      cursor: pointer;
-      margin-left: 10px;
-      
-      &:hover { color: white; }
-    }
+    .eye-icon { color: #64748b; font-size: 1.2rem; cursor: pointer; margin-left: 10px; &:hover { color: white; } }
     
-    /* Estado Error (Borde Rojo) */
-    &.error-border {
-      border-color: #ef4444;
-    }
+    &.error-border { border-color: #ef4444; }
   }
 
-  /* Mensaje de error texto abajo */
-  .error-msg {
-    color: #ef4444;
-    font-size: 0.75rem;
-    margin-top: 5px;
-    margin-left: 5px;
-  }
+  .error-msg { color: #ef4444; font-size: 0.75rem; margin-top: 5px; margin-left: 5px; }
 }
 
 /* BOTÓN BLANCO */
 .btn-submit {
   --background: #ffffff;
-  --color: #0f172a; /* Texto oscuro */
+  --color: #0f172a;
   --border-radius: 8px;
   font-weight: 800;
   text-transform: uppercase;
@@ -155,7 +144,7 @@ $border-color: rgba(255, 255, 255, 0.1);
   --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* LINK INFERIOR DE LA TARJETA */
+/* LINK INFERIOR */
 .auth-footer-link {
   text-align: center;
   margin-top: 25px;
@@ -165,26 +154,12 @@ $border-color: rgba(255, 255, 255, 0.1);
   p {
     color: #64748b;
     font-size: 0.85rem;
-    
-    a {
-      color: $text-cyan;
-      text-decoration: none;
-      font-weight: 700;
-      margin-left: 5px;
-      
-      &:hover { text-decoration: underline; }
-    }
+    a { color: $text-cyan; text-decoration: none; font-weight: 700; margin-left: 5px; &:hover { text-decoration: underline; } }
   }
 }
 
 /* RESPONSIVE MÓVIL */
 @media (max-width: 576px) {
-  .main-wrapper {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  
-  .auth-card {
-    padding: 30px 20px; /* Menos padding interno en móvil */
-  }
+  .main-wrapper { padding-left: 15px; padding-right: 15px; }
+  .auth-card { padding: 30px 20px; }
 }

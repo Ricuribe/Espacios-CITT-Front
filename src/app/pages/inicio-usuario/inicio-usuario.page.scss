@@ -11,12 +11,30 @@ $text-grey: #94a3b8;
   }
 }
 
-/* HEADER Y MENÚ */
+/* --- HEADER PRINCIPAL --- */
 .main-header {
   position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
-  .main-toolbar { --min-height: 90px; --background: transparent; --border-width: 0; padding: 0 10px; display: flex; align-items: center; }
-  .logo { height: 70px; width: auto; object-fit: contain; cursor: pointer; padding: 5px 0; }
-  ion-menu-button { --color: #ffffff; font-size: 2rem; }
+  
+  .main-toolbar { 
+    --min-height: 100px; 
+    --background: transparent; 
+    --border-width: 0; 
+    /* Sin padding interno para que toque los bordes */
+    padding: 0 20px; 
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  /* LOGO MEJORADO */
+  .logo { 
+    height: 80px; 
+    width: auto; 
+    object-fit: contain; 
+    cursor: pointer; 
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+  
+  ion-menu-button { --color: #ffffff; font-size: 2rem; margin: 0; }
   
   .desktop-user-info {
     .user-chip {
@@ -26,43 +44,60 @@ $text-grey: #94a3b8;
   }
 }
 
-/* Menú Azul Forzado (Igual que Home) */
+/* --- MEDIA QUERIES (POSICIONAMIENTO) --- */
+@media (max-width: 991px) { 
+  .main-header { 
+    .desktop-user-info { display: none; } 
+    .mobile-only-button { display: block; margin-right: 0; } 
+    /* MÓVIL: Logo a la derecha */
+    .logo { margin-left: auto; margin-right: 0; } 
+  } 
+}
+
+@media (min-width: 992px) { 
+  .main-header { 
+    .mobile-only-button { display: none; } 
+    .desktop-user-info { display: flex; align-items: center; }
+    /* DESKTOP: Logo a la izquierda */
+    .logo { margin-right: auto; margin-left: 0; } 
+  } 
+}
+
+/* --- MENÚ LATERAL AZUL (FORZADO) --- */
 ion-menu {
   --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
   background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
-  ion-header ion-toolbar { --background: transparent !important; background: transparent !important; --color: white; --border-width: 0; }
-  ion-content { --background: transparent !important; background: transparent !important; --color: white; }
-  ion-list { background: transparent !important; }
-  ion-item { --background: transparent !important; background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); 
-    ion-icon { color: #bfdbfe; margin-right: 10px; }
-    &:hover { --background: rgba(255,255,255,0.1) !important; }
+
+  ion-header {
+    ion-toolbar { 
+      --background: transparent !important; background: transparent !important; 
+      --color: #ffffff; --border-width: 0; 
+      ion-title { 
+        font-weight: 700; font-size: 1.4rem; padding-inline-start: 20px; margin-top: 15px; 
+        border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 15px; 
+      }
+    }
   }
-  .logout-item { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; ion-icon { color: #ffadad; } }
+  
+  ion-content { --background: transparent !important; background: transparent !important; --color: #ffffff; }
+  ion-list { background: transparent !important; padding-top: 10px; padding-bottom: 0; }
+  
+  ion-item { 
+    --background: transparent !important; background: transparent !important; 
+    --color: #ffffff; --border-color: rgba(255,255,255,0.1); 
+    font-size: 1rem; font-weight: 500; --min-height: 55px; --padding-start: 20px;
+    
+    ion-icon { color: #bfdbfe; margin-right: 15px; }
+    &:hover { --background: rgba(255,255,255,0.1) !important; cursor: pointer; }
+  }
+  
+  .logout-item { 
+    margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; 
+    ion-icon { color: #ffadad; } 
+  }
 }
 
-/* ========================================================
-   LÓGICA RESPONSIVE (AQUÍ ESTÁ EL ARREGLO DEL BOTÓN)
-   ======================================================== */
-
-/* MÓVIL: Pantallas pequeñas (menos de 992px) */
-@media (max-width: 991px) { 
-  .main-header { 
-    .desktop-user-info { display: none; } /* Oculta info de usuario */
-    .mobile-only-button { display: block; } /* MUESTRA botón hamburguesa */
-    .logo { margin-left: auto; margin-right: 0; } /* Logo a la derecha */
-  } 
-}
-
-/* DESKTOP: Pantallas grandes (más de 992px) */
-@media (min-width: 992px) { 
-  .main-header { 
-    .mobile-only-button { display: none; } /* OCULTA botón hamburguesa */
-    .desktop-user-info { display: flex; }  /* Muestra info de usuario */
-    .logo { margin-right: auto; margin-left: 0; } /* Logo a la izquierda */
-  } 
-}
-
-/* CONTENIDO */
+/* DASHBOARD */
 .page-container {
   padding: 140px 20px 80px 20px;
   max-width: 1200px;

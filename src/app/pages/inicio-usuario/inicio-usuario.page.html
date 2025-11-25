@@ -3,13 +3,12 @@
   <ion-toolbar class="main-toolbar">
     
     <!-- IZQUIERDA: Botón Menú (SOLO MÓVIL) -->
-    <!-- La clase 'mobile-only-button' se encarga de ocultarlo en PC -->
     <ion-buttons slot="start" class="mobile-only-button">
       <ion-menu-button color="light" menu="menu-inicio"></ion-menu-button>
     </ion-buttons>
 
-    <!-- Logo -->
-    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo"></ion-img>
+    <!-- Logo (Posición dinámica por CSS) -->
+    <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
 
     <!-- DERECHA: Info Usuario (Solo Desktop) -->
     <ion-buttons slot="end" class="desktop-user-info">
@@ -23,7 +22,7 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- MENÚ LATERAL -->
+<!-- MENÚ LATERAL (Azul Forzado) -->
 <ion-menu contentId="main-content-inicio" type="overlay" menuId="menu-inicio">
   <ion-header>
     <ion-toolbar>

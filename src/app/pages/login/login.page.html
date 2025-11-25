@@ -1,18 +1,18 @@
 <!-- HEADER FLOTANTE -->
 <ion-header class="auth-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
+  <ion-toolbar class="main-toolbar">
+    
+    <!-- IZQUIERDA: Botón Volver -->
+    <ion-buttons slot="start" class="back-button-wrapper">
       <ion-button [routerLink]="['/home']" color="light" fill="clear">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     
-    <ion-buttons slot="end">
-      <!-- Logo alineado a la derecha como en la foto -->
-      <div class="header-logo-container">
-        <img src="/assets/icon/Gemvirt_logo.png" alt="GemVirt" class="logo-img">
-      </div>
-    </ion-buttons>
+    <!-- LOGO: Suelto en la toolbar para control total -->
+    <!-- Se alineará a la derecha gracias al CSS 'margin-left: auto' -->
+    <img src="/assets/icon/Gemvirt_logo.png" alt="GemVirt" class="logo">
+
   </ion-toolbar>
 </ion-header>
 
@@ -20,72 +20,51 @@
   
   <div class="login-wrapper">
     
-    <!-- TÍTULOS -->
-    <div class="text-center mb-4">
+    <div class="text-center header-text">
       <h1>Iniciar Sesión</h1>
       <p class="subtitle">Ingresa a tu cuenta para continuar</p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-      <!-- INPUT EMAIL (Estilo Píldora) -->
+      <!-- Email -->
       <div class="pill-input-group">
         <div class="input-container" [class.error-border]="email?.invalid && email?.touched">
           <ion-icon name="mail-outline" class="field-icon"></ion-icon>
-          <input 
-            type="email" 
-            placeholder="Email Institucional" 
-            formControlName="email"
-            class="native-input">
+          <input type="email" placeholder="Email Institucional" formControlName="email" class="native-input">
         </div>
-        <!-- Error msg -->
         <div class="error-msg" *ngIf="email?.invalid && email?.touched">
           <span *ngIf="email?.hasError('required')">Email requerido</span>
           <span *ngIf="email?.hasError('email')">Formato inválido</span>
         </div>
       </div>
 
-      <!-- INPUT PASSWORD (Estilo Píldora) -->
+      <!-- Contraseña -->
       <div class="pill-input-group">
         <div class="input-container" [class.error-border]="password?.invalid && password?.touched">
           <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>
-          <input 
-            [type]="passwordVisible ? 'text' : 'password'" 
-            placeholder="Contraseña" 
-            formControlName="password"
-            class="native-input">
-          <ion-icon 
-            [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'" 
-            class="eye-toggle"
-            (click)="togglePasswordVisibility()">
-          </ion-icon>
+          <input [type]="passwordVisible ? 'text' : 'password'" placeholder="Contraseña" formControlName="password" class="native-input">
+          <ion-icon [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'" class="eye-toggle" (click)="togglePasswordVisibility()"></ion-icon>
         </div>
-        <!-- Error msg -->
-        <div class="error-msg" *ngIf="password?.invalid && password?.touched">
-          Contraseña requerida
-        </div>
+        <div class="error-msg" *ngIf="password?.invalid && password?.touched">Contraseña requerida</div>
       </div>
 
-      <!-- LINK OLVIDASTE CONTRASEÑA -->
-      <div class="forgot-pass text-end">
+      <div class="forgot-pass">
         <a [routerLink]="['/recuperar-pass']">¿OLVIDASTE TU CONTRASEÑA?</a>
       </div>
 
-      <!-- BOTÓN INICIAR SESIÓN -->
       <ion-button expand="block" type="submit" class="btn-login-pill" [disabled]="loginForm.invalid">
         INICIAR SESIÓN
       </ion-button>
 
     </form>
 
-    <!-- FOOTER LINK -->
-    <div class="register-link text-center">
+    <div class="register-link">
       <p>¿No tienes una cuenta? <a [routerLink]="['/registro']">REGÍSTRATE AQUÍ</a></p>
     </div>
 
   </div>
 
-  <!-- FOOTER GLOBAL -->
   <app-footer></app-footer>
 
 </ion-content>

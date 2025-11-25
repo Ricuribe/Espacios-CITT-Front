@@ -1,22 +1,28 @@
-<!-- HEADER FLOTANTE -->
+<!-- HEADER TRANSPARENTE -->
 <ion-header class="auth-header">
-  <ion-toolbar>
+  <ion-toolbar class="main-toolbar">
+    
+    <!-- IZQUIERDA: Botón Volver -->
     <ion-buttons slot="start">
       <ion-button [routerLink]="['/home']" color="light" fill="clear">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <!-- Logo opcional en el header si quieres, o solo volver -->
+    
+    <!-- DERECHA: Logo GemVirt (Tamaño Home) -->
     <ion-buttons slot="end">
-      <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="header-logo">
+      <div class="logo-container">
+        <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
+      </div>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="auth-content">
   
   <div class="main-wrapper">
-    <!-- TARJETA DE REGISTRO (Centrada) -->
+    <!-- TARJETA DE REGISTRO -->
     <div class="auth-card">
       
       <div class="auth-header-text">
@@ -36,7 +42,6 @@
               formControlName="nombre"
               class="native-input">
           </div>
-          <!-- Mensaje Error -->
           <div class="error-msg" *ngIf="nombre?.invalid && nombre?.touched">
             <span *ngIf="nombre?.hasError('required')">Nombre requerido</span>
             <span *ngIf="nombre?.hasError('minlength')">Mínimo 3 caracteres</span>
@@ -110,10 +115,10 @@
         <p>¿Ya tienes una cuenta? <a [routerLink]="['/login']">INICIA SESIÓN AQUÍ</a></p>
       </div>
 
-    </div> <!-- Fin Card -->
-  </div> <!-- Fin Wrapper -->
+    </div>
+  </div>
 
-  <!-- FOOTER GLOBAL -->
+  <!-- FOOTER -->
   <app-footer></app-footer>
 
 </ion-content>

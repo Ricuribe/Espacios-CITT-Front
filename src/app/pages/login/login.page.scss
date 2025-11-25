@@ -1,49 +1,58 @@
-/* VARIABLES ESTÉTICAS (Basadas en la foto) */
-$bg-dark-blue: #020b26;    // Azul muy oscuro de fondo
-$input-bg: rgba(10, 25, 60, 0.6); // Fondo input semitransparente
-$border-blue: #1e4b8a;     // Borde azul de los inputs
+/* VARIABLES */
+$bg-dark-blue: #020b26;    
+$input-bg: rgba(10, 25, 60, 0.6); 
+$border-blue: #1e4b8a;     
 $text-white: #ffffff;
-$text-subtitle: #8b9bb4;   // Gris azulado para subtítulos
-$accent-white: #ffffff;    // Botón blanco
+$text-subtitle: #8b9bb4;   
 
 :host {
   ion-content {
-    /* Fondo degradado radial sutil como en la foto */
     --background: radial-gradient(circle at center top, #0f2550 0%, #020b26 80%);
   }
 }
 
-/* --- HEADER --- */
+/* ==================================================================
+   HEADER (LOGO GRANDE A LA DERECHA)
+   ================================================================== */
 .auth-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  --background: transparent;
-  --border-width: 0;
-  --box-shadow: none;
-  z-index: 10;
+  position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
 
-  ion-toolbar {
+  .main-toolbar {
+    --min-height: 100px; /* Espacio suficiente para el logo */
     --background: transparent;
-  }
-
-  .header-logo-container {
+    --border-width: 0;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-right: 15px;
+    /* justify-content: flex-start es el default, usamos margins para mover cosas */
+  }
 
-    .logo-img {
-      height: 28px;
-      width: auto;
-      // Si tu logo es negro, esto lo vuelve blanco. Si ya es blanco, quítalo.
-      filter: brightness(0) invert(1); 
-    }
+  /* LOGO DE 80PX */
+  .logo {
+    height: 80px; /* Tamaño forzado */
+    width: auto;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    
+    /* EMPUJAR A LA DERECHA */
+    margin-left: auto; 
+    /* Margen derecho para que no toque el borde */
+    margin-right: 0;   
+  }
+
+  /* Botón Volver (Se queda a la izquierda por defecto) */
+  .back-button-wrapper {
+    margin-right: 0; 
+    flex-shrink: 0; 
   }
 }
 
-/* --- WRAPPER PRINCIPAL --- */
+/* =========================================
+   FORMULARIO LOGIN
+   ========================================= */
+
 .login-wrapper {
   min-height: 100vh;
   display: flex;
@@ -52,144 +61,41 @@ $accent-white: #ffffff;    // Botón blanco
   padding: 0 30px;
   max-width: 500px;
   margin: 0 auto;
-  padding-top: 60px; // Espacio para el header
-  padding-bottom: 100px; // Espacio para el footer
+  padding-top: 120px; /* Más padding top para no chocar con el logo grande */
+  padding-bottom: 100px;
 }
 
-/* --- TEXTOS --- */
-h1 {
-  color: $text-white;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-  text-align: center;
-}
+h1 { color: $text-white; font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; text-align: center; }
+.subtitle { color: $text-subtitle; font-size: 1rem; text-align: center; margin-bottom: 40px; }
 
-.subtitle {
-  color: $text-subtitle;
-  font-size: 1rem;
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-/* --- INPUTS ESTILO PÍLDORA --- */
 .pill-input-group {
   margin-bottom: 20px;
-
   .input-container {
-    display: flex;
-    align-items: center;
-    background: $input-bg;
-    border: 1px solid $border-blue;
-    border-radius: 50px; /* Borde completamente redondeado */
-    padding: 0 20px;
-    height: 55px;
-    transition: all 0.3s ease;
-
-    /* Efecto al enfocar */
-    &:focus-within {
-      border-color: #3b82f6; /* Azul más brillante */
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
-    }
-
-    &.error-border {
-      border-color: #ef4444;
-    }
-
-    /* Icono Izquierda */
-    .field-icon {
-      color: #5da3f5; /* Azul clarito icónico */
-      font-size: 1.2rem;
-      margin-right: 12px;
-    }
-
-    /* Input Nativo */
-    .native-input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: white;
-      flex: 1;
-      font-size: 1rem;
-      width: 100%;
-
-      &::placeholder {
-        color: #5c6b85;
-      }
-    }
-
-    /* Icono Ojo */
-    .eye-toggle {
-      color: #5da3f5;
-      font-size: 1.2rem;
-      cursor: pointer;
-      margin-left: 10px;
-    }
+    display: flex; align-items: center; background: $input-bg; border: 1px solid $border-blue; border-radius: 50px; padding: 0 20px; height: 55px; transition: all 0.3s ease;
+    &:focus-within { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+    &.error-border { border-color: #ef4444; }
+    .field-icon { color: #5da3f5; font-size: 1.2rem; margin-right: 12px; }
+    .native-input { background: transparent; border: none; outline: none; color: white; flex: 1; font-size: 1rem; width: 100%; &::placeholder { color: #5c6b85; } }
+    .eye-toggle { color: #5da3f5; font-size: 1.2rem; cursor: pointer; margin-left: 10px; }
   }
-
-  .error-msg {
-    color: #ef4444;
-    font-size: 0.8rem;
-    margin-top: 5px;
-    padding-left: 20px;
-  }
+  .error-msg { color: #ef4444; font-size: 0.8rem; margin-top: 5px; padding-left: 20px; }
 }
 
-/* --- LINK OLVIDASTE CONTRASEÑA --- */
 .forgot-pass {
-  text-align: right;
-  margin-bottom: 30px;
-
-  a {
-    color: #7aaae4; /* Azul pastel */
-    font-size: 0.8rem;
-    text-decoration: none;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    &:hover {
-      color: white;
-      text-decoration: underline;
-    }
-  }
+  text-align: right; margin-bottom: 30px;
+  a { color: #7aaae4; font-size: 0.8rem; text-decoration: none; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; &:hover { color: white; text-decoration: underline; } }
 }
 
-/* --- BOTÓN BLANCO GRANDE --- */
 .btn-login-pill {
-  --background: #ffffff;
-  --color: #020b26; /* Texto oscuro */
-  --border-radius: 50px; /* Botón píldora */
-  font-weight: 800;
-  text-transform: uppercase;
-  height: 55px;
-  font-size: 1rem;
-  letter-spacing: 1px;
-  --box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
-  margin-bottom: 30px;
+  --background: #ffffff; --color: #020b26; --border-radius: 50px; font-weight: 800; text-transform: uppercase; height: 55px; font-size: 1rem; letter-spacing: 1px; --box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15); margin-bottom: 30px;
 }
 
-/* --- LINK REGISTRO --- */
 .register-link {
-  p {
-    color: $text-subtitle;
-    font-size: 0.9rem;
-
-    a {
-      color: white;
-      text-decoration: underline;
-      font-weight: 700;
-      margin-left: 5px;
-      text-transform: uppercase;
-    }
-  }
+  text-align: center;
+  p { color: $text-subtitle; font-size: 0.9rem; a { color: white; text-decoration: underline; font-weight: 700; margin-left: 5px; text-transform: uppercase; } }
 }
 
-/* RESPONSIVE */
 @media (max-height: 700px) {
-  .login-wrapper {
-    padding-top: 40px; // Menos espacio en pantallas bajas
-  }
+  .login-wrapper { padding-top: 100px; }
   h1 { font-size: 2rem; }
-  .subtitle { margin-bottom: 25px; }
 }

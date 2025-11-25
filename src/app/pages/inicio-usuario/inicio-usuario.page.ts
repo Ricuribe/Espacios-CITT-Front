@@ -53,6 +53,7 @@ export class InicioUsuarioPage implements OnInit {
   }
 
   ngOnInit() {
+    // Intenta recuperar datos de sesión si existen
     const storedName = sessionStorage.getItem('userFirstName');
     const storedLastName = sessionStorage.getItem('userLastName');
     
