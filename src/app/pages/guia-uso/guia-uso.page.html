@@ -1,18 +1,21 @@
-<!-- HEADER PÚBLICO SIMPLE -->
+<!-- HEADER PÚBLICO -->
 <ion-header class="auth-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-    <!-- Botón Volver -->
+    <!-- Botón Volver (Izquierda) -->
     <ion-buttons slot="start">
       <ion-button [routerLink]="['/home']" color="light">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <!-- Logo Centro -->
-    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="auth-logo"></ion-img>
+    <!-- Logo (Centro) -->
+    <!-- Usamos un contenedor para centrarlo perfectamente -->
+    <div class="logo-container">
+        <img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="auth-logo">
+    </div>
     
-    <!-- Espaciador para centrar logo (truco visual) -->
-    <ion-buttons slot="end" style="width: 48px;"></ion-buttons>
+    <!-- Espaciador invisible (Derecha) para equilibrar el botón de volver -->
+    <ion-buttons slot="end" style="width: 48px; pointer-events: none;"></ion-buttons>
   </ion-toolbar>
 </ion-header>
 
