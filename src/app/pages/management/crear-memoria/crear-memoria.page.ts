@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
-import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, ToastController, IonicModule } from '@ionic/angular';
 import { ApiService } from 'src/app/service/http-client';
-import { SCHOOLS_DATA, getSchoolCode, getCareerCode } from 'src/app/constants/school-data';
+import { SCHOOLS_DATA, getSchoolCode, getCareerCode } from 'src/app/constants/schools-data';
 import { addIcons } from 'ionicons';
-import { trashOutline, addOutline } from 'ionicons/icons'; // Eliminamos calendarOutline si ya no se usa visualmente
+import { trashOutline, addOutline } from 'ionicons/icons'; 
 
 @Component({
   selector: 'app-crear-memoria',
@@ -25,7 +25,6 @@ export class CrearMemoriaPage implements OnInit {
   escuelas = Object.keys(SCHOOLS_DATA) as Array<keyof typeof SCHOOLS_DATA>;
   carrerasDisponibles: string[] = [];
   
-  // MODIFICADO: Obtenemos solo la parte de la fecha (YYYY-MM-DD)
   fechaActual: string = new Date().toISOString().split('T')[0];
 
   pdfFile: File | null = null;
@@ -45,27 +44,42 @@ export class CrearMemoriaPage implements OnInit {
     this.memoriaForm = this.fb.group({
       titulo: ['', [Validators.required, Validators.maxLength(100)]],
       profesor: ['', [Validators.required, Validators.maxLength(100)]],
-      descripcion: ['', Validators.required],
+      descripcion: ['', [Validators.required, Validators.maxLength(5000)]],
       escuela: ['', Validators.required],
       carrera: ['', Validators.required],
-      entidad_involucrada: ['', Validators.required],
-      tipo_entidad: ['', Validators.required],
-      tipo_memoria: ['', Validators.required],
+      entidad_involucrada: ['', [Validators.required, Validators.maxLength(100)]],
+      tipo_entidad: ['', [Validators.required, Validators.maxLength(50)]],
+      tipo_memoria: ['', [Validators.required, Validators.maxLength(50)]],
       fecha_inicio: ['', Validators.required],
       fecha_termino: ['', Validators.required],
-      // SE MANTIENE OCULTO EN LÓGICA: Se inicializa con la fecha formateada YYYY-MM-DD
       fecha_subida: [this.fechaActual, Validators.required],
       integrantes: this.fb.array([])
-    });
+    }, { validators: this.dateRangeValidator }); // Validación global del grupo
   }
 
   ngOnInit() {}
   
-  // ... (Resto del código: getters, onEscuelaChange, agregarIntegrante, eliminarIntegrante, onFileSelected) ...
+  // --- VALIDACIÓN DE RANGO DE FECHAS (Cross-field) ---
+  dateRangeValidator(group: AbstractControl): ValidationErrors | null {
+    const inicio = group.get('fecha_inicio')?.value;
+    const termino = group.get('fecha_termino')?.value;
+
+    if (inicio && termino) {
+      const dateInicio = new Date(inicio);
+      const dateTermino = new Date(termino);
+
+      if (dateInicio > dateTermino) {
+        return { dateRangeInvalid: true };
+      }
+    }
+    return null;
+  }
+
   get integrantes(): FormArray {
     return this.memoriaForm.get('integrantes') as FormArray;
   }
   
+  // ... (onEscuelaChange, rutValidator, onRutInput se mantienen igual) ...
   onEscuelaChange(event: any) {
     const escuela = event.detail.value as keyof typeof SCHOOLS_DATA;
     if (SCHOOLS_DATA[escuela]) {
@@ -76,18 +90,69 @@ export class CrearMemoriaPage implements OnInit {
     this.memoriaForm.patchValue({ carrera: '' });
   }
 
+  rutValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+
+    const cleanValue = value.replace(/\./g, '').replace(/-/g, '');
+    const cuerpo = cleanValue.slice(0, -1);
+    
+    const numCuerpo = parseInt(cuerpo, 10);
+    if (isNaN(numCuerpo) || numCuerpo < 10000000 || numCuerpo > 30000000) {
+      return { rutRange: true };
+    }
+
+    const rutPattern = /^\d{1,2}\.\d{3}\.\d{3}-[0-9kK]$|^\d{7,8}-[0-9kK]$/;
+    if (!rutPattern.test(value)) {
+      return { rutFormat: true };
+    }
+
+    return null;
+  }
+
+  onRutInput(event: any, index: number) {
+    let value = event.target.value;
+    value = value.replace(/[^0-9kK]/g, '');
+    value = value.toUpperCase();
+
+    if (value.length > 1) {
+      const cuerpo = value.slice(0, -1);
+      const dv = value.slice(-1);
+      
+      let formattedCuerpo = '';
+      for (let i = cuerpo.length - 1, j = 0; i >= 0; i--, j++) {
+        if (j > 0 && j % 3 === 0) {
+          formattedCuerpo = '.' + formattedCuerpo;
+        }
+        formattedCuerpo = cuerpo[i] + formattedCuerpo;
+      }
+      
+      value = `${formattedCuerpo}-${dv}`;
+    }
+
+    const control = this.integrantes.at(index).get('rut_estudiante');
+    if (control) {
+      control.setValue(value, { emitEvent: false });
+      control.updateValueAndValidity();
+    }
+  }
+
   agregarIntegrante() {
     if (this.integrantes.length >= 10) {
       this.presentToast('Máximo 10 integrantes permitidos.', 'warning');
       return;
     }
+    
+    // Patrón simple para LinkedIn (permite http, https, www., linkedin.com/in/...)
+    const linkedinPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/.*$/;
+
     const integranteForm = this.fb.group({
-      rut_estudiante: ['', [Validators.required, Validators.pattern(/^\d{1,2}\.\d{3}\.\d{3}-[0-9kK]$|^\d{7,8}-[0-9kK]$/)]],
-      nombre_estudiante: ['', Validators.required],
-      apellido_estudiante: ['', Validators.required],
-      segundo_nombre_estudiante: [''],
-      segundo_apellido_estudiante: [''],
-      linkedin: [''] 
+      rut_estudiante: ['', [Validators.required, this.rutValidator]],
+      nombre_estudiante: ['', [Validators.required, Validators.maxLength(30)]],
+      apellido_estudiante: ['', [Validators.required, Validators.maxLength(30)]],
+      segundo_nombre_estudiante: ['', Validators.maxLength(30)],
+      segundo_apellido_estudiante: ['', Validators.maxLength(30)],
+      linkedin: ['', [Validators.maxLength(200), Validators.pattern(linkedinPattern)]] 
     });
     this.integrantes.push(integranteForm);
   }
@@ -110,9 +175,23 @@ export class CrearMemoriaPage implements OnInit {
   }
 
   async confirmarGuardar() {
+    // Validar errores globales del grupo (Fechas)
+    if (this.memoriaForm.hasError('dateRangeInvalid')) {
+      this.presentToast('La fecha de inicio debe ser anterior a la fecha de término.', 'danger');
+      return;
+    }
+
     if (this.memoriaForm.invalid) {
       this.memoriaForm.markAllAsTouched();
-      this.presentToast('Por favor complete los campos obligatorios.', 'danger');
+      
+      // Verificar si hay errores específicos de LinkedIn
+      const invalidLinkedin = this.integrantes.controls.some(c => c.get('linkedin')?.hasError('pattern'));
+      if (invalidLinkedin) {
+        this.presentToast('Verifique que los enlaces de LinkedIn sean válidos (https://www.linkedin.com/in/...).', 'warning');
+        return;
+      }
+
+      this.presentToast('Por favor complete los campos obligatorios correctamente.', 'danger');
       return;
     }
     if (!this.pdfFile) {
@@ -134,6 +213,7 @@ export class CrearMemoriaPage implements OnInit {
     await alert.present();
   }
 
+  // ... (confirmarCancelar, guardarMemoria, presentToast se mantienen igual) ...
   async confirmarCancelar() {
     const alert = await this.alertCtrl.create({
       header: 'Cancelar',
@@ -153,11 +233,8 @@ export class CrearMemoriaPage implements OnInit {
     Object.keys(formValue).forEach(key => {
       if (key !== 'integrantes') {
         let value = formValue[key];
-        
-        // Traducciones
         if (key === 'escuela') value = getSchoolCode(value);
         if (key === 'carrera') value = getCareerCode(value);
-        
         formData.append(key, value);
       }
     });

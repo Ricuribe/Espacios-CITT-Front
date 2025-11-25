@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/service/http-client'; 
 import { FooterComponent } from 'src/app/components/footer/footer.component';
 
@@ -36,6 +36,7 @@ export class InformacionProyectoPage implements OnInit {
   public error = signal<any>(null);
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private apiService = inject(ApiService);
   private menuCtrl = inject(MenuController);
 
@@ -78,6 +79,15 @@ export class InformacionProyectoPage implements OnInit {
       this.isLoading.set(false);
       this.error.set({ message: 'ID de proyecto no encontrado.' });
     }
+  }
+
+  async irAEditarMemoria() {
+
+    // 1. Verificación de Seguridad
+    
+
+    // 2. Navegación usando paramMap (/editar-memoria/5)
+    this.router.navigate(['/editar-memoria', this.memory().id_memo]);
   }
 
   descargarArchivo(tipo: 'informe' | 'presentacion' | 'codigo') {

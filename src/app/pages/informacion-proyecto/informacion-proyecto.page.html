@@ -92,6 +92,11 @@
             <span class="date"><ion-icon name="calendar-outline"></ion-icon> {{ memory().fecha_subida | date:'dd MMMM, yyyy' }}</span>
           </div>
 
+          <ion-button fill="outline" color="warning" (click)="irAEditarMemoria()">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            Editar Proyecto
+          </ion-button>
+
           <div class="hero-actions">
             <ion-button class="btn-download" (click)="descargarArchivo('informe')">
               <ion-icon slot="start" name="download-outline"></ion-icon> Descargar Memoria

@@ -91,6 +91,14 @@ export class ProyectosPage implements OnInit {
     });
   }
 
+  async irACrearMemoria() {
+    // 1. Verificación de Seguridad (Escalable)
+    
+    
+    // 2. Navegación
+    this.router.navigate(['/crear-memoria']);
+  }
+
   applyFilters() {
     let result = this.memories();
     const term = this.searchTerm().toLowerCase();

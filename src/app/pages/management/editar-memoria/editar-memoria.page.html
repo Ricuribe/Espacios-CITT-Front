@@ -1,4 +1,5 @@
 <ion-content>
+  <!-- Loader -->
   <div *ngIf="isLoading" class="loading-container">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
     <p>Cargando información del proyecto...</p>
@@ -10,29 +11,39 @@
       <ion-button fill="clear" (click)="loadData()" class="reload-btn">
         <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
+      
+      <ion-button fill="clear" color="light" routerLink="/proyectos" class="back-btn-top">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon> Volver
+      </ion-button>
+
       <h1>Editar Memoria</h1>
-      <p class="subtitle">Gestione la información del proyecto y sus integrantes.</p>
+      <p class="subtitle">Gestiona la información del proyecto y sus participantes.</p>
     </div>
 
+    <!-- SECCIÓN 1: DATOS GENERALES -->
     <form [formGroup]="memoriaForm" class="management-form">
       <ion-card class="form-card">
         <ion-card-header>
           <ion-card-title>Detalles del Proyecto</ion-card-title>
         </ion-card-header>
         <ion-card-content>
+          
           <ion-item class="custom-input">
-            <ion-label position="stacked">Título</ion-label>
-            <ion-input formControlName="titulo"></ion-input>
+            <ion-label position="stacked">Título <span class="required">*</span></ion-label>
+            <ion-input formControlName="titulo" maxlength="100"></ion-input>
           </ion-item>
           
           <ion-item class="custom-input">
-            <ion-label position="stacked">Profesor Guía</ion-label>
-            <ion-input formControlName="profesor"></ion-input>
+            <ion-label position="stacked">Profesor Guía <span class="required">*</span></ion-label>
+            <ion-input formControlName="profesor" maxlength="100"></ion-input>
           </ion-item>
 
           <ion-item class="custom-input">
-            <ion-label position="stacked">Descripción</ion-label>
-            <ion-textarea formControlName="descripcion" rows="4"></ion-textarea>
+            <ion-label position="stacked">Descripción <span class="required">*</span></ion-label>
+            <ion-textarea formControlName="descripcion" rows="4" maxlength="5000"></ion-textarea>
+            <div class="helper-container" slot="helper">
+               <ion-note>{{memoriaForm.get('descripcion')?.value?.length || 0}} / 5000</ion-note>
+            </div>
           </ion-item>
 
           <div class="form-row">
@@ -45,7 +56,7 @@
 
             <ion-item class="custom-input half">
               <ion-label position="stacked">Carrera</ion-label>
-              <ion-select formControlName="carrera">
+              <ion-select formControlName="carrera" [disabled]="!carrerasDisponibles.length">
                 <ion-select-option *ngFor="let car of carrerasDisponibles" [value]="car">{{ car }}</ion-select-option>
               </ion-select>
             </ion-item>
@@ -53,30 +64,31 @@
 
           <div class="form-row">
             <ion-item class="custom-input half">
-              <ion-label position="stacked">Fecha Inicio</ion-label>
+              <ion-label position="stacked">Fecha Inicio <span class="required">*</span></ion-label>
               <ion-input type="date" formControlName="fecha_inicio"></ion-input>
             </ion-item>
             <ion-item class="custom-input half">
-              <ion-label position="stacked">Fecha Término</ion-label>
+              <ion-label position="stacked">Fecha Término <span class="required">*</span></ion-label>
               <ion-input type="date" formControlName="fecha_termino"></ion-input>
             </ion-item>
           </div>
           
            <div class="form-row">
             <ion-item class="custom-input half">
-              <ion-label position="stacked">Entidad</ion-label>
-              <ion-input formControlName="entidad_involucrada"></ion-input>
+              <ion-label position="stacked">Entidad Involucrada <span class="required">*</span></ion-label>
+              <ion-input formControlName="entidad_involucrada" maxlength="100"></ion-input>
             </ion-item>
             <ion-item class="custom-input half">
-              <ion-label position="stacked">Tipo Entidad</ion-label>
-              <ion-input formControlName="tipo_entidad"></ion-input>
+              <ion-label position="stacked">Tipo Entidad <span class="required">*</span></ion-label>
+              <ion-input formControlName="tipo_entidad" maxlength="50"></ion-input>
             </ion-item>
           </div>
            <ion-item class="custom-input">
-            <ion-label position="stacked">Tipo Memoria</ion-label>
-            <ion-input formControlName="tipo_memoria"></ion-input>
+            <ion-label position="stacked">Tipo Memoria <span class="required">*</span></ion-label>
+            <ion-input formControlName="tipo_memoria" maxlength="50"></ion-input>
           </ion-item>
 
+          <!-- Archivos -->
           <div class="file-uploads">
             <div class="file-group">
               <label>PDF (Solo subir para reemplazar)</label>
@@ -91,7 +103,7 @@
               <label>Imagen (Solo subir para reemplazar)</label>
               <div class="file-input-wrapper">
                 <input type="file" accept="image/*" (change)="onFileSelected($event, 'img')" hidden #imgInput>
-                <ion-button fill="outline" size="small" (click)="imgInput.click()">Seleccionar Nueva</ion-button>
+                <ion-button fill="outline" size="small" (click)="imgInput.click()">Seleccionar Nuevo</ion-button>
                 <span class="file-name">{{ currentImgName }}</span>
               </div>
             </div>
@@ -99,11 +111,15 @@
         </ion-card-content>
         
         <div class="card-footer-actions">
-           <ion-button color="primary" (click)="confirmarActualizarMemoria()">Modificar Memoria</ion-button>
+           <!-- BOTÓN ACTIVO SIEMPRE: Validación en click -->
+           <ion-button color="primary" (click)="confirmarActualizarMemoria()">
+             <ion-icon slot="start" name="save-outline"></ion-icon> Modificar Memoria
+           </ion-button>
         </div>
       </ion-card>
     </form>
 
+    <!-- SECCIÓN 2: INTEGRANTES EXISTENTES -->
     <div class="integrantes-section">
       <h3>Integrantes Actuales</h3>
       
@@ -113,27 +129,49 @@
             <ion-card-content>
               <div class="form-row">
                  <ion-item class="custom-input half">
-                    <ion-label position="stacked">RUT</ion-label>
-                    <ion-input formControlName="rut_estudiante"></ion-input>
+                    <ion-label position="stacked">RUT <span class="required">*</span></ion-label>
+                    <ion-input 
+                      formControlName="rut_estudiante" 
+                      maxlength="12"
+                      (ionInput)="onRutInputExisting($event, detalle)">
+                    </ion-input>
                   </ion-item>
                   <ion-item class="custom-input half">
                     <ion-label position="stacked">LinkedIn</ion-label>
-                    <ion-input formControlName="linkedin"></ion-input>
+                    <ion-input formControlName="linkedin" maxlength="200"></ion-input>
                   </ion-item>
               </div>
+
               <div class="form-row">
                   <ion-item class="custom-input half">
-                    <ion-label position="stacked">Nombre</ion-label>
-                    <ion-input formControlName="nombre_estudiante"></ion-input>
+                    <ion-label position="stacked">Primer Nombre <span class="required">*</span></ion-label>
+                    <ion-input formControlName="nombre_estudiante" maxlength="30"></ion-input>
                   </ion-item>
                   <ion-item class="custom-input half">
-                    <ion-label position="stacked">Apellido</ion-label>
-                    <ion-input formControlName="apellido_estudiante"></ion-input>
+                    <ion-label position="stacked">Segundo Nombre</ion-label>
+                    <ion-input formControlName="segundo_nombre_estudiante" maxlength="30"></ion-input>
                   </ion-item>
               </div>
+
+              <div class="form-row">
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Primer Apellido <span class="required">*</span></ion-label>
+                    <ion-input formControlName="apellido_estudiante" maxlength="30"></ion-input>
+                  </ion-item>
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Segundo Apellido</ion-label>
+                    <ion-input formControlName="segundo_apellido_estudiante" maxlength="30"></ion-input>
+                  </ion-item>
+              </div>
+
               <div class="detail-actions">
-                <ion-button size="small" fill="outline" color="danger" (click)="confirmarDeleteDetalle(detalle.id_detalle)">Eliminar</ion-button>
-                <ion-button size="small" fill="solid" color="secondary" (click)="confirmarUpdateDetalle(detalle)">Aplicar Cambios</ion-button>
+                <ion-button size="small" fill="outline" color="danger" (click)="confirmarDeleteDetalle(detalle.id_detalle)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+                <!-- BOTÓN ACTIVO SIEMPRE -->
+                <ion-button size="small" fill="solid" color="secondary" (click)="confirmarUpdateDetalle(detalle)">
+                   Aplicar Cambios
+                </ion-button>
               </div>
             </ion-card-content>
           </ion-card>
@@ -141,9 +179,10 @@
       </div>
     </div>
 
+    <!-- SECCIÓN 3: AGREGAR NUEVO INTEGRANTE -->
     <div class="nuevo-integrante-section">
-      <ion-button *ngIf="!mostrarFormNuevo" expand="block" fill="outline" (click)="mostrarFormNuevo = true">
-        <ion-icon name="add-circle-outline" slot="start"></ion-icon> Agregar Integrante
+      <ion-button *ngIf="!mostrarFormNuevo" expand="block" fill="outline" (click)="mostrarFormNuevo = true" class="btn-add-new">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon> Agregar Nuevo Integrante
       </ion-button>
 
       <ion-card *ngIf="mostrarFormNuevo" class="detail-card new-entry">
@@ -153,15 +192,43 @@
         <ion-card-content>
           <form [formGroup]="nuevoIntegranteForm">
              <div class="form-row">
-                <ion-item class="custom-input half"><ion-label position="stacked">RUT</ion-label><ion-input formControlName="rut_estudiante"></ion-input></ion-item>
-                <ion-item class="custom-input half"><ion-label position="stacked">LinkedIn</ion-label><ion-input formControlName="linkedin"></ion-input></ion-item>
+                <ion-item class="custom-input half">
+                  <ion-label position="stacked">RUT <span class="required">*</span></ion-label>
+                  <ion-input 
+                    formControlName="rut_estudiante" 
+                    maxlength="12"
+                    (ionInput)="onRutInputNew($event)">
+                  </ion-input>
+                </ion-item>
+                <ion-item class="custom-input half">
+                  <ion-label position="stacked">LinkedIn</ion-label>
+                  <ion-input formControlName="linkedin" maxlength="200"></ion-input>
+                </ion-item>
              </div>
              <div class="form-row">
-                <ion-item class="custom-input half"><ion-label position="stacked">Nombre</ion-label><ion-input formControlName="nombre_estudiante"></ion-input></ion-item>
-                <ion-item class="custom-input half"><ion-label position="stacked">Apellido</ion-label><ion-input formControlName="apellido_estudiante"></ion-input></ion-item>
+                <ion-item class="custom-input half">
+                  <ion-label position="stacked">Primer Nombre <span class="required">*</span></ion-label>
+                  <ion-input formControlName="nombre_estudiante" maxlength="30"></ion-input>
+                </ion-item>
+                <ion-item class="custom-input half">
+                  <ion-label position="stacked">Segundo Nombre</ion-label>
+                  <ion-input formControlName="segundo_nombre_estudiante" maxlength="30"></ion-input>
+                </ion-item>
              </div>
+             <div class="form-row">
+                <ion-item class="custom-input half">
+                  <ion-label position="stacked">Primer Apellido <span class="required">*</span></ion-label>
+                  <ion-input formControlName="apellido_estudiante" maxlength="30"></ion-input>
+                </ion-item>
+                <ion-item class="custom-input half">
+                  <ion-label position="stacked">Segundo Apellido</ion-label>
+                  <ion-input formControlName="segundo_apellido_estudiante" maxlength="30"></ion-input>
+                </ion-item>
+             </div>
+
              <div class="detail-actions">
                <ion-button size="small" color="medium" fill="clear" (click)="mostrarFormNuevo = false">Cancelar</ion-button>
+               <!-- BOTÓN ACTIVO SIEMPRE -->
                <ion-button size="small" (click)="confirmarAgregarDetalle()">Agregar</ion-button>
              </div>
           </form>
@@ -170,8 +237,9 @@
     </div>
 
     <div class="global-actions">
-      <ion-button color="light" fill="clear" routerLink="/proyectos">Volver a Proyectos</ion-button>
-      <ion-button color="danger" fill="outline" (click)="confirmarEliminarMemoria()">Eliminar Proyecto Completo</ion-button>
+      <ion-button color="danger" fill="outline" (click)="confirmarEliminarMemoria()">
+        <ion-icon slot="start" name="trash-outline"></ion-icon> Eliminar Proyecto Completo
+      </ion-button>
     </div>
 
   </div>

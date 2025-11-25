@@ -81,8 +81,8 @@ export class ApiService {
     return this.http.get<Memory[]>(`${this.baseUrl3}memos/memories/`);
   }
 
-  /** Obtiene una memoria/proyecto por su ID */
-  getMemoryById(id: number): Observable<Memory> {
+  /** Obtiene una memoria/proyecto por su ID + detalles*/
+  getMemoryById(id: number): Observable<any> {
     // Asume que tu API de detalle es 'memos/{id}/'
     return this.http.get<Memory>(`${this.baseUrl3}memos/${id}/`); 
   }
@@ -95,9 +95,22 @@ export class ApiService {
     return this.http.post(`${this.baseUrl3}memos/memories/`, formData);
   }
 
+  getOnlyMemoryById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl3}memos/memories/${id}/`);
+  }
+
   /** Actualiza la memoria (sin detalles) */
-  updateMemory(id: number, formData: FormData): Observable<any> {
+  updateMemoryPut(id: number, formData: FormData): Observable<any> {
     return this.http.put(`${this.baseUrl3}memos/memories/${id}/`, formData);
+  }
+  /**
+   * PATCH: Actualización parcial.
+   * Angular detecta el Content-Type automáticamente:
+   * - Si 'data' es un objeto JS plano -> Content-Type: application/json
+   * - Si 'data' es FormData -> Content-Type: multipart/form-data (con boundary)
+   */
+  updateMemoryPatch(id: number, data: any | FormData): Observable<any> {
+    return this.http.patch(`${this.baseUrl3}memos/memories/${id}/`, data);
   }
 
   deleteMemory(id: number): Observable<any> {
