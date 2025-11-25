@@ -11,12 +11,14 @@ $text-grey: #94a3b8;
   }
 }
 
-/* --- HEADER Y MENÚ --- */
+/* --- HEADER (LOGO 80PX) --- */
 .main-header {
   position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
-  .main-toolbar { --min-height: 90px; --background: transparent; --border-width: 0; padding: 0 10px; display: flex; align-items: center; }
-  .logo { height: 70px; width: auto; object-fit: contain; cursor: pointer; padding: 5px 0; }
-  ion-menu-button { --color: #ffffff; font-size: 2rem; }
+  .main-toolbar { --min-height: 100px; --background: transparent; --border-width: 0; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+  
+  .logo { height: 80px; width: auto; object-fit: contain; cursor: pointer; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); transition: all 0.3s ease; }
+  
+  ion-menu-button { --color: #ffffff; font-size: 2rem; margin: 0; }
   
   .desktop-only-buttons {
     ion-button {
@@ -27,139 +29,67 @@ $text-grey: #94a3b8;
   }
 }
 
-/* Estilo Menú Azul */
+/* RESPONSIVE HEADER */
+@media (max-width: 991px) { 
+  .main-header { .desktop-only-buttons { display: none; } .mobile-only-button { display: block; margin-right: 0; } .logo { margin-left: auto; margin-right: 0; } } 
+}
+@media (min-width: 992px) { 
+  .main-header { .mobile-only-button { display: none; } .desktop-only-buttons { display: flex; align-items: center; } .logo { margin-right: auto; margin-left: 0; } } 
+}
+
+/* --- MENÚ LATERAL (AZUL DEGRADADO CON ICONOS) --- */
 ion-menu {
   --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
-  ion-header ion-toolbar { --background: transparent !important; --color: white; --border-width: 0; }
-  ion-content { --background: transparent !important; --color: white; }
-  ion-list { background: transparent !important; }
-  ion-item { --background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); 
-    &:hover { --background: rgba(255,255,255,0.1) !important; }
-  }
-}
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
 
-@media (max-width: 991px) { .main-header { .desktop-only-buttons { display: none; } .logo { margin-left: auto; margin-right: 0; } } }
-@media (min-width: 992px) { .main-header { .mobile-only-button { display: none; } .logo { margin-right: auto; margin-left: 0; } } }
-
-/* --- CONTENIDO --- */
-.page-container {
-  padding: 140px 20px 80px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 90vh;
-}
-
-.nav-header {
-  margin-bottom: 20px;
-  .back-btn { --color: #ffffff; --padding-start: 0; font-size: 1.2rem; 
-    ion-icon { font-size: 2rem; margin-right: 5px; }
-    .back-text { display: none; @media(min-width: 768px) { display: inline; } }
-  }
-}
-
-.header-section {
-  margin-bottom: 40px;
-  h1 { color: $text-white; font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
-  p { color: $text-grey; font-size: 1.1rem; }
-}
-
-/* FILTROS */
-.filters-bar {
-  display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 40px; align-items: center;
-  .search-wrapper {
-    flex: 1; min-width: 300px;
-    .custom-searchbar {
-      --background: #1e293b; --color: white; --placeholder-color: #94a3b8; --icon-color: #94a3b8; --border-radius: 8px; padding: 0;
+  ion-header ion-toolbar { 
+    --background: transparent !important; background: transparent !important; 
+    --color: #ffffff; --border-width: 0; 
+    ion-title { 
+        font-weight: 700; font-size: 1.4rem; padding-inline-start: 20px; margin-top: 15px; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 15px; 
     }
   }
-  .year-filters {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    .btn-filter-dropdown { --border-color: #334155; --color: #cbd5e1; --border-radius: 6px; text-transform: none; }
-    .btn-year {
-      --border-radius: 6px; --border-color: #334155; --color: #cbd5e1; font-weight: 500;
-      &.ion-color-primary { --background: #2563eb; --color: white; --border-color: #2563eb; }
-      &.ion-color-medium { --background: transparent; }
-    }
-  }
-}
-
-/* --- TARJETAS (AQUÍ ESTÁ EL ARREGLO DE ALTURA) --- */
-.memories-grid { padding: 0; }
-
-.memory-card {
-  background-color: $card-bg; 
-  border-radius: 12px; 
-  margin: 0 0 25px 0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  overflow: hidden; 
-  transition: transform 0.2s;
+  ion-content { --background: transparent !important; background: transparent !important; --color: #ffffff; }
+  ion-list { background: transparent !important; padding-top: 10px; }
   
-  /* 1. Forzamos altura completa dentro de la columna */
-  height: 100%; 
-  /* 2. Usamos flexbox vertical para distribuir el contenido */
-  display: flex;
-  flex-direction: column;
+  ion-item { 
+    --background: transparent !important; background: transparent !important; 
+    --color: #ffffff; --border-color: rgba(255,255,255,0.1); 
+    font-size: 1rem; font-weight: 500; --min-height: 55px; --padding-start: 20px;
+    
+    ion-icon { color: #bfdbfe; margin-right: 15px; font-size: 1.3rem; }
+    
+    &:hover { --background: rgba(255,255,255,0.1) !important; cursor: pointer; }
+  }
 
+  .logout-item { 
+    margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; 
+    ion-icon { color: #ffadad; } 
+  }
+}
+
+/* CONTENIDO */
+.page-container { padding: 140px 20px 80px 20px; max-width: 1200px; margin: 0 auto; min-height: 90vh; }
+
+.nav-header { margin-bottom: 20px; .back-btn { --color: #ffffff; --padding-start: 0; font-size: 1.2rem; ion-icon { font-size: 2rem; margin-right: 5px; } .back-text { display: none; @media(min-width: 768px) { display: inline; } } } }
+
+.header-section { margin-bottom: 40px; h1 { color: $text-white; font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; } p { color: $text-grey; font-size: 1.1rem; } }
+
+.filters-bar { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 40px; align-items: center;
+  .search-wrapper { flex: 1; min-width: 300px; .custom-searchbar { --background: #1e293b; --color: white; --placeholder-color: #94a3b8; --icon-color: #94a3b8; --border-radius: 8px; padding: 0; } }
+  .year-filters { display: flex; gap: 10px; flex-wrap: wrap; .btn-filter-dropdown { --border-color: #334155; --color: #cbd5e1; --border-radius: 6px; text-transform: none; } .btn-year { --border-radius: 6px; --border-color: #334155; --color: #cbd5e1; font-weight: 500; &.ion-color-primary { --background: #2563eb; --color: white; --border-color: #2563eb; } &.ion-color-medium { --background: transparent; } } }
+}
+
+.memories-grid { padding: 0; }
+.memory-card {
+  background-color: $card-bg; border-radius: 12px; margin: 0 0 25px 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; transition: transform 0.2s; height: 100%; display: flex; flex-direction: column;
   &:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.1); }
-
-  .card-image {
-    height: 200px; 
-    width: 100%;
-    background-size: cover; 
-    background-position: center;
-    background-color: #0f172a; 
-    position: relative;
-    /* Evitamos que la imagen se encoja */
-    flex-shrink: 0; 
-    
-    .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent 0%, rgba(30, 41, 59, 0.8) 100%); }
-  }
-
-  ion-card-header {
-    padding: 15px 15px 5px 15px;
-    /* Hacemos que el header crezca si es necesario, pero no demasiado */
-    flex-grow: 1; 
-    
-    ion-card-title { 
-      color: white; 
-      font-size: 1.1rem; 
-      font-weight: 700; 
-      margin-bottom: 5px; 
-      
-      /* Opcional: Limitar el título a 2 líneas para uniformidad estricta */
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    
-    ion-card-subtitle { color: $text-grey; font-size: 0.85rem; text-transform: none; }
-  }
-
-  ion-card-content {
-    padding: 10px 15px 20px 15px;
-    /* Asegura que el contenido (botones) siempre esté al final */
-    margin-top: auto; 
-
-    .card-actions {
-      display: flex; gap: 10px;
-      .action-btn {
-        flex: 1; --background: #334155; --background-hover: #475569; --color: #e2e8f0;
-        --border-radius: 6px; font-size: 0.85rem; font-weight: 600; height: 35px; text-transform: none;
-        ion-icon { font-size: 1.1rem; margin-right: 5px; }
-      }
-    }
-  }
+  .card-image { height: 200px; width: 100%; background-size: cover; background-position: center; background-color: #0f172a; position: relative; flex-shrink: 0; .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent 0%, rgba(30, 41, 59, 0.8) 100%); } }
+  ion-card-header { padding: 15px 15px 5px 15px; flex-grow: 1; ion-card-title { color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } ion-card-subtitle { color: $text-grey; font-size: 0.85rem; text-transform: none; } }
+  ion-card-content { padding: 10px 15px 20px 15px; margin-top: auto; .card-actions { display: flex; gap: 10px; .action-btn { flex: 1; --background: #334155; --background-hover: #475569; --color: #e2e8f0; --border-radius: 6px; font-size: 0.85rem; font-weight: 600; height: 35px; text-transform: none; ion-icon { font-size: 1.1rem; margin-right: 5px; } } } }
 }
 
-/* SKELETON */
-.skeleton-card {
-  height: 100%; /* También altura completa para el skeleton */
-  .skeleton-img { width: 100%; height: 200px; margin-bottom: 10px; }
-  ion-skeleton-text { border-radius: 4px; background: rgba(255,255,255,0.1); }
-}
+.skeleton-card { height: 100%; .skeleton-img { width: 100%; height: 200px; margin-bottom: 10px; } ion-skeleton-text { border-radius: 4px; background: rgba(255,255,255,0.1); } }
 
-@media (max-width: 768px) {
-  .filters-bar { flex-direction: column; align-items: stretch; }
-}
+@media (max-width: 768px) { .filters-bar { flex-direction: column; align-items: stretch; } }

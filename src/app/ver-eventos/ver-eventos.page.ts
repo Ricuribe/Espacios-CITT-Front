@@ -1,35 +1,18 @@
-import { Component, OnInit, inject } from '@angular/core'; // Importamos inject
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { 
-  IonContent, 
-  IonHeader, 
-  IonToolbar, 
-  IonButtons, 
-  IonButton, 
-  IonMenuButton, 
-  IonImg, 
-  IonMenu,
-  IonTitle,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonIcon,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  MenuController // <--- IMPORTANTE: Importamos el controlador de menú
+  IonContent, IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, 
+  IonImg, IonMenu, IonTitle, IonList, IonItem, IonLabel, IonIcon,
+  MenuController, IonChip, IonAvatar // Agregados para usuario
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
-  calendarOutline, 
-  timeOutline, 
-  locationOutline, 
-  arrowForwardOutline,
-  arrowBackOutline
+  calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline,
+  personCircleOutline, logOutOutline, libraryOutline, folderOpenOutline, homeOutline
 } from 'ionicons/icons';
 import { FooterComponent } from '../components/footer/footer.component';
+import { ApiService } from 'src/app/service/http-client'; 
 
 @Component({
   selector: 'app-ver-eventos',
@@ -37,39 +20,29 @@ import { FooterComponent } from '../components/footer/footer.component';
   styleUrls: ['./ver-eventos.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    RouterLink,
-    FooterComponent,
-    IonContent,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonButton,
-    IonMenuButton,
-    IonImg,
-    IonMenu,
-    IonTitle,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonIcon,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonCard
+    CommonModule, RouterLink, FooterComponent,
+    IonContent, IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, 
+    IonImg, IonMenu, IonTitle, IonList, IonItem, IonLabel, IonIcon,
+    IonChip, IonAvatar
   ]
 })
 export class VerEventosPage implements OnInit {
-
-  // Inyectamos el MenuController
+  
   private menuCtrl = inject(MenuController);
+  private apiService = inject(ApiService);
+  private router = inject(Router);
 
+  // Estado de usuario
+  public isLoggedIn = signal<boolean>(false); 
+  public userName = signal<string>('');
+
+  // Datos Mock (se mantienen igual)
   eventos = [
     {
       titulo: 'Taller de Robótica',
       fecha: '15 de Octubre, 2024',
       hora: '10:00 AM - 1:00 PM',
-      descripcion: 'Sumérgete en el fascinante mundo de la automatización y la mecatrónica. En este taller práctico, tendrás la oportunidad de construir y programar tu primer robot desde cero.',
+      descripcion: 'Sumérgete en el fascinante mundo de la automatización y la mecatrónica.',
       imagen: '/assets/icon/robotica.jpg',
       categoria: 'Taller'
     },
@@ -77,7 +50,7 @@ export class VerEventosPage implements OnInit {
       titulo: 'Introducción a AWS',
       fecha: '22 de Octubre, 2024',
       hora: '4:00 PM - 6:00 PM',
-      descripcion: 'Descubre los fundamentos de la computación en la nube con Amazon Web Services (AWS). Este taller te guiará a través de los servicios principales y cómo desplegar tu primera aplicación.',
+      descripcion: 'Descubre los fundamentos de la computación en la nube con Amazon Web Services (AWS).',
       imagen: '/assets/icon/aws.jpg',
       categoria: 'Certificación'
     },
@@ -85,29 +58,43 @@ export class VerEventosPage implements OnInit {
       titulo: 'Charla: El Futuro de la IA',
       fecha: '5 de Noviembre, 2024',
       hora: '7:00 PM - 8:00 PM',
-      descripcion: 'Únete a una conferencia inspiradora sobre las últimas tendencias y el profundo impacto que la Inteligencia Artificial está teniendo en nuestra sociedad.',
+      descripcion: 'Únete a una conferencia inspiradora sobre las últimas tendencias de IA.',
       imagen: '/assets/icon/ai.jpg',
       categoria: 'Conferencia'
     }
   ];
 
   constructor() {
-    addIcons({ calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline });
+    addIcons({ 
+      calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline,
+      personCircleOutline, logOutOutline, libraryOutline, folderOpenOutline, homeOutline
+    });
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.checkLogin();
+  }
 
-  // --- LÓGICA PARA ACTIVAR EL MENÚ CORRECTO ---
-  
-  // Se ejecuta cada vez que la vista va a entrar (antes de mostrarse)
   ionViewWillEnter() {
-    // Habilitamos el menú específico de esta página ('menu-eventos')
     this.menuCtrl.enable(true, 'menu-eventos');
+    this.checkLogin();
   }
 
-  // (Opcional) Se ejecuta al salir
-  ionViewWillLeave() {
-    // Podríamos deshabilitarlo si quisiéramos ser muy estrictos, 
-    // pero usualmente habilitar el siguiente en la otra página es suficiente.
+  checkLogin() {
+    const userId = sessionStorage.getItem('userId');
+    this.isLoggedIn.set(!!userId);
+    
+    if (userId) {
+      const name = sessionStorage.getItem('userFirstName');
+      const last = sessionStorage.getItem('userLastName');
+      if (name) this.userName.set(`${name} ${last || ''}`);
+    }
+  }
+
+  logout() {
+    sessionStorage.clear();
+    this.isLoggedIn.set(false);
+    this.userName.set('');
+    this.router.navigate(['/home']);
   }
 }

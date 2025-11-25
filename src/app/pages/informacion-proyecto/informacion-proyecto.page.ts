@@ -12,7 +12,9 @@ import {
 import { addIcons } from 'ionicons';
 import { 
   chevronBackOutline, downloadOutline, documentTextOutline, 
-  easelOutline, codeSlashOutline, personOutline, calendarOutline 
+  easelOutline, codeSlashOutline, personOutline, calendarOutline,
+  // Iconos del menú
+  homeOutline, folderOpenOutline, libraryOutline, logOutOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -29,7 +31,6 @@ import {
 })
 export class InformacionProyectoPage implements OnInit {
   
-  // Signals
   public memory = signal<any | null>(null);
   public isLoading = signal<boolean>(true);
   public error = signal<any>(null);
@@ -41,7 +42,8 @@ export class InformacionProyectoPage implements OnInit {
   constructor() {
     addIcons({ 
       chevronBackOutline, downloadOutline, documentTextOutline, 
-      easelOutline, codeSlashOutline, personOutline, calendarOutline 
+      easelOutline, codeSlashOutline, personOutline, calendarOutline,
+      homeOutline, folderOpenOutline, libraryOutline, logOutOutline
     });
   }
 
@@ -50,7 +52,6 @@ export class InformacionProyectoPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Habilitamos el menú específico de esta página (reutilizamos el de proyectos o uno propio)
     this.menuCtrl.enable(true, 'menu-info-proyecto');
   }
 
@@ -64,7 +65,6 @@ export class InformacionProyectoPage implements OnInit {
       const id = +idParam;
       this.apiService.getMemoryById(id).subscribe({
         next: (data: any) => {
-          // Ajuste para soportar si la API devuelve el objeto directo o envuelto
           const mem = (data && data.memory) ? data.memory : data;
           this.memory.set(mem);
           this.isLoading.set(false);
@@ -80,24 +80,15 @@ export class InformacionProyectoPage implements OnInit {
     }
   }
 
-  /**
-   * Descarga un archivo específico. 
-   * Por ahora, como tu API solo tiene un endpoint de descarga general, 
-   * usaremos ese para todos los botones, pero aquí podrías diferenciar por tipo.
-   */
   descargarArchivo(tipo: 'informe' | 'presentacion' | 'codigo') {
     const mem = this.memory();
     if (!mem) return;
-
-    // Aquí podrías tener lógica diferente si tu API soporta descargar partes separadas
-    // Por ejemplo: this.apiService.downloadReport(mem.id_memo)...
     
     this.apiService.downloadMemoryPdf(mem.id_memo).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        // Simulamos nombres diferentes según el botón presionado
         const ext = tipo === 'codigo' ? 'zip' : (tipo === 'presentacion' ? 'pptx' : 'pdf');
         a.download = `proyecto_${mem.id_memo}_${tipo}.${ext}`;
         document.body.appendChild(a);
@@ -109,7 +100,6 @@ export class InformacionProyectoPage implements OnInit {
     });
   }
 
-  // Helper para imagen
   getImageUrl(): string {
     const mem = this.memory();
     return mem?.imagen_display || '/assets/icon/portadapagina.jpg';

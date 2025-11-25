@@ -3,23 +3,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Router, RouterLink } from '@angular/router';
 
-// CORRECCIÓN 1: Importamos desde tu archivo real
 import { ApiService, Memory } from 'src/app/service/http-client'; 
 import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 import {
   IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, 
-  IonGrid, IonRow, IonCol, IonIcon, IonCard, IonCardHeader, IonCardTitle, 
-  IonCardSubtitle, IonCardContent, IonLabel, IonMenu, IonMenuButton, IonList, 
+  IonGrid, IonRow, IonCol, IonIcon, 
+  IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, 
+  IonLabel, IonMenu, IonMenuButton, IonList, 
   IonItem, IonSkeletonText, IonText, 
-  IonSearchbar, // CORRECCIÓN 2: Importado
-  IonChip,      // CORRECCIÓN 2: Importado
+  IonSearchbar, 
+  IonChip,      
   MenuController 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   eyeOutline, downloadOutline, searchOutline, filterOutline, 
-  arrowForwardOutline, chevronDownOutline, chevronBackOutline
+  arrowForwardOutline, chevronDownOutline, chevronBackOutline,
+  // Nuevos iconos para el menú
+  homeOutline, folderOpenOutline, libraryOutline, logOutOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -31,8 +33,9 @@ import {
     CommonModule, FormsModule, RouterLink, 
     FooterComponent, 
     IonHeader, IonToolbar, IonTitle, IonImg, IonButtons, IonButton, IonContent, 
-    IonGrid, IonRow, IonCol, IonIcon, IonCard, IonCardHeader, IonCardTitle, 
-    IonCardSubtitle, IonCardContent, IonLabel, IonMenu, IonMenuButton, IonList, 
+    IonGrid, IonRow, IonCol, IonIcon, 
+    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, 
+    IonLabel, IonMenu, IonMenuButton, IonList, 
     IonItem, IonSkeletonText, IonText, 
     IonSearchbar, 
     IonChip       
@@ -44,13 +47,11 @@ export class ProyectosPage implements OnInit {
   private router = inject(Router);
   private menuCtrl = inject(MenuController);
 
-  // --- ESTADO ---
   public memories = signal<Memory[]>([]);
   public filteredMemories = signal<Memory[]>([]); 
   public isLoading = signal<boolean>(true);
   public error = signal<any>(null);
   
-  // --- FILTROS (Variables que el HTML busca) ---
   public searchTerm = signal<string>('');
   public selectedYear = signal<number | null>(null);
   public filterYears = [2024, 2023, 2022, 2021, 2020];
@@ -58,7 +59,9 @@ export class ProyectosPage implements OnInit {
   constructor() {
     addIcons({ 
       eyeOutline, downloadOutline, searchOutline, filterOutline, 
-      arrowForwardOutline, chevronDownOutline, chevronBackOutline 
+      arrowForwardOutline, chevronDownOutline, chevronBackOutline,
+      // Iconos del menú
+      homeOutline, folderOpenOutline, libraryOutline, logOutOutline
     });
   }
 
@@ -90,8 +93,6 @@ export class ProyectosPage implements OnInit {
 
   applyFilters() {
     let result = this.memories();
-
-    // 1. Filtro Texto
     const term = this.searchTerm().toLowerCase();
     if (term) {
       result = result.filter((m: Memory) => 
@@ -100,19 +101,12 @@ export class ProyectosPage implements OnInit {
         (m.descripcion && m.descripcion.toLowerCase().includes(term))
       );
     }
-
-    // 2. Filtro Año
     if (this.selectedYear()) {
       const yearStr = String(this.selectedYear());
-      result = result.filter((m: Memory) => 
-        m.fecha_inicio && m.fecha_inicio.startsWith(yearStr)
-      );
+      result = result.filter((m: Memory) => m.fecha_inicio && m.fecha_inicio.startsWith(yearStr));
     }
-
     this.filteredMemories.set(result);
   }
-
-  // --- MÉTODOS QUE EL HTML NECESITA ---
 
   onSearchChange(event: any) {
     this.searchTerm.set(event.detail.value);
@@ -135,8 +129,6 @@ export class ProyectosPage implements OnInit {
 
   descargarPDF(id: number, event: Event) {
     event.stopPropagation();
-    
-    // Usamos 'any' para evitar problemas si tu interfaz Memory no tiene el tipo Blob explícito en el servicio
     this.apiService.downloadMemoryPdf(id).subscribe({
       next: (blob: any) => {
         const url = window.URL.createObjectURL(blob);
