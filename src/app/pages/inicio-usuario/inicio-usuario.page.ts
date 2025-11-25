@@ -15,7 +15,7 @@ import {
   personCircleOutline, settingsOutline, logOutOutline, 
   documentTextOutline, calendarOutline, peopleOutline, 
   addCircleOutline, statsChartOutline, libraryOutline,
-  timeOutline, cloudUploadOutline
+  timeOutline, cloudUploadOutline, calendarNumberOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -48,7 +48,7 @@ export class InicioUsuarioPage implements OnInit {
       personCircleOutline, settingsOutline, logOutOutline, 
       documentTextOutline, calendarOutline, peopleOutline, 
       addCircleOutline, statsChartOutline, libraryOutline,
-      timeOutline, cloudUploadOutline
+      timeOutline, cloudUploadOutline, calendarNumberOutline
     });
   }
 

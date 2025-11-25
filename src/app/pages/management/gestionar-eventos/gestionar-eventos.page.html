@@ -1,0 +1,116 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+      <ion-back-button defaultHref="/inicio-usuario"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Eventos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding bg-light">
+  
+  <!-- Filtros Rápidos -->
+  <div class="filter-bar ion-margin-bottom">
+    <ion-segment [(ngModel)]="statusFilter" (ionChange)="loadEvents()">
+      <ion-segment-button value="all">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="pending">
+        <ion-label>Pendientes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="confirmed">
+        <ion-label>Confirmados</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="ion-text-center ion-padding-top">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando solicitudes...</p>
+    </div>
+  }
+
+  <!-- Lista de Eventos -->
+  @if (!isLoading()) {
+    <div class="events-list">
+      @if (filteredEvents().length === 0) {
+        <div class="empty-state">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <p>No se encontraron eventos con este criterio.</p>
+        </div>
+      }
+
+      @for (ev of filteredEvents(); track ev.id) {
+        <ion-card class="event-card animate__animated animate__fadeIn">
+          
+          <!-- Cabecera de la Tarjeta (Siempre visible) -->
+          <div class="card-header" (click)="toggleDetails(ev.id)">
+            <div class="status-indicator" [ngClass]="getStatusColor(ev.status)"></div>
+            <div class="header-content">
+              <h2 class="card-title">{{ ev.title }}</h2>
+              <div class="card-meta">
+                <span><ion-icon name="calendar-outline"></ion-icon> {{ formatDate(ev.start_datetime) }}</span>
+                <span><ion-icon name="time-outline"></ion-icon> {{ formatTime(ev.start_datetime) }} - {{ formatTime(ev.end_datetime) }}</span>
+              </div>
+            </div>
+            <div class="header-action">
+              <ion-icon [name]="expandedId() === ev.id ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </div>
+          </div>
+
+          <!-- Detalles Expandibles -->
+          @if (expandedId() === ev.id) {
+            <div class="card-details">
+              <div class="detail-row">
+                <strong>Solicitante:</strong> {{ ev.user_name || 'Usuario' }}
+              </div>
+              <div class="detail-row">
+                <strong>Descripción:</strong>
+                <p>{{ ev.description || 'Sin descripción.' }}</p>
+              </div>
+              <div class="detail-row">
+                <strong>Espacios:</strong>
+                <div class="chip-container">
+                  @for (space of ev.spaces; track $index) {
+                    <ion-chip color="tertiary" outline="true">
+                      <ion-label>{{ space.name }}</ion-label>
+                    </ion-chip>
+                  }
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="action-buttons ion-padding-top">
+                <ion-button fill="outline" color="medium" (click)="goToEdit(ev.id)">
+                  <ion-icon slot="start" name="create-outline"></ion-icon>
+                  Editar
+                </ion-button>
+
+                <!-- Mostrar acciones solo si no está cancelado/finalizado -->
+                @if (ev.status !== 4 && ev.status !== 5) { <!-- Asumiendo 4: Cancelado, 5: Finalizado -->
+                  
+                  <!-- Si no está confirmado, mostrar confirmar -->
+                  @if (ev.status !== 2) { 
+                    <ion-button fill="solid" color="success" (click)="confirmEvent(ev)">
+                      <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                      Confirmar
+                    </ion-button>
+                  }
+
+                  <ion-button fill="solid" color="danger" (click)="rejectEvent(ev)">
+                    <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+                    Rechazar
+                  </ion-button>
+                }
+              </div>
+            </div>
+          }
+        </ion-card>
+      }
+    </div>
+  }
+
+</ion-content>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Workspace } from '../interfaces/workspace'; // Asume que tienes este archivo
 
@@ -159,6 +159,45 @@ export class ApiService {
    */
   getScheduledEvents(today: boolean): Observable<any> {
     return this.http.get(`${this.baseUrl2}scheduled-events/?today=${today}`);
+  }
+
+  // GESTION DE EVENTOS -----------------------------
+  /**
+   * Obtiene lista de eventos para gestión. 
+   * Soporta filtros opcionales (status, fecha, etc.) si el backend los implementa.
+   */
+  getManagementEvents(filters?: any): Observable<any> {
+    let params = new HttpParams();
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== null && filters[key] !== undefined) {
+          params = params.append(key, filters[key]);
+        }
+      });
+    }
+    // Asumiendo que la ruta en manage_service/urls.py es 'manage/events/'
+    return this.http.get(`${this.baseUrl}manage/events-manage/`, { params });
+  }
+
+  /** Obtiene un evento específico para edición */
+  getManagementEventById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}manage/events-manage/${id}/`);
+  }
+
+  /** Actualiza un evento completo (PUT) */
+  updateManagementEvent(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}manage/events-manage/${id}/`, data);
+  }
+
+  /** * Cambia el estado del evento (Confirmar/Rechazar).
+   * Usamos PATCH para actualizar parcialmente.
+   */
+  patchManagementEventStatus(id: number, status: number, comment?: string): Observable<any> {
+    const payload: any = { status };
+    if (comment) {
+      payload.admin_comment = comment; // Asumiendo que existe un campo para comentarios de admin
+    }
+    return this.http.patch(`${this.baseUrl}manage/events-manage/${id}/`, payload);
   }
 
 }

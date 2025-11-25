@@ -1,0 +1,129 @@
+.bg-light {
+  --background: #f4f5f8;
+}
+
+.filter-bar {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-card {
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  background: white;
+}
+
+.card-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.2s;
+
+  &:active {
+    background: #f9f9f9;
+  }
+}
+
+.status-indicator {
+  width: 6px;
+  height: 40px;
+  border-radius: 4px;
+  margin-right: 12px;
+  
+  &.status-pending { background-color: var(--ion-color-warning); }
+  &.status-confirmed { background-color: var(--ion-color-success); }
+  &.status-cancelled { background-color: var(--ion-color-danger); }
+  &.status-default { background-color: var(--ion-color-medium); }
+}
+
+.header-content {
+  flex: 1;
+  
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--ion-color-dark);
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+    
+    span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+}
+
+.header-action {
+  color: var(--ion-color-medium);
+}
+
+.card-details {
+  padding: 0 16px 16px 16px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  animation: slideDown 0.3s ease-out;
+
+  .detail-row {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    color: var(--ion-color-dark);
+    
+    strong {
+      display: block;
+      color: var(--ion-color-medium);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px dashed #e0e0e0;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 40px;
+  color: var(--ion-color-medium);
+  
+  ion-icon {
+    font-size: 64px;
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

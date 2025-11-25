@@ -75,6 +75,15 @@ export const routes: Routes = [
     path: 'editar-memoria/:id',
     loadComponent: () => import('./pages/management/editar-memoria/editar-memoria.page').then( m => m.EditarMemoriaPage)
   },
+  {
+    path: 'gestionar-eventos',
+    loadComponent: () => import('./pages/management/gestionar-eventos/gestionar-eventos.page').then( m => m.GestionarEventosPage)
+  },
+  {
+    path: 'editar-evento/:id',
+    loadComponent: () => import('./pages/management/editar-evento/editar-evento.page').then( m => m.EditarEventoPage)
+  },
+
 
 
 

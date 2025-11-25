@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/management/gestionar-eventos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Evento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  
+  @if (isLoading()) {
+    <div class="ion-text-center ion-padding top-loader">
+      <ion-spinner name="circles"></ion-spinner>
+      <p>Cargando datos del evento...</p>
+    </div>
+  }
+
+  @if (!isLoading() && eventForm) {
+    <form [formGroup]="eventForm" (ngSubmit)="saveEvent()">
+      
+      <ion-card>
+        <ion-card-content>
+          
+          <!-- Título -->
+          <ion-item fill="outline" class="ion-margin-bottom">
+            <ion-label position="floating">Título del Evento</ion-label>
+            <ion-input formControlName="title" type="text" placeholder="Ej: Taller de Robótica"></ion-input>
+            <ion-note slot="error" *ngIf="f['title'].invalid && f['title'].touched">El título es requerido.</ion-note>
+          </ion-item>
+
+          <!-- Descripción -->
+          <ion-item fill="outline" class="ion-margin-bottom">
+            <ion-label position="floating">Descripción</ion-label>
+            <ion-textarea formControlName="description" rows="4" placeholder="Detalles del evento..."></ion-textarea>
+            <ion-note slot="error" *ngIf="f['description'].invalid && f['description'].touched">La descripción es requerida.</ion-note>
+          </ion-item>
+
+          <!-- Fecha -->
+          <ion-item fill="outline" class="ion-margin-bottom">
+            <ion-label position="stacked">Fecha</ion-label>
+            <ion-datetime-button datetime="datePicker"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="datePicker" presentation="date" formControlName="date"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+          <div class="time-row">
+            <!-- Hora Inicio -->
+            <ion-item fill="outline" class="half-width">
+              <ion-label position="stacked">Inicio</ion-label>
+              <ion-select formControlName="startTime" interface="popover" placeholder="00:00">
+                @for (slot of timeSlots; track slot) {
+                  <ion-select-option [value]="slot">{{ slot }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+
+            <!-- Hora Fin -->
+            <ion-item fill="outline" class="half-width">
+              <ion-label position="stacked">Término</ion-label>
+              <ion-select formControlName="endTime" interface="popover" placeholder="00:00">
+                @for (slot of timeSlots; track slot) {
+                  <ion-select-option [value]="slot">{{ slot }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </div>
+          
+          <ion-text color="danger" *ngIf="eventForm.errors?.['invalidTimeRange'] && (f['startTime'].touched || f['endTime'].touched)">
+            <p class="error-msg"><ion-icon name="alert-circle"></ion-icon> La hora de término debe ser mayor a la de inicio.</p>
+          </ion-text>
+
+        </ion-card-content>
+      </ion-card>
+
+      <div class="ion-padding-vertical">
+        <ion-button expand="block" type="submit" [disabled]="eventForm.invalid || isSaving()">
+          @if (isSaving()) {
+            <ion-spinner name="crescent"></ion-spinner> Guardando...
+          } @else {
+            Guardar Cambios
+          }
+        </ion-button>
+      </div>
+
+    </form>
+  }
+</ion-content>
