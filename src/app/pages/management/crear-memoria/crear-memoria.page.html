@@ -1,0 +1,163 @@
+<ion-content>
+  <div class="page-container">
+    
+    <div class="header-section">
+      <h1>Nueva Memoria de Proyecto</h1>
+      <p class="subtitle">Complete el formulario para añadir un proyecto al repositorio.</p>
+    </div>
+
+    <form [formGroup]="memoriaForm" class="management-form">
+      
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-title>Información General</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Título del Proyecto <span class="required">*</span></ion-label>
+            <ion-input formControlName="titulo" placeholder="Ingrese el título"></ion-input>
+          </ion-item>
+          
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Profesor Guía <span class="required">*</span></ion-label>
+            <ion-input formControlName="profesor" placeholder="Nombre del profesor"></ion-input>
+          </ion-item>
+
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Descripción <span class="required">*</span></ion-label>
+            <ion-textarea formControlName="descripcion" rows="4" placeholder="Resumen del proyecto..."></ion-textarea>
+          </ion-item>
+
+          <div class="form-row">
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Escuela <span class="required">*</span></ion-label>
+              <ion-select formControlName="escuela" (ionChange)="onEscuelaChange($event)" placeholder="Seleccione">
+                <ion-select-option *ngFor="let esc of escuelas" [value]="esc">{{ esc }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Carrera <span class="required">*</span></ion-label>
+              <ion-select formControlName="carrera" placeholder="Seleccione" [disabled]="!carrerasDisponibles.length">
+                <ion-select-option *ngFor="let car of carrerasDisponibles" [value]="car">{{ car }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <div class="form-row">
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Fecha Inicio <span class="required">*</span></ion-label>
+              <ion-input type="date" formControlName="fecha_inicio"></ion-input>
+            </ion-item>
+
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Fecha Término <span class="required">*</span></ion-label>
+              <ion-input type="date" formControlName="fecha_termino"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-row">
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Entidad Involucrada <span class="required">*</span></ion-label>
+              <ion-input formControlName="entidad_involucrada"></ion-input>
+            </ion-item>
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Tipo Entidad <span class="required">*</span></ion-label>
+              <ion-input formControlName="tipo_entidad"></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Tipo Memoria <span class="required">*</span></ion-label>
+            <ion-input formControlName="tipo_memoria"></ion-input>
+          </ion-item>
+
+          <div class="file-uploads">
+            <div class="file-group">
+              <label>Documento PDF <span class="required">*</span></label>
+              <div class="file-input-wrapper">
+                <input type="file" accept=".pdf" (change)="onFileSelected($event, 'pdf')" hidden #pdfInput>
+                <ion-button fill="outline" size="small" (click)="pdfInput.click()">Seleccionar PDF</ion-button>
+                <span class="file-name">{{ pdfFileName || 'Ningún archivo seleccionado' }}</span>
+              </div>
+            </div>
+
+            <div class="file-group">
+              <label>Imagen de Portada (Opcional)</label>
+              <div class="file-input-wrapper">
+                <input type="file" accept="image/*" (change)="onFileSelected($event, 'img')" hidden #imgInput>
+                <ion-button fill="outline" size="small" (click)="imgInput.click()">Seleccionar Imagen</ion-button>
+                <span class="file-name">{{ imgFileName || 'Ningún archivo seleccionado' }}</span>
+              </div>
+            </div>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <div class="integrantes-section">
+        <h3>Integrantes del Proyecto</h3>
+        
+        <div formArrayName="integrantes">
+          <div *ngFor="let integrante of integrantes.controls; let i = index" [formGroupName]="i">
+            <ion-card class="detail-card">
+              <ion-card-header>
+                <div class="detail-header">
+                  <ion-card-subtitle>Integrante #{{ i + 1 }}</ion-card-subtitle>
+                  <ion-button fill="clear" color="danger" (click)="eliminarIntegrante(i)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="form-row">
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">RUT <span class="required">*</span></ion-label>
+                    <ion-input formControlName="rut_estudiante" placeholder="12.345.678-9"></ion-input>
+                  </ion-item>
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">LinkedIn</ion-label>
+                    <ion-input formControlName="linkedin" placeholder="URL Perfil"></ion-input>
+                  </ion-item>
+                </div>
+                <div class="form-row">
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Nombre <span class="required">*</span></ion-label>
+                    <ion-input formControlName="nombre_estudiante"></ion-input>
+                  </ion-item>
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Segundo Nombre</ion-label>
+                    <ion-input formControlName="segundo_nombre_estudiante"></ion-input>
+                  </ion-item>
+                </div>
+                <div class="form-row">
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Apellido <span class="required">*</span></ion-label>
+                    <ion-input formControlName="apellido_estudiante"></ion-input>
+                  </ion-item>
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Segundo Apellido</ion-label>
+                    <ion-input formControlName="segundo_apellido_estudiante"></ion-input>
+                  </ion-item>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </div>
+
+        <div class="add-btn-wrapper">
+          <ion-button fill="outline" (click)="agregarIntegrante()" class="add-btn">
+            <ion-icon name="add-outline" slot="start"></ion-icon> Agregar Integrante
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <ion-button color="medium" fill="outline" (click)="confirmarCancelar()">Cancelar</ion-button>
+        <ion-button color="primary" fill="solid" (click)="confirmarGuardar()">Agregar Memoria</ion-button>
+      </div>
+
+    </form>
+  </div>
+</ion-content>

@@ -13,6 +13,11 @@ export interface Memory {
   profesor: string;
   descripcion: string;
   loc_disco: string; 
+  escuela: any;
+  carrera: any;
+  entidad_involucrada: string; 
+  tipo_entidad: string; 
+  tipo_memoria: string;
   fecha_inicio: string; 
   fecha_termino: string; 
   fecha_subida: string; 
@@ -70,7 +75,7 @@ export class ApiService {
     return this.http.patch(`${this.baseUrl}schedule/schedules/${id}/`, { status });
   }
 
-  // Memorias y proyectos
+  // Memorias y proyectos --------------------------------
   /** Obtiene la lista de todas las memorias/proyectos */
   getMemories(): Observable<Memory[]> {
     return this.http.get<Memory[]>(`${this.baseUrl3}memos/memories/`);
@@ -86,7 +91,38 @@ export class ApiService {
     return this.http.get(`${this.baseUrl3}memos/download/${id}/`, { responseType: 'blob' });
   }
 
-  // Eventos y actividades futuras
+  createMemory(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl3}memos/memories/`, formData);
+  }
+
+  /** Actualiza la memoria (sin detalles) */
+  updateMemory(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.baseUrl3}memos/memories/${id}/`, formData);
+  }
+
+  deleteMemory(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl3}memos/memories/${id}/`);
+  }
+
+  // Detalles de memoria -----------------------------
+
+  getMemoryDetails(idMemo: number): Observable<any> {
+    return this.http.get(`${this.baseUrl3}memos/memories/${idMemo}/detalles/`);
+  }
+
+  addMemoryDetail(idMemo: number, detailData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl3}memos/memories/${idMemo}/add_detalle/`, detailData);
+  }
+
+  updateMemoryDetail(idMemo: number, idDetalle: number, detailData: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl3}memos/memories/${idMemo}/update_detalle/${idDetalle}/`, detailData);
+  }
+
+  deleteMemoryDetail(idMemo: number, idDetalle: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl3}memos/memories/${idMemo}/delete_detalle/${idDetalle}/`);
+  }
+
+  // Eventos y actividades futuras -----------------------------
 
   getEvents(): Observable<any> {
     return this.http.get(`${this.baseUrl2}event/events/`);

@@ -1,0 +1,111 @@
+/* Variables extraídas de inicio-usuario */
+$brand-dark: #0f172a;
+$card-bg: #1e293b;
+$brand-blue: #2563eb;
+$text-light: #f8fafc;
+$text-grey: #94a3b8;
+
+:host {
+  ion-content {
+    --background: #{$brand-dark};
+  }
+}
+
+.page-container {
+  padding: 40px 20px 80px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header-section {
+  margin-bottom: 30px;
+  h1 { color: $text-light; font-weight: 800; font-size: 2rem; }
+  .subtitle { color: $text-grey; font-size: 1rem; }
+  .reload-btn { float: right; color: $brand-blue; }
+}
+
+/* Formularios y Inputs */
+.form-card, .detail-card {
+  background-color: $card-bg;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+ion-card-title {
+  color: white;
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 10px;
+}
+
+.custom-input {
+  --background: transparent;
+  --color: #{$text-light};
+  --border-color: #475569;
+  --placeholder-color: #64748b;
+  margin-bottom: 10px;
+
+  ion-label { color: #bfdbfe !important; font-weight: 600; font-size: 0.85rem; }
+  .required { color: #f87171; }
+  
+  ion-input, ion-textarea, ion-select {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding-left: 10px !important;
+    margin-top: 5px;
+    border: 1px solid #334155;
+  }
+}
+
+.form-row {
+  display: flex; gap: 15px; flex-wrap: wrap;
+  .half { flex: 1; min-width: 250px; }
+}
+
+/* File Uploads */
+.file-uploads {
+  display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;
+  
+  .file-group {
+    flex: 1;
+    label { display: block; color: #bfdbfe; font-size: 0.85rem; margin-bottom: 5px; }
+    .file-input-wrapper {
+      display: flex; align-items: center; gap: 10px;
+      .file-name { color: $text-grey; font-size: 0.8rem; font-style: italic; }
+    }
+  }
+}
+
+/* Tarjetas de Detalles */
+.integrantes-section h3 { color: $text-light; margin-bottom: 15px; border-left: 4px solid $brand-blue; padding-left: 10px; }
+
+.detail-header {
+  display: flex; justify-content: space-between; align-items: center;
+  ion-card-subtitle { color: #60a5fa; font-weight: 700; }
+}
+
+.add-btn-wrapper { text-align: center; margin: 20px 0; }
+.add-btn { --color: #60a5fa; --border-color: #60a5fa; }
+
+/* Botones de acción */
+.action-buttons, .global-actions {
+  display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;
+}
+
+.card-footer-actions {
+  padding: 10px 15px; display: flex; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.detail-actions {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;
+}
+
+/* Loader */
+.loading-container {
+  height: 100vh;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  background: $brand-dark;
+  color: $text-grey;
+}

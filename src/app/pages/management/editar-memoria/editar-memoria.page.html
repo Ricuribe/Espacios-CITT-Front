@@ -1,0 +1,178 @@
+<ion-content>
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando información del proyecto...</p>
+  </div>
+
+  <div class="page-container" *ngIf="!isLoading">
+    
+    <div class="header-section">
+      <ion-button fill="clear" (click)="loadData()" class="reload-btn">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+      <h1>Editar Memoria</h1>
+      <p class="subtitle">Gestione la información del proyecto y sus integrantes.</p>
+    </div>
+
+    <form [formGroup]="memoriaForm" class="management-form">
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-title>Detalles del Proyecto</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Título</ion-label>
+            <ion-input formControlName="titulo"></ion-input>
+          </ion-item>
+          
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Profesor Guía</ion-label>
+            <ion-input formControlName="profesor"></ion-input>
+          </ion-item>
+
+          <ion-item class="custom-input">
+            <ion-label position="stacked">Descripción</ion-label>
+            <ion-textarea formControlName="descripcion" rows="4"></ion-textarea>
+          </ion-item>
+
+          <div class="form-row">
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Escuela</ion-label>
+              <ion-select formControlName="escuela" (ionChange)="onEscuelaChange($event)">
+                <ion-select-option *ngFor="let esc of escuelas" [value]="esc">{{ esc }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Carrera</ion-label>
+              <ion-select formControlName="carrera">
+                <ion-select-option *ngFor="let car of carrerasDisponibles" [value]="car">{{ car }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <div class="form-row">
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Fecha Inicio</ion-label>
+              <ion-input type="date" formControlName="fecha_inicio"></ion-input>
+            </ion-item>
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Fecha Término</ion-label>
+              <ion-input type="date" formControlName="fecha_termino"></ion-input>
+            </ion-item>
+          </div>
+          
+           <div class="form-row">
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Entidad</ion-label>
+              <ion-input formControlName="entidad_involucrada"></ion-input>
+            </ion-item>
+            <ion-item class="custom-input half">
+              <ion-label position="stacked">Tipo Entidad</ion-label>
+              <ion-input formControlName="tipo_entidad"></ion-input>
+            </ion-item>
+          </div>
+           <ion-item class="custom-input">
+            <ion-label position="stacked">Tipo Memoria</ion-label>
+            <ion-input formControlName="tipo_memoria"></ion-input>
+          </ion-item>
+
+          <div class="file-uploads">
+            <div class="file-group">
+              <label>PDF (Solo subir para reemplazar)</label>
+              <div class="file-input-wrapper">
+                <input type="file" accept=".pdf" (change)="onFileSelected($event, 'pdf')" hidden #pdfInput>
+                <ion-button fill="outline" size="small" (click)="pdfInput.click()">Seleccionar Nuevo</ion-button>
+                <span class="file-name">{{ currentPdfName }}</span>
+              </div>
+            </div>
+
+            <div class="file-group">
+              <label>Imagen (Solo subir para reemplazar)</label>
+              <div class="file-input-wrapper">
+                <input type="file" accept="image/*" (change)="onFileSelected($event, 'img')" hidden #imgInput>
+                <ion-button fill="outline" size="small" (click)="imgInput.click()">Seleccionar Nueva</ion-button>
+                <span class="file-name">{{ currentImgName }}</span>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+        
+        <div class="card-footer-actions">
+           <ion-button color="primary" (click)="confirmarActualizarMemoria()">Modificar Memoria</ion-button>
+        </div>
+      </ion-card>
+    </form>
+
+    <div class="integrantes-section">
+      <h3>Integrantes Actuales</h3>
+      
+      <div *ngFor="let detalle of detallesExistentes" class="detalle-existente">
+        <form [formGroup]="detalle.form">
+          <ion-card class="detail-card existing">
+            <ion-card-content>
+              <div class="form-row">
+                 <ion-item class="custom-input half">
+                    <ion-label position="stacked">RUT</ion-label>
+                    <ion-input formControlName="rut_estudiante"></ion-input>
+                  </ion-item>
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">LinkedIn</ion-label>
+                    <ion-input formControlName="linkedin"></ion-input>
+                  </ion-item>
+              </div>
+              <div class="form-row">
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Nombre</ion-label>
+                    <ion-input formControlName="nombre_estudiante"></ion-input>
+                  </ion-item>
+                  <ion-item class="custom-input half">
+                    <ion-label position="stacked">Apellido</ion-label>
+                    <ion-input formControlName="apellido_estudiante"></ion-input>
+                  </ion-item>
+              </div>
+              <div class="detail-actions">
+                <ion-button size="small" fill="outline" color="danger" (click)="confirmarDeleteDetalle(detalle.id_detalle)">Eliminar</ion-button>
+                <ion-button size="small" fill="solid" color="secondary" (click)="confirmarUpdateDetalle(detalle)">Aplicar Cambios</ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </form>
+      </div>
+    </div>
+
+    <div class="nuevo-integrante-section">
+      <ion-button *ngIf="!mostrarFormNuevo" expand="block" fill="outline" (click)="mostrarFormNuevo = true">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon> Agregar Integrante
+      </ion-button>
+
+      <ion-card *ngIf="mostrarFormNuevo" class="detail-card new-entry">
+        <ion-card-header>
+          <ion-card-title>Nuevo Integrante</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="nuevoIntegranteForm">
+             <div class="form-row">
+                <ion-item class="custom-input half"><ion-label position="stacked">RUT</ion-label><ion-input formControlName="rut_estudiante"></ion-input></ion-item>
+                <ion-item class="custom-input half"><ion-label position="stacked">LinkedIn</ion-label><ion-input formControlName="linkedin"></ion-input></ion-item>
+             </div>
+             <div class="form-row">
+                <ion-item class="custom-input half"><ion-label position="stacked">Nombre</ion-label><ion-input formControlName="nombre_estudiante"></ion-input></ion-item>
+                <ion-item class="custom-input half"><ion-label position="stacked">Apellido</ion-label><ion-input formControlName="apellido_estudiante"></ion-input></ion-item>
+             </div>
+             <div class="detail-actions">
+               <ion-button size="small" color="medium" fill="clear" (click)="mostrarFormNuevo = false">Cancelar</ion-button>
+               <ion-button size="small" (click)="confirmarAgregarDetalle()">Agregar</ion-button>
+             </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="global-actions">
+      <ion-button color="light" fill="clear" routerLink="/proyectos">Volver a Proyectos</ion-button>
+      <ion-button color="danger" fill="outline" (click)="confirmarEliminarMemoria()">Eliminar Proyecto Completo</ion-button>
+    </div>
+
+  </div>
+</ion-content>
