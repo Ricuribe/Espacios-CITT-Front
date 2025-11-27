@@ -29,79 +29,87 @@ export interface Memory {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8001/api/'; // La URL base de tu API
+    private baseUrl = 'http://localhost:8000/api/'; // Api Gateway
+  
+  /* private baseUrl = 'http://localhost:8001/api/'; // Gestion
   private baseUrl2 = 'http://localhost:8003/api/'; //agendamiento
-  private baseUrl3 = 'http://localhost:8002/api/'; //repositorio 
+  private baseUrl3 = 'http://localhost:8002/api/'; //repositorio  */
+
   constructor(private http: HttpClient) { }
 
+  // URLS DE AUTENTICACION
+
+  register(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}auth/register/`, payload);
+  }
+
   login(payload: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}user/login/`, payload);
+    return this.http.post(`${this.baseUrl}auth/login/`, payload);
+  }
+
+  getUserProfile(): Observable<any> {
+    return this.http.get(`${this.baseUrl}auth/me/`);
+  }
+
+  /**
+   * Logout: envía el token de refresh al backend para invalidarlo.
+   * El backend debe aceptar un payload como { refresh: "..." }
+   */
+  logout(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}auth/logout/`, payload);
+  }
+
+  /** Refresh token - soporte para endpoints tipo SimpleJWT. */
+  refreshToken(payload: any): Observable<any> {
+    // Intentamos la ruta común 'auth/refresh/'
+    return this.http.post(`${this.baseUrl}auth/refresh/`, payload);
   }
 
   //Espacios y reservas
   getWorkspaces(): Observable<any> {
-    return this.http.get(`${this.baseUrl}manage/workspaces/`);
+    return this.http.get(`${this.baseUrl}manage/manage/workspaces/`);
   }
 
   getSchedules(): Observable<any> {
-    return this.http.get(`${this.baseUrl3}event/events/`);
+    return this.http.get(`${this.baseUrl}/event/event/events/`);
   }
 
   getWorkspaceById(id: number): Observable<Workspace> {
     // Asume que tu API responde con un objeto workspace en '.../workspaces/ID/'
-    return this.http.get<Workspace>(`${this.baseUrl}manage/workspaces/${id}/`);
-  }
-
-  /** Crea una nueva reserva (schedule) en el backend */
-  createSchedule(payload: any) {
-    return this.http.post(`${this.baseUrl2}schedule/schedules/`, payload);
+    return this.http.get<Workspace>(`${this.baseUrl}manage/manage/workspaces/${id}/`);
   }
 
   getSchedulesByUserId(userId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl2}event/events/user/${userId}/`);
-  }
-
-  /** Obtiene un schedule por su id */
-  getScheduleById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}schedule/schedules/${id}/`);
-  }
-
-  getScheduleDetailById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}schedule/schedules/${id}/details/`);
-  }
-
-  /** Actualiza campos de un schedule (patch). Usado para cambiar status, etc. */
-  updateScheduleStatus(id: number, status: number): Observable<any> {
-    return this.http.patch(`${this.baseUrl}schedule/schedules/${id}/`, { status });
+    return this.http.get(`${this.baseUrl}event/event/events/user/${userId}/`);
   }
 
   // Memorias y proyectos --------------------------------
   /** Obtiene la lista de todas las memorias/proyectos */
   getMemories(): Observable<Memory[]> {
-    return this.http.get<Memory[]>(`${this.baseUrl3}memos/memories/`);
+    return this.http.get<Memory[]>(`${this.baseUrl}memos/memos/memories/`);
   }
 
   /** Obtiene una memoria/proyecto por su ID + detalles*/
   getMemoryById(id: number): Observable<any> {
     // Asume que tu API de detalle es 'memos/{id}/'
-    return this.http.get<Memory>(`${this.baseUrl3}memos/${id}/`); 
+    return this.http.get<Memory>(`${this.baseUrl}memos/memos/${id}/`); 
   }
 
   downloadMemoryPdf(id: number): Observable<Blob> {
-    return this.http.get(`${this.baseUrl3}memos/download/${id}/`, { responseType: 'blob' });
+    return this.http.get(`${this.baseUrl}memos/memos/download/${id}/`, { responseType: 'blob' });
   }
 
   createMemory(formData: FormData): Observable<any> {
-    return this.http.post(`${this.baseUrl3}memos/memories/`, formData);
+    return this.http.post(`${this.baseUrl}memos/memos/memories/`, formData);
   }
 
   getOnlyMemoryById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl3}memos/memories/${id}/`);
+    return this.http.get(`${this.baseUrl}memos/memos/memories/${id}/`);
   }
 
   /** Actualiza la memoria (sin detalles) */
   updateMemoryPut(id: number, formData: FormData): Observable<any> {
-    return this.http.put(`${this.baseUrl3}memos/memories/${id}/`, formData);
+    return this.http.put(`${this.baseUrl}memos/memos/memories/${id}/`, formData);
   }
   /**
    * PATCH: Actualización parcial.
@@ -110,47 +118,47 @@ export class ApiService {
    * - Si 'data' es FormData -> Content-Type: multipart/form-data (con boundary)
    */
   updateMemoryPatch(id: number, data: any | FormData): Observable<any> {
-    return this.http.patch(`${this.baseUrl3}memos/memories/${id}/`, data);
+    return this.http.patch(`${this.baseUrl}memos/memos/memories/${id}/`, data);
   }
 
   deleteMemory(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl3}memos/memories/${id}/`);
+    return this.http.delete(`${this.baseUrl}memos/memos/memories/${id}/`);
   }
 
   // Detalles de memoria -----------------------------
 
   getMemoryDetails(idMemo: number): Observable<any> {
-    return this.http.get(`${this.baseUrl3}memos/memories/${idMemo}/detalles/`);
+    return this.http.get(`${this.baseUrl}memos/memos/memories/${idMemo}/detalles/`);
   }
 
   addMemoryDetail(idMemo: number, detailData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl3}memos/memories/${idMemo}/add_detalle/`, detailData);
+    return this.http.post(`${this.baseUrl}memos/memos/memories/${idMemo}/add_detalle/`, detailData);
   }
 
   updateMemoryDetail(idMemo: number, idDetalle: number, detailData: any): Observable<any> {
-    return this.http.patch(`${this.baseUrl3}memos/memories/${idMemo}/update_detalle/${idDetalle}/`, detailData);
+    return this.http.patch(`${this.baseUrl}memos/memos/memories/${idMemo}/update_detalle/${idDetalle}/`, detailData);
   }
 
   deleteMemoryDetail(idMemo: number, idDetalle: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl3}memos/memories/${idMemo}/delete_detalle/${idDetalle}/`);
+    return this.http.delete(`${this.baseUrl}memos/memos/memories/${idMemo}/delete_detalle/${idDetalle}/`);
   }
 
   // Eventos y actividades futuras -----------------------------
 
   getEvents(): Observable<any> {
-    return this.http.get(`${this.baseUrl2}event/events/`);
+    return this.http.get(`${this.baseUrl}event/event/events/`);
   }
 
   creeateEvent(payload: any): Observable<any> {
-    return this.http.post(`${this.baseUrl2}event/events/`, payload);
+    return this.http.post(`${this.baseUrl}event/event/events/`, payload);
   }
 
   getFutureActivities(): Observable<any> {
-    return this.http.get(`${this.baseUrl2}future-activity/`);
+    return this.http.get(`${this.baseUrl}event/future-activity/`);
   }
 
   getFutureActivitiesByWorkspaceId(allSpaces: boolean | false ,workspaceId: number[]): Observable<any> {
-    return this.http.get(`${this.baseUrl2}future-activity/?all=${allSpaces}&spaces=${workspaceId.join(',')}`);
+    return this.http.get(`${this.baseUrl}event/future-activity/?all=${allSpaces}&spaces=${workspaceId.join(',')}`);
   }
 
   /**
@@ -158,7 +166,7 @@ export class ApiService {
    * @param today Si es true, trae eventos del día. Si es false, trae futuros.
    */
   getScheduledEvents(today: boolean): Observable<any> {
-    return this.http.get(`${this.baseUrl2}scheduled-events/?today=${today}`);
+    return this.http.get(`${this.baseUrl}event/scheduled-events/?today=${today}`);
   }
 
   // GESTION DE EVENTOS -----------------------------
@@ -176,17 +184,17 @@ export class ApiService {
       });
     }
     // Asumiendo que la ruta en manage_service/urls.py es 'manage/events/'
-    return this.http.get(`${this.baseUrl}manage/events-manage/`, { params });
+    return this.http.get(`${this.baseUrl}manage/manage/events-manage/`, { params });
   }
 
   /** Obtiene un evento específico para edición */
   getManagementEventById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}manage/events-manage/${id}/`);
+    return this.http.get(`${this.baseUrl}manage/manage/events-manage/${id}/`);
   }
 
   /** Actualiza un evento completo (PUT) */
   updateManagementEvent(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}manage/events-manage/${id}/`, data);
+    return this.http.put(`${this.baseUrl}manage/manage/events-manage/${id}/`, data);
   }
 
   /** * Cambia el estado del evento (Confirmar/Rechazar).
@@ -197,9 +205,9 @@ export class ApiService {
     if (comment) {
       payload.admin_comment = comment; // Asumiendo que existe un campo para comentarios de admin
     }
-    return this.http.patch(`${this.baseUrl}manage/events-manage/${id}/`, payload);
+    return this.http.patch(`${this.baseUrl}manage/manage/events-manage/${id}/`, payload);
   }
-
+  
 }
 
 export { HttpClient };
