@@ -3,11 +3,11 @@
   <ion-toolbar class="main-toolbar">
     
     <!-- IZQUIERDA: Botón Menú (SOLO MÓVIL) -->
-    <ion-buttons slot="start" class="mobile-only-button">
+    <ion-buttons slot="start" class="mobile-only-button desktop-hidden">
       <ion-menu-button color="light" menu="menu-inicio"></ion-menu-button>
     </ion-buttons>
 
-    <!-- Logo (Posición dinámica por CSS) -->
+    <!-- Logo -->
     <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
 
     <!-- DERECHA: Info Usuario (Solo Desktop) -->
@@ -22,7 +22,7 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- MENÚ LATERAL (Azul Forzado) -->
+<!-- MENÚ LATERAL -->
 <ion-menu contentId="main-content-inicio" type="overlay" menuId="menu-inicio">
   <ion-header>
     <ion-toolbar>
@@ -60,15 +60,9 @@
     <div class="role-switcher">
       <ion-text color="medium"><p class="switcher-label">Simular Rol:</p></ion-text>
       <ion-segment [value]="userRole()" (ionChange)="cambiarRol($event)" mode="ios">
-        <ion-segment-button value="alumno">
-          <ion-label>Alumno</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="docente">
-          <ion-label>Docente</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="admin">
-          <ion-label>Admin</ion-label>
-        </ion-segment-button>
+        <ion-segment-button value="alumno"><ion-label>Alumno</ion-label></ion-segment-button>
+        <ion-segment-button value="docente"><ion-label>Docente</ion-label></ion-segment-button>
+        <ion-segment-button value="admin"><ion-label>Admin</ion-label></ion-segment-button>
       </ion-segment>
     </div>
 
@@ -142,26 +136,21 @@
               </ion-card-header>
             </ion-card>
           </ion-col>
-
-          <ion-col size="12" size-md="6" size-lg="4">
-            <ion-card button [routerLink]="['/gestionar-eventos']" class="menu-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-              <div class="card-content-wrapper">
-                <div class="icon-container">
-                  <ion-icon name="calendar-number-outline"></ion-icon>
-                </div>
-                <div class="text-container">
-                  <ion-card-title>Gestionar Eventos</ion-card-title>
-                  <p>Administrar solicitudes de talleres y eventos</p>
-                </div>
-                <div class="arrow-container">
-                  <ion-icon name="chevron-forward-outline"></ion-icon>
-                </div>
-              </div>
+          
+          <!-- BOTÓN DE GESTIONAR EVENTOS (DISEÑO UNIFICADO) -->
+          <ion-col size="12" size-sm="6" size-lg="4">
+            <ion-card class="action-card highlight-card" button [routerLink]="['/gestionar-eventos']">
+              <div class="card-icon info"><ion-icon name="calendar-number-outline"></ion-icon></div>
+              <ion-card-header>
+                <ion-card-title>Gestionar Eventos</ion-card-title>
+                <ion-card-subtitle>Administrar solicitudes</ion-card-subtitle>
+              </ion-card-header>
+              <!-- Icono de flecha para indicar acción -->
             </ion-card>
           </ion-col>
+
         </ion-row>
       </ng-container>
-      
 
       <!-- VISTA COMÚN (TODOS) -->
       <ion-row>

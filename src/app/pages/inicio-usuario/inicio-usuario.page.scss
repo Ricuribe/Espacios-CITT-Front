@@ -11,7 +11,7 @@ $text-grey: #94a3b8;
   }
 }
 
-/* --- HEADER PRINCIPAL --- */
+/* --- HEADER Y MENÚ --- */
 .main-header {
   position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
   
@@ -19,82 +19,77 @@ $text-grey: #94a3b8;
     --min-height: 100px; 
     --background: transparent; 
     --border-width: 0; 
-    /* Sin padding interno para que toque los bordes */
     padding: 0 20px; 
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
   }
 
-  /* LOGO MEJORADO */
   .logo { 
     height: 80px; 
     width: auto; 
     object-fit: contain; 
     cursor: pointer; 
-    display: block;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    display: block; 
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
+    transition: all 0.3s ease; 
   }
   
-  ion-menu-button { --color: #ffffff; font-size: 2rem; margin: 0; }
+  ion-menu-button { 
+    --color: #ffffff; 
+    font-size: 2rem; 
+    margin: 0; 
+  }
   
   .desktop-user-info {
     .user-chip {
-      --background: rgba(255,255,255,0.1); --color: white; font-weight: 600;
+      --background: rgba(255,255,255,0.1); 
+      --color: white; 
+      font-weight: 600;
       ion-avatar { width: 24px; height: 24px; margin-right: 8px; }
     }
   }
 }
 
-/* --- MEDIA QUERIES (POSICIONAMIENTO) --- */
+/* --- RESPONSIVE (BOTÓN HAMBURGUESA) --- */
+
+/* MÓVIL: Pantallas pequeñas (menos de 992px) */
 @media (max-width: 991px) { 
   .main-header { 
     .desktop-user-info { display: none; } 
+    /* MUESTRA botón hamburguesa */
     .mobile-only-button { display: block; margin-right: 0; } 
-    /* MÓVIL: Logo a la derecha */
+    /* Logo a la derecha */
     .logo { margin-left: auto; margin-right: 0; } 
   } 
 }
 
+/* DESKTOP: Pantallas grandes (más de 992px) */
 @media (min-width: 992px) { 
   .main-header { 
-    .mobile-only-button { display: none; } 
+    /* OCULTA botón hamburguesa FORZADO */
+    .mobile-only-button, .desktop-hidden { display: none !important; } 
+    
+    /* Mostramos info de usuario */
     .desktop-user-info { display: flex; align-items: center; }
-    /* DESKTOP: Logo a la izquierda */
+    
+    /* Logo a la izquierda */
     .logo { margin-right: auto; margin-left: 0; } 
   } 
 }
 
-/* --- MENÚ LATERAL AZUL (FORZADO) --- */
+/* --- MENÚ AZUL --- */
 ion-menu {
   --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
   background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
-
-  ion-header {
-    ion-toolbar { 
-      --background: transparent !important; background: transparent !important; 
-      --color: #ffffff; --border-width: 0; 
-      ion-title { 
-        font-weight: 700; font-size: 1.4rem; padding-inline-start: 20px; margin-top: 15px; 
-        border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 15px; 
-      }
-    }
-  }
-  
-  ion-content { --background: transparent !important; background: transparent !important; --color: #ffffff; }
-  ion-list { background: transparent !important; padding-top: 10px; padding-bottom: 0; }
-  
-  ion-item { 
-    --background: transparent !important; background: transparent !important; 
-    --color: #ffffff; --border-color: rgba(255,255,255,0.1); 
-    font-size: 1rem; font-weight: 500; --min-height: 55px; --padding-start: 20px;
-    
+  ion-header ion-toolbar { --background: transparent !important; background: transparent !important; --color: white; --border-width: 0; }
+  ion-content { --background: transparent !important; background: transparent !important; --color: white; }
+  ion-list { background: transparent !important; padding-top: 10px; }
+  ion-item { --background: transparent !important; background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); 
     ion-icon { color: #bfdbfe; margin-right: 15px; }
     &:hover { --background: rgba(255,255,255,0.1) !important; cursor: pointer; }
   }
-  
-  .logout-item { 
-    margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; 
-    ion-icon { color: #ffadad; } 
-  }
+  .logout-item { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; ion-icon { color: #ffadad; } }
 }
 
 /* DASHBOARD */
@@ -105,7 +100,6 @@ ion-menu {
   min-height: 90vh;
 }
 
-/* Role Switcher */
 .role-switcher {
   margin-bottom: 30px;
   background: rgba(255,255,255,0.05);
@@ -135,13 +129,26 @@ ion-menu {
   padding-left: 10px;
 }
 
-/* TARJETAS */
+/* TARJETAS UNIFICADAS */
 .action-card {
-  background-color: $card-bg; border-radius: 16px; margin: 0 0 20px 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: transform 0.2s, border-color 0.2s; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px;
+  background-color: $card-bg; 
+  border-radius: 16px; 
+  margin: 0 0 20px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s, border-color 0.2s; 
+  height: 100%; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  padding: 20px;
+  position: relative; /* Para posicionar la flecha absoluta si se quiere */
 
-  &:hover { transform: translateY(-5px); border-color: rgba(37, 99, 235, 0.5); background-color: lighten($card-bg, 5%); }
+  &:hover { 
+    transform: translateY(-5px); 
+    border-color: rgba(37, 99, 235, 0.5); 
+    background-color: lighten($card-bg, 5%); 
+  }
 
   .card-icon {
     width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 15px;
@@ -158,4 +165,5 @@ ion-menu {
     ion-card-title { color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
     ion-card-subtitle { color: $text-grey; font-size: 0.9rem; text-transform: none; }
   }
+
 }

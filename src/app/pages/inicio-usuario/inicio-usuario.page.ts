@@ -15,7 +15,8 @@ import {
   personCircleOutline, settingsOutline, logOutOutline, 
   documentTextOutline, calendarOutline, peopleOutline, 
   addCircleOutline, statsChartOutline, libraryOutline,
-  timeOutline, cloudUploadOutline, calendarNumberOutline
+  timeOutline, cloudUploadOutline, calendarNumberOutline,
+  chevronForwardOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -37,23 +38,20 @@ export class InicioUsuarioPage implements OnInit {
   private router = inject(Router);
   private menuCtrl = inject(MenuController);
 
-  // Estado del Usuario
   public userName = signal<string>('Rodrigo Alvarez');
-  
-  // Rol inicial (Cámbialo aquí o usa el selector en pantalla para probar)
-  public userRole = signal<'admin' | 'docente' | 'alumno'>('alumno'); 
+  public userRole = signal<'admin' | 'docente' | 'alumno'>('admin'); 
 
   constructor() {
     addIcons({ 
       personCircleOutline, settingsOutline, logOutOutline, 
       documentTextOutline, calendarOutline, peopleOutline, 
       addCircleOutline, statsChartOutline, libraryOutline,
-      timeOutline, cloudUploadOutline, calendarNumberOutline
+      timeOutline, cloudUploadOutline, calendarNumberOutline,
+      chevronForwardOutline
     });
   }
 
   ngOnInit() {
-    // Intenta recuperar datos de sesión si existen
     const storedName = sessionStorage.getItem('userFirstName');
     const storedLastName = sessionStorage.getItem('userLastName');
     
@@ -63,11 +61,9 @@ export class InicioUsuarioPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Activa el menú específico de esta página
     this.menuCtrl.enable(true, 'menu-inicio');
   }
 
-  // Método para cambiar de rol desde el selector (Solo pruebas)
   cambiarRol(event: any) {
     this.userRole.set(event.detail.value);
   }
