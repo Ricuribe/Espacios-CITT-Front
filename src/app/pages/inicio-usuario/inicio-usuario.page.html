@@ -55,28 +55,18 @@
 <ion-content [fullscreen]="true" id="main-content-inicio" class="dashboard-content">
   
   <div class="page-container">
-    
-    <!-- SELECTOR DE ROL (SOLO PARA PRUEBAS) -->
-    <div class="role-switcher">
-      <ion-text color="medium"><p class="switcher-label">Simular Rol:</p></ion-text>
-      <ion-segment [value]="userRole()" (ionChange)="cambiarRol($event)" mode="ios">
-        <ion-segment-button value="alumno"><ion-label>Alumno</ion-label></ion-segment-button>
-        <ion-segment-button value="docente"><ion-label>Docente</ion-label></ion-segment-button>
-        <ion-segment-button value="admin"><ion-label>Admin</ion-label></ion-segment-button>
-      </ion-segment>
-    </div>
 
     <!-- BIENVENIDA -->
     <div class="welcome-section">
       <h1>Bienvenido, {{ userName() }}</h1>
-      <p class="role-badge">Rol: {{ userRole() | titlecase }}</p>
+      <p class="role-badge">Rol: sample text</p>
       <p class="subtitle">¿Qué deseas gestionar hoy?</p>
     </div>
 
     <ion-grid class="dashboard-grid">
       
       <!-- VISTA ADMINISTRADOR -->
-      <ng-container *ngIf="userRole() === 'admin'">
+      <ng-container *ngIf="isAdmin">
         <ion-row>
           <ion-col size="12"><h3 class="section-title">Panel de Administración</h3></ion-col>
 
@@ -93,7 +83,7 @@
       </ng-container>
 
       <!-- VISTA DOCENTE / ADMIN -->
-      <ng-container *ngIf="userRole() === 'docente' || userRole() === 'admin'">
+      <ng-container *ngIf="canManageEvents">
         <ion-row>
           <ion-col size="12"><h3 class="section-title">Gestión Académica</h3></ion-col>
 
@@ -142,16 +132,6 @@
             <ion-card-header>
               <ion-card-title>Repositorio de Memorias</ion-card-title>
               <ion-card-subtitle>Buscar y descargar</ion-card-subtitle>
-            </ion-card-header>
-          </ion-card>
-        </ion-col>
-
-        <ion-col size="12" size-sm="6" size-lg="4">
-          <ion-card class="action-card" button [routerLink]="['/seleccion-espacio']">
-            <div class="card-icon success"><ion-icon name="time-outline"></ion-icon></div>
-            <ion-card-header>
-              <ion-card-title>Reservar Espacio</ion-card-title>
-              <ion-card-subtitle>Salas y mesas de estudio</ion-card-subtitle>
             </ion-card-header>
           </ion-card>
         </ion-col>

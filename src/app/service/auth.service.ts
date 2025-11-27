@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
-import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { ApiService } from './http-client'; // <--- Importamos ApiService
 
 export interface User {
   id: number;
@@ -11,25 +11,25 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
-  role?: string; // Agregamos el rol a la interfaz para tipado fuerte
+  role?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
-  private apiUrl = environment.apiUrl || 'http://localhost:8000/api';
-  // Solo necesitamos UNA fuente de verdad: el usuario actual
+  // Fuente de verdad del estado del usuario
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  // El rol y el estado de autenticación se derivan del usuario
+  // Derivados para Guards y Vistas
   public isAuthenticated$ = this.currentUserSubject.pipe(map(user => !!user));
   public currentRole$ = this.currentUserSubject.pipe(map(user => user?.role || ''));
 
-  constructor(private storageService: StorageService,
-    private http: HttpClient
+  constructor(
+    private storageService: StorageService,
+    private apiService: ApiService, // <--- Inyectamos ApiService en lugar de HttpClient
+    private router: Router
   ) {
     this.init();
   }
@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   /**
-   * Carga la sesión desde el almacenamiento local al iniciar la app.
+   * Carga la sesión desde Storage al iniciar la app
    */
   async loadSession() {
     const user = await this.storageService.get('user_session');
@@ -49,40 +49,93 @@ export class AuthService {
   }
 
   /**
-   * Login: Guarda sesión y actualiza el estado reactivo.
-   * NOTA: Aquí integramos tu lógica de roles basada en dominio.
+   * LOGIN: Guarda tokens y usuario en local.
+   * (La llamada a la API se hace en login.page.ts usando apiService.login, 
+   * luego se llama a este método para persistir los datos).
    */
-  async login(responseUser: User, tokens: { access: string, refresh: string }) {
-    // 1. Determinar rol (Lógica crítica de tu negocio actual)
-    const role = this.determineRoleFromEmail(responseUser.email);
-    const userWithRole = { ...responseUser, role };
+  async login(user: User, tokens: { access: string, refresh: string }) {
+    // 1. Calcular Rol (tu lógica de dominio)
+    const role = this.determineRoleFromEmail(user.email);
+    const userWithRole = { ...user, role };
 
-    // 2. Guardar en Storage (Persistencia)
+    // 2. Persistencia en Disco (Storage)
     await this.storageService.set('user_session', userWithRole);
     await this.storageService.setAccessToken(tokens.access);
     await this.storageService.set('refresh_token', tokens.refresh);
 
-    // 3. Actualizar estado en memoria (Reactividad)
+    // 3. Actualizar Estado en Memoria
     this.currentUserSubject.next(userWithRole);
   }
 
   /**
-   * Logout: Limpia todo.
+   * LOGOUT: Llama a la API para invalidar y limpia localmente.
    */
   async logout() {
-    await this.storageService.clearSession(); // Asume que este método limpia todo el storage relevante
-    this.currentUserSubject.next(null);
+    // 1. Recuperar refresh token
+    const refreshToken = await this.storageService.get('refresh_token');
+
+    if (refreshToken) {
+      // 2. Llamada al Backend usando ApiService (usa el path correcto de http-client)
+      this.apiService.logout(refreshToken)
+        .pipe(
+          finalize(() => {
+            // 3. Limpieza local SIEMPRE (éxito o error)
+            this.performLocalCleanup();
+          })
+        )
+        .subscribe({
+          next: () => console.log('Sesión cerrada en servidor'),
+          error: (err) => console.warn('Error en logout servidor', err)
+        });
+    } else {
+      this.performLocalCleanup();
+    }
   }
 
   /**
-   * Helper simple para obtener el valor actual del rol sin suscribirse (para lógica síncrona simple)
+   * Limpieza local y redirección
    */
-  getCurrentRoleValue(): string {
-    return this.currentUserSubject.value?.role || '';
+  private async performLocalCleanup() {
+    await this.storageService.clearSession(); // Tu método en StorageService
+    
+    // Limpieza de seguridad extra
+    sessionStorage.clear();
+    localStorage.clear();
+
+    this.currentUserSubject.next(null);
+    this.router.navigate(['/home'], { replaceUrl: true });
   }
 
-  // --- Lógica de Negocio Específica ---
+  /**
+   * REFRESH TOKEN: Usado por el Interceptor
+   */
+  refreshToken(): Observable<any> {
+    return from(this.storageService.get('refresh_token')).pipe(
+      switchMap(token => {
+        if (!token) {
+          return throwError(() => new Error('No refresh token'));
+        }
+        // Llamada usando ApiService (path correcto)
+        return this.apiService.refreshToken(token);
+      }),
+      tap(async (res) => {
+        await this.storageService.setAccessToken(res.access);
+        if (res.refresh) {
+          await this.storageService.set('refresh_token', res.refresh);
+        }
+      }),
+      catchError(err => {
+        this.logout();
+        return throwError(() => err);
+      })
+    );
+  }
 
+  getAccessToken(): Promise<string | null> {
+    return this.storageService.getAccessToken();
+  }
+
+  // --- Lógica de Negocio ---
   private determineRoleFromEmail(email: string): string {
     if (!email) return 'alumno';
     const lower = email.toLowerCase();
@@ -90,39 +143,4 @@ export class AuthService {
     if (lower.endsWith('@profesor.duoc.cl')) return 'coordinador';
     return 'alumno';
   }
-
-  refreshToken(): Observable<any> {
-    // 1. Obtenemos el refresh token del almacenamiento
-    return from(this.storageService.get('refresh_token')).pipe(
-      switchMap(token => {
-        if (!token) {
-          return throwError(() => new Error('No refresh token available'));
-        }
-        // 2. Llamamos al endpoint de Django (Simple JWT)
-        return this.http.post<any>(`${this.apiUrl}/token/refresh/`, { refresh: token });
-      }),
-      tap(async (response) => {
-        // 3. Si funciona, guardamos el nuevo Access Token
-        await this.storageService.setAccessToken(response.access);
-        // Si el backend rota el refresh token, guárdalo también
-        if (response.refresh) {
-          await this.storageService.set('refresh_token', response.refresh);
-        }
-      }),
-      catchError(error => {
-        // 4. Si falla (refresh expirado), cerramos sesión forzosamente
-        this.logout();
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Helper para obtener el token actual (para el interceptor)
-   */
-  getAccessToken(): Promise<string | null> {
-    return this.storageService.getAccessToken();
-  }
-
-
 }
