@@ -34,7 +34,9 @@ import {
   alertCircleOutline
 } from 'ionicons/icons';
 
-import { FooterComponent } from 'src/app/components/footer/footer.component';
+// Importamos el AuthService para gestionar la sesión real
+import { AuthService } from 'src/app/service/auth.service';
+import { FooterComponent } from "src/app/components/footer/footer.component";
 
 @Component({
   selector: 'app-login',
@@ -43,52 +45,53 @@ import { FooterComponent } from 'src/app/components/footer/footer.component';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     RouterLink,
-    IonContent, 
-    IonImg, 
-    IonItem, 
-    IonInput, 
-    IonButton, 
-    IonIcon, 
+    IonContent,
+    IonImg,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonIcon,
     IonText,
     IonHeader,
     IonToolbar,
     IonButtons,
     IonMenuButton,
-    FooterComponent 
-  ]
+    FooterComponent
+]
 })
 export class LoginPage {
+  loginForm: FormGroup;
+  passwordVisible: boolean = false;
 
-  private router = inject(Router);
-  private toastCtrl = inject(ToastController); 
-  private api = inject(ApiService);
-  private menuCtrl = inject(MenuController);
-
-  public loginForm: FormGroup;
-  public passwordVisible = false;
-
-  constructor() {
-    addIcons({ 
-      eyeOutline, eyeOffOutline, checkmarkCircleOutline, 
-      alertCircleOutline, arrowBackOutline, mailOutline, lockClosedOutline
-    });
-
+  constructor(
+    private api: ApiService, 
+    private router: Router, 
+    private toastController: ToastController,
+    private authService: AuthService // <--- Inyectamos el AuthService
+  ) {
     this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required]),
+      email: new FormControl('', [
+        Validators.required, 
+        Validators.email,
+        Validators.pattern('^[a-z0-9._%+-]+@duocuc\\.cl$|^[a-z0-9._%+-]+@profesor\\.duoc\\.cl$|^[a-z0-9._%+-]+@duoc\\.cl$')
+      ]),
+      password: new FormControl('', [Validators.required])
+    });
+
+    addIcons({ 
+      eyeOutline, 
+      eyeOffOutline, 
+      arrowBackOutline,
+      mailOutline, 
+      lockClosedOutline,
+      checkmarkCircleOutline,
+      alertCircleOutline
     });
   }
 
-  ionViewWillEnter() {
-    this.menuCtrl.enable(false); 
-  }
-
-  ionViewWillLeave() {
-    this.menuCtrl.enable(true, 'menu-home'); 
-  }
-
+  // Getters para facilitar el acceso en el HTML
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
 
@@ -100,34 +103,62 @@ export class LoginPage {
     this.loginForm.markAllAsTouched();
     if (this.loginForm.invalid) return;
 
-    const emailVal = this.loginForm.value.email;
-    const passVal = this.loginForm.value.password;
+    const credentials = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
 
-    this.api.login({ email: emailVal, password: passVal }).subscribe({
-      next: (res: any) => {
+    // 1. Llamamos a la API para verificar credenciales
+    this.api.login(credentials).subscribe({
+      next: async (res: any) => {
         try {
-          sessionStorage.setItem('userId', String(res.id ?? ''));
-          sessionStorage.setItem('userUsername', res.username ?? '');
-          sessionStorage.setItem('userEmail', res.email ?? '');
-          sessionStorage.setItem('userFirstName', res.first_name ?? '');
-          sessionStorage.setItem('userLastName', res.last_name ?? '');
-          if(res.role) sessionStorage.setItem('userRole', res.role);
+          // Validamos que la respuesta tenga lo necesario
+          if (res.access && res.refresh) {
+            
+            // 2. CONECTAMOS CON AUTHSERVICE
+            // Usamos el usuario que viene en la respuesta, o 'res' si viene plano
+            // y pasamos los tokens para que se guarden en Storage
+            const user = res.user || res; 
+            
+            await this.authService.login(user, { 
+              access: res.access, 
+              refresh: res.refresh 
+            });
+
+            this.mostrarAlerta('¡Bienvenido!', 'success');
+            
+            // 3. Redirección protegida
+            setTimeout(() => { 
+              this.router.navigate(['/inicio-usuario']); 
+            }, 1000);
+
+          } else {
+            console.error('Estructura de respuesta inválida:', res);
+            this.mostrarAlerta('Error: Respuesta del servidor incompleta', 'danger');
+          }
+
         } catch (e) {
-          console.error('Error storage', e);
+          console.error('Error guardando sesión:', e);
+          this.mostrarAlerta('Error al guardar la sesión.', 'danger');
         }
-        this.mostrarAlerta('¡Bienvenido!', 'success');
-        setTimeout(() => { this.router.navigate(['/inicio-usuario']); }, 1000);
       },
       error: (err: any) => {
         console.error('Login error:', err);
-        this.mostrarAlerta('Credenciales incorrectas.', 'danger');
+        // Mensaje amigable según el error
+        const msg = err.status === 401 
+          ? 'Credenciales incorrectas.' 
+          : 'Error de conexión con el servidor.';
+        this.mostrarAlerta(msg, 'danger');
       }
     });
   }
 
   async mostrarAlerta(message: string, color: 'success' | 'danger') {
-    const toast = await this.toastCtrl.create({
-      message, duration: 3000, position: 'top', color,
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      color: color,
+      position: 'bottom',
       icon: color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'
     });
     await toast.present();

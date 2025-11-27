@@ -2,6 +2,7 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FooterComponent } from 'src/app/components/footer/footer.component';
+import { AuthService } from 'src/app/service/auth.service';
 
 import {
   IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, IonImg, 
@@ -41,7 +42,11 @@ export class InicioUsuarioPage implements OnInit {
   public userName = signal<string>('Rodrigo Alvarez');
   public userRole = signal<'admin' | 'docente' | 'alumno'>('admin'); 
 
-  constructor() {
+// Banderas de permisos (Lógica acumulativa)
+  canManageEvents: boolean = false; // Para Coordinador y Admin
+  isAdmin: boolean = false;         // Solo para Admin
+
+  constructor(private authService: AuthService) {
     addIcons({ 
       personCircleOutline, settingsOutline, logOutOutline, 
       documentTextOutline, calendarOutline, peopleOutline, 
@@ -54,10 +59,22 @@ export class InicioUsuarioPage implements OnInit {
   ngOnInit() {
     const storedName = sessionStorage.getItem('userFirstName');
     const storedLastName = sessionStorage.getItem('userLastName');
+
+    // Nos suscribimos al rol. Si el usuario cambia (logout/login), esto se actualiza solo.
     
     if (storedName) {
       this.userName.set(`${storedName} ${storedLastName || ''}`);
     }
+  }
+
+  setPermissions(role: string) {
+    // 1. El nivel base (Alumno) no necesita bandera, siempre se muestra.
+    
+    // 2. Nivel Intermedio: Coordinador y Admin pueden gestionar eventos
+    this.canManageEvents = role === 'coordinator' || role === 'admin';
+
+    // 3. Nivel Superior: Solo Admin ve gestión de usuarios y estadísticas
+    this.isAdmin = role === 'admin';
   }
 
   ionViewWillEnter() {
