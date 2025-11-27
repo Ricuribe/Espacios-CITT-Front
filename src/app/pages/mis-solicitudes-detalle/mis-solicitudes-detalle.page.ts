@@ -59,7 +59,7 @@ export class MisSolicitudesDetallePage implements OnInit {
   private loadScheduleDetail(id: number) {
     this.isLoading = true;
     this.error = null;
-    this.apiService.getScheduleById(id).subscribe({
+    this.apiService.getSchedulesByUserId(id).subscribe({
       next: (data: any) => {
         this.schedule = data;
         // formato fecha y horas
@@ -90,7 +90,7 @@ export class MisSolicitudesDetallePage implements OnInit {
         }
 
         // Cargar detalle (team, attendees, project, description)
-        this.apiService.getScheduleDetailById(id).subscribe({
+        this.apiService.getSchedulesByUserId(id).subscribe({
           next: (details: any[]) => {
             this.scheduleDetails = Array.isArray(details) ? details : [];
           },
@@ -183,7 +183,7 @@ export class MisSolicitudesDetallePage implements OnInit {
     const id = this.schedule.id_schedule ?? this.schedule.id;
     if (!id) return;
     this.cancelling = true;
-    this.apiService.updateScheduleStatus(id, 6).subscribe({
+    this.apiService.updateManagementEvent(id, 6).subscribe({
       next: (res: any) => {
         this.cancelling = false;
         // actualizar estado local
