@@ -5,6 +5,8 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { provideHttpClient, withInterceptors, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './app/service/auth.interceptor';
 import { StorageService } from './app/service/storage.service';
+import { provideStorage, Storage } from '@ionic/storage-angular';
+import { PLATFORM_ID } from '@angular/core';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
@@ -15,6 +17,12 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
+    // Proveedor de Ionic Storage (necesario para inyectar `Storage`)
+    {
+      provide: Storage,
+      useFactory: (platformId: Object) => provideStorage(platformId, { name: '__espacios_db' }),
+      deps: [PLATFORM_ID]
+    },
     // Registra el interceptor de autenticación
     {
       provide: HTTP_INTERCEPTORS,
