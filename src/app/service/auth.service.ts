@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
-import { map, switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { map, switchMap, tap, catchError, finalize, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { ApiService } from './http-client'; // <--- Importamos ApiService
@@ -19,16 +19,21 @@ export interface User {
 })
 export class AuthService {
   // Fuente de verdad del estado del usuario
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private currentUserSubject = new BehaviorSubject<User | null | undefined>(undefined);
+  public currentUser$ = this.currentUserSubject.asObservable().pipe(
+    filter(user => user !== undefined) // Para que otros componentes también esperen
+  ) as Observable<User | null>;
 
   // Derivados para Guards y Vistas
-  public isAuthenticated$ = this.currentUserSubject.pipe(map(user => !!user));
+  public isAuthenticated$ = this.currentUserSubject.pipe(
+  filter(val => val !== undefined), // Espera hasta que deje de ser undefined
+  map(user => !!user)
+);
   public currentRole$ = this.currentUserSubject.pipe(map(user => user?.role || ''));
 
   constructor(
     private storageService: StorageService,
-    private apiService: ApiService, // <--- Inyectamos ApiService en lugar de HttpClient
+    private apiService: ApiService,
     private router: Router
   ) {
     this.init();
@@ -42,9 +47,13 @@ export class AuthService {
    * Carga la sesión desde Storage al iniciar la app
    */
   async loadSession() {
-    const user = await this.storageService.get('user_session');
+  // Aseguramos que storage esté listo
+    const user = await this.storageService.get('user_session'); 
+    
     if (user) {
-      this.currentUserSubject.next(user);
+      this.currentUserSubject.next(user); // Encontró usuario -> Pasa
+    } else {
+      this.currentUserSubject.next(null); // No encontró nada -> Rechaza explícitamente
     }
   }
 
