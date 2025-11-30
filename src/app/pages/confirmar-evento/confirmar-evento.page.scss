@@ -1,13 +1,135 @@
-/* Styles for confirmar-evento page */
+/* VARIABLES */
+$brand-blue: #3b82f6; 
+$brand-dark: #0b1121; 
+$card-bg: #111827;    
+$text-white: #ffffff;
+$text-grey: #9ca3af;
 
-/* Expand textarea for comfortable reading and scrolling */
-ion-textarea {
-  min-height: 200px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
+:host {
+  ion-content {
+    --background: #{$brand-dark};
+  }
 }
 
-/* Small responsiveness tweak */
-@media (max-width: 767px) {
-	/* Responsive adjustments */
+/* --- HEADER ESTÁNDAR --- */
+.main-header {
+  position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
+  .main-toolbar { --min-height: 100px; --background: transparent; --border-width: 0; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { height: 80px; width: auto; object-fit: contain; cursor: pointer; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  ion-menu-button { --color: #ffffff; font-size: 2rem; margin: 0; }
+  .desktop-only-buttons {
+    display: flex; align-items: center; gap: 10px;
+    ion-button { font-family: 'Inter', sans-serif; font-weight: 500; --border-radius: 50px;
+      &.btn-logout { --background: #ffffff; --color: #1e40af; font-weight: 700; margin-left: 10px; }
+    }
+    .user-chip { --background: rgba(255,255,255,0.1); --color: white; font-weight: 600; ion-avatar { width: 24px; height: 24px; margin-right: 8px; } }
+  }
+}
+
+/* RESPONSIVE HEADER */
+@media (max-width: 991px) { .main-header { .desktop-only-buttons { display: none; } .mobile-only-button { display: block; margin-right: 0; } .logo { margin-left: auto; margin-right: 0; } } }
+@media (min-width: 992px) { .main-header { .mobile-only-button { display: none; } .desktop-only-buttons { display: flex; align-items: center; } .logo { margin-right: auto; margin-left: 0; } } }
+
+/* --- MENÚ --- */
+ion-menu {
+  --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
+  ion-header ion-toolbar { --background: transparent !important; background: transparent !important; --color: white; --border-width: 0; }
+  ion-content { --background: transparent !important; background: transparent !important; --color: white; }
+  ion-list { background: transparent !important; padding-top: 10px; }
+  ion-item { --background: transparent !important; background: transparent !important; --color: white; --border-color: rgba(255,255,255,0.1); &:hover { --background: rgba(255,255,255,0.1) !important; } }
+  .logout-item { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; ion-icon { color: #ffadad; } }
+}
+
+/* --- CONTENIDO --- */
+.page-wrapper {
+  padding: 140px 20px 80px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 90vh;
+}
+
+.nav-header {
+  margin-bottom: 20px;
+  .back-btn { --color: #ffffff; --padding-start: 0; font-size: 1rem; ion-icon { font-size: 1.2rem; margin-right: 5px; } .back-text { font-weight: 600; letter-spacing: 1px; } }
+}
+
+.header-section {
+  text-align: center; margin-bottom: 40px;
+  h1 { color: $text-white; font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
+  p { color: $text-grey; font-size: 1.1rem; }
+}
+
+/* --- TARJETA DE RESUMEN --- */
+.summary-card {
+  background-color: $card-bg;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  margin: 0; /* Reset Ionic card margin */
+  overflow: hidden;
+
+  .card-top {
+    background: rgba(255,255,255,0.03);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    
+    .header-icon { color: $brand-blue; font-size: 1.5rem; margin-right: 10px; }
+    h2 { color: white; font-size: 1.2rem; font-weight: 700; margin: 0; }
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  /* GRID DE DATOS */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+    
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      ion-icon { color: $brand-blue; font-size: 1.4rem; margin-right: 10px; margin-top: 2px; }
+      label { display: block; color: $text-grey; font-size: 0.8rem; margin-bottom: 3px; }
+      span { color: white; font-size: 1rem; font-weight: 500; }
+      .highlight { color: $brand-blue; font-weight: 700; }
+    }
+  }
+
+  .divider { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0; }
+
+  /* INPUTS */
+  .custom-input {
+    --background: transparent;
+    --padding-start: 0;
+    margin-bottom: 15px;
+    
+    ion-label { color: $text-grey !important; font-size: 0.9rem; margin-bottom: 8px; }
+    ion-input, ion-textarea {
+      --background: rgba(0,0,0,0.2);
+      --color: white;
+      --padding-start: 15px;
+      --border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 1rem;
+      margin-top: 5px;
+    }
+    &.area ion-textarea { min-height: 80px; }
+  }
+
+  /* BOTÓN CONFIRMAR */
+  .action-area {
+    margin-top: 30px;
+    .btn-confirm-final {
+      width: 100%; background-color: #ffffff; color: #0f172a; border: none; border-radius: 8px; padding: 16px;
+      font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s;
+      &:disabled { opacity: 0.6; cursor: not-allowed; }
+      &:hover:not(:disabled) { opacity: 0.9; }
+    }
+  }
 }

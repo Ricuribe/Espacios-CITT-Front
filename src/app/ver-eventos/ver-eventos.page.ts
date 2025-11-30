@@ -10,7 +10,7 @@ import { addIcons } from 'ionicons';
 import { 
   calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline,
   personCircleOutline, logOutOutline, libraryOutline, folderOpenOutline, homeOutline,
-  alertCircleOutline
+  alertCircleOutline, logInOutline
 } from 'ionicons/icons';
 import { FooterComponent } from '../components/footer/footer.component';
 import { ApiService } from 'src/app/service/http-client'; 
@@ -41,14 +41,14 @@ export class VerEventosPage implements OnInit {
   public eventos = signal<any[]>([]);
   public isLoading = signal<boolean>(false);
   
-  // CAMBIO AQUÍ: Inicializamos en 'true' para que "Eventos de Hoy" sea el default
+  // Filtro: true = Hoy, false = Próximos
   public filterToday = signal<boolean>(true); 
 
   constructor() {
     addIcons({ 
       calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline,
       personCircleOutline, logOutOutline, libraryOutline, folderOpenOutline, homeOutline,
-      alertCircleOutline
+      alertCircleOutline, logInOutline
     });
   }
 
@@ -59,12 +59,16 @@ export class VerEventosPage implements OnInit {
   ionViewWillEnter() {
     this.menuCtrl.enable(true, 'menu-eventos');
     this.checkLogin();
-    this.loadEvents(); // Cargar eventos al entrar
+    this.loadEvents(); 
   }
 
   checkLogin() {
+    // Validamos si existe userId O si existe un token de acceso
     const userId = sessionStorage.getItem('userId');
-    this.isLoggedIn.set(!!userId);
+    const token = sessionStorage.getItem('token') || sessionStorage.getItem('access'); 
+    
+    // Si hay cualquiera de los dos, asumimos que está logueado
+    this.isLoggedIn.set(!!(userId || token));
     
     if (userId) {
       const name = sessionStorage.getItem('userFirstName');
@@ -81,29 +85,35 @@ export class VerEventosPage implements OnInit {
   }
 
   /**
-   * Cambia el filtro entre 'hoy' y 'futuros'
+   * FUNCIÓN NUEVA: Controla a dónde vuelve el usuario
    */
+  irAtras() {
+    if (this.isLoggedIn()) {
+      // Si está logueado, vuelve a su panel de usuario
+      this.router.navigate(['/inicio-usuario']);
+    } else {
+      // Si NO está logueado, vuelve a la portada pública
+      this.router.navigate(['/home']);
+    }
+  }
+
   segmentChanged(event: any) {
     const value = event.detail.value;
-    // Si el valor es 'today', filterToday pasa a true. Si es 'future', pasa a false.
     this.filterToday.set(value === 'today');
     this.loadEvents();
   }
 
   loadEvents() {
     this.isLoading.set(true);
-    // Llamada al endpoint con el parámetro today (true/false)
     this.apiService.getScheduledEvents(this.filterToday()).subscribe({
       next: (response: any) => {
         if (response && response.events) {
-          // Mapeamos la respuesta del backend al formato que usa la vista
           const mappedEvents = response.events.map((ev: any) => ({
             id: ev.id_event || ev.id,
             titulo: ev.title || 'Sin título',
             fecha: this.formatDate(ev.start_datetime),
             hora: this.formatTimeRange(ev.start_datetime, ev.end_datetime),
             descripcion: ev.description || 'Sin descripción disponible.',
-            // Si el backend no devuelve imagen, usamos una por defecto o aleatoria
             imagen: ev.image || this.getRandomImage(), 
             categoria: ev.event_type_label || 'Evento'
           }));
@@ -120,8 +130,6 @@ export class VerEventosPage implements OnInit {
       }
     });
   }
-
-  // --- Utilidades de Formato ---
 
   private formatDate(isoString: string): string {
     if (!isoString) return '';
@@ -141,9 +149,9 @@ export class VerEventosPage implements OnInit {
 
   private getRandomImage(): string {
     const images = [
-      'https://images.unsplash.com/photo-1713918927999-6c1ddf8ffc84?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      'https://images.unsplash.com/photo-1603356033288-acfcb54801e6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cm9iJUMzJUIzdGljYXxlbnwwfDJ8MHx8fDA%3D',
-      'https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      'https://images.unsplash.com/photo-1713918927999-6c1ddf8ffc84?q=80&w=880&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1603356033288-acfcb54801e6?w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=880&auto=format&fit=crop'
     ];
     return images[Math.floor(Math.random() * images.length)];
   }

@@ -1,137 +1,142 @@
-
+<!-- HEADER -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-
-    <!-- CAMBIO 1.A: Añadido el botón de hamburguesa -->
+    <!-- Botón Menú Móvil -->
     <ion-buttons slot="start" class="mobile-only-button">
-      <ion-menu-button color="light"></ion-menu-button>
+      <ion-menu-button color="light" menu="menu-confirmar"></ion-menu-button>
     </ion-buttons>
 
-    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo"></ion-img>
-    
-    <!-- CAMBIO 1.B: Añadida la clase "desktop-only-buttons" -->
+    <!-- Logo -->
+    <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
+
+    <!-- Botones Escritorio -->
     <ion-buttons slot="end" class="desktop-only-buttons">
-      <ion-button fill="clear" color="light">Recursos</ion-button>
-      <ion-button fill="clear" color="light">Memorias</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
+      <ion-chip class="user-chip">
+        <ion-avatar>
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
+        </ion-avatar>
+        <ion-label>{{ userName }}</ion-label>
+      </ion-chip>
+      <ion-button class="btn-logout" fill="solid" color="light" (click)="logout()">Cerrar Sesión</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-
-<ion-menu contentId="confirmar-solicitud-content" type="overlay">
+<!-- MENÚ LATERAL -->
+<ion-menu contentId="confirmar-content" type="overlay" menuId="menu-confirmar">
   <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-list>
-      <!-- Aquí pones los botones que quieres en el menú -->
-      <ion-item button [routerLink]="['/inicio-usuario']">
-        <ion-label>Inicio</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/recursos']">
-        <ion-label>Recursos</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/memorias']">
-        <ion-label>Memorias</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/home']">
-        <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
+    <ion-list lines="none">
+      <ion-item button [routerLink]="['/inicio-usuario']"><ion-icon name="home-outline" slot="start"></ion-icon><ion-label>Inicio</ion-label></ion-item>
+      <ion-item button [routerLink]="['/recursos']"><ion-icon name="folder-open-outline" slot="start"></ion-icon><ion-label>Recursos</ion-label></ion-item>
+      <ion-item button [routerLink]="['/proyectos']"><ion-icon name="library-outline" slot="start"></ion-icon><ion-label>Memorias</ion-label></ion-item>
+      <ion-item button (click)="logout()" class="logout-item"><ion-icon name="log-out-outline" slot="start"></ion-icon><ion-label>Cerrar Sesión</ion-label></ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<ion-content [fullscreen]="true" id="confirmar-solicitud-content">
-  <ion-grid class="main-content-grid">
-    <ion-row>
-      <ion-col>
-        <ion-button fill="outline" color="medium" class="btn-volver" routerDirection="back">
-          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          Volver
-        </ion-button>
-      </ion-col>
-    </ion-row>
-    
-    <ion-row class="ion-justify-content-center">
-      <ion-col size="12" size-lg="10">
-        
-        <h1 class="page-title">Confirmar Evento</h1>
-
-        <ion-row>
-          <div *ngIf="isLoading" class="ion-text-center ion-padding">
-            <ion-spinner name="crescent"></ion-spinner>
-            <p>Enviando evento...</p>
-          </div>
+<!-- CONTENIDO -->
+<ion-content [fullscreen]="true" id="confirmar-content" class="confirmar-content">
   
-          <div *ngIf="error" class="ion-text-center ion-padding">
-            <ion-text color="danger">
-              <p>Error al crear el evento.</p>
-              <p><small>{{ error.message }}</small></p>
-            </ion-text>
+  <div class="page-wrapper">
+    
+    <!-- Botón Volver -->
+    <div class="nav-header">
+      <ion-button fill="clear" class="back-btn" (click)="volver()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+        <span class="back-text">VOLVER</span>
+      </ion-button>
+    </div>
+
+    <div class="header-section">
+      <h1>Confirmar Reserva</h1>
+      <p>Revisa los detalles antes de finalizar.</p>
+    </div>
+
+    <div class="content-card-wrapper">
+      
+      <!-- TARJETA PRINCIPAL (ESTILO MOCKUP) -->
+      <ion-card class="summary-card">
+        
+        <!-- Encabezado Tarjeta -->
+        <div class="card-top">
+          <ion-icon name="document-text-outline" class="header-icon"></ion-icon>
+          <h2>Resumen del Evento</h2>
+        </div>
+
+        <div class="card-body">
+          
+          <!-- DATOS DE FECHA (SOLO LECTURA) -->
+          <div class="info-grid">
+            <div class="info-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <div>
+                <label>Fecha</label>
+                <span>{{ reserva?.fecha | date:'fullDate' }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <ion-icon name="time-outline"></ion-icon>
+              <div>
+                <label>Hora Inicio</label>
+                <span class="highlight">{{ reserva?.hora }} hrs</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <ion-icon name="time-outline"></ion-icon>
+              <div>
+                <label>Duración</label>
+                <span>{{ reserva?.duracion }} min</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <ion-icon name="people-outline"></ion-icon>
+              <div>
+                <label>Espacios</label>
+                <span>{{ reserva?.espacios?.length || 0 }} seleccionados</span>
+              </div>
+            </div>
           </div>
-        </ion-row>
 
-        <ion-row class="form-section">
-          <ion-col>
-            <h2>Formulario de evento</h2>
+          <hr class="divider">
 
-            <ion-list>
-              <ion-item>
-                <ion-label position="stacked">Título</ion-label>
-                <ion-input [(ngModel)]="form.title" name="title" placeholder="Ej: Charla de Mircosoft Azure"></ion-input>
-              </ion-item>
+          <!-- FORMULARIO FINAL (INPUTS) -->
+          <div class="form-container">
+            <ion-item class="custom-input">
+              <ion-label position="stacked">Título del Evento</ion-label>
+              <ion-input [(ngModel)]="form.title" placeholder="Ej: Reunión de equipo"></ion-input>
+            </ion-item>
 
-              <ion-item>
-                <ion-label position="stacked">Descripción</ion-label>
-                <ion-textarea [(ngModel)]="form.description" name="description" placeholder="Breve descripción del evento" rows="6"></ion-textarea>
-              </ion-item>
+            <ion-item class="custom-input">
+              <ion-label position="stacked">Asistentes estimados</ion-label>
+              <ion-input type="number" [(ngModel)]="form.attendees" placeholder="Ej: 4"></ion-input>
+            </ion-item>
 
-              <ion-item>
-                <ion-label position="stacked">Número de Asistentes</ion-label>
-                <ion-input [(ngModel)]="form.attendees" name="attendees" type="number" [min]="1" [max]="maxAttendees" placeholder="Ej: 20"></ion-input>
-                <small *ngIf="maxAttendees > 0" slot="helper">Máximo: {{ maxAttendees }} asistentes</small>
-              </ion-item>
+            <ion-item class="custom-input area">
+              <ion-label position="stacked">Descripción (Opcional)</ion-label>
+              <ion-textarea [(ngModel)]="form.description" rows="3" placeholder="Detalles adicionales..."></ion-textarea>
+            </ion-item>
+          </div>
 
-              <!-- Mostrar datos de agendamiento ya seleccionados (solo lectura) -->
-              <ion-item *ngIf="reserva">
-                <ion-label>
-                  <h3>Datos de agendamiento</h3>
-                  <p>Inicio: {{ form.start_datetime | date:'yyyy-MM-dd HH:mm' }}</p>
-                  <p>Término: {{ form.end_datetime | date:'yyyy-MM-dd HH:mm' }}</p>
-                  <small>Estos datos fueron elegidos en la página anterior y no son editables aquí.</small>
-                </ion-label>
-              </ion-item>
+          <!-- BOTÓN CONFIRMAR -->
+          <div class="action-area">
+            <button class="btn-confirm-final" (click)="confirmarFinal()" [disabled]="isLoading">
+              <span *ngIf="!isLoading">CONFIRMAR Y FINALIZAR</span>
+              <span *ngIf="isLoading">PROCESANDO...</span>
+            </button>
+          </div>
 
-              <ion-item>
-                <ion-label>Crear invitación</ion-label>
-                <ion-toggle [(ngModel)]="form.create_invitation" name="create_invitation"></ion-toggle>
-              </ion-item>
+        </div>
+      </ion-card>
 
-              <!-- Mensaje de validación del formulario -->
-              <ion-item *ngIf="formError">
-                <ion-text color="danger">
-                  <p>{{ formError }}</p>
-                </ion-text>
-              </ion-item>
+    </div>
 
-            </ion-list>
-          </ion-col>
-        </ion-row>
+  </div>
 
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" size="large" class="btn-solicitar" color="primary" (click)="submitSolicitud()" [disabled]="isLoading || !isFormValid()">
-              <span *ngIf="!isLoading">Crear Evento</span>
-              <span *ngIf="isLoading">Enviando...</span>
-            </ion-button>
-          </ion-col>
-        </ion-row>
+  <app-footer></app-footer>
 
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>
-

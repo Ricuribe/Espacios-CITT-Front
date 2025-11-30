@@ -31,7 +31,7 @@
   </ion-header>
   <ion-content>
     <ion-list lines="none">
-      <ion-item button [routerLink]="isLoggedIn() ? ['/inicio-usuario'] : ['/home']">
+      <ion-item button (click)="irAtras()">
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label>{{ isLoggedIn() ? 'Inicio' : 'Home' }}</ion-label>
       </ion-item>
@@ -70,7 +70,7 @@
   <div class="page-wrapper">
     
     <div class="nav-header">
-      <ion-button [routerLink]="isLoggedIn() ? ['/inicio-usuario'] : ['/home']" fill="clear" class="back-btn">
+      <ion-button (click)="irAtras()" fill="clear" class="back-btn">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
         <span class="back-text">Volver</span>
       </ion-button>

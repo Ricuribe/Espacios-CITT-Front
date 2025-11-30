@@ -1,30 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonToggle,
-  IonLabel,
-  IonItem,
-  IonSpinner,
-  IonText,
-  IonIcon,
-  ModalController
+  IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonGrid, IonRow, IonCol,
+  IonCard, IonToggle, IonLabel, IonItem, IonSpinner, IonText, IonIcon,
+  ModalController, IonButtons, IonMenuButton, IonImg, IonMenu, IonList // Agregados para Header/Menu
 } from '@ionic/angular/standalone';
 import { ApiService } from 'src/app/service/http-client';
 import { Workspace } from 'src/app/interfaces/workspace';
 import { addIcons } from 'ionicons';
-import { informationCircleOutline } from 'ionicons/icons';
+import { 
+  informationCircle, 
+  arrowForwardOutline, 
+  personCircleOutline, 
+  libraryOutline, 
+  calendarOutline, 
+  logOutOutline 
+} from 'ionicons/icons';
 import { WorkspaceDetailsComponent } from './workspace-details.component';
+import { FooterComponent } from 'src/app/components/footer/footer.component'; // Importamos Footer
 
 interface ZoneGrid {
   zone: string;
@@ -38,22 +33,18 @@ interface ZoneGrid {
   styleUrls: ['./seleccion-espacio.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButton,
-    IonToggle,
-    IonLabel,
-    IonItem,
-    IonSpinner,
-    IonText,
-    IonIcon
+    CommonModule, FormsModule, RouterLink, FooterComponent,
+    IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonToggle, 
+    IonLabel, IonItem, IonSpinner, IonText, IonIcon, IonGrid, IonRow, IonCol,
+    IonButtons, IonMenuButton, IonImg, IonMenu, IonList // Componentes de UI
   ]
 })
 export class SeleccionEspacioPage implements OnInit {
+  
+  private apiService = inject(ApiService);
+  private router = inject(Router);
+  private modalController = inject(ModalController);
+
   public workspaces: Workspace[] = [];
   public selectedWorkspaces: Set<number> = new Set();
   public isLoading = true;
@@ -70,12 +61,12 @@ export class SeleccionEspacioPage implements OnInit {
     { zone: 'SO', displayName: 'Sudoeste' }
   ];
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router,
-    private modalController: ModalController
-  ) {
-    addIcons({ informationCircleOutline });
+  constructor() {
+    // Icono para "Ver Detalles" (la "i" del círculo)
+    addIcons({ 
+      informationCircle, arrowForwardOutline,
+      personCircleOutline, libraryOutline, calendarOutline, logOutOutline 
+    });
   }
 
   ngOnInit() {
@@ -112,8 +103,6 @@ export class SeleccionEspacioPage implements OnInit {
     } else {
       this.selectedWorkspaces.add(workspaceId);
     }
-
-    // Si se deselecciona manualmente, apagar el switch
     this.updateSelectAllState();
   }
 
@@ -128,7 +117,6 @@ export class SeleccionEspacioPage implements OnInit {
     this.selectedWorkspaces.clear();
 
     if (isChecked) {
-      // Seleccionar todos los enabled
       const enabledWorkspaces = this.workspaces.filter(w => w.enabled);
       enabledWorkspaces.forEach(w => this.selectedWorkspaces.add(w.id_workspace));
     }
@@ -145,27 +133,20 @@ export class SeleccionEspacioPage implements OnInit {
   async showWorkspaceDetails(workspace: Workspace | undefined) {
     if (!workspace) return;
 
-    // Request full detail from API then open modal component
     this.apiService.getWorkspaceById(workspace.id_workspace).subscribe({
       next: async (detailed: Workspace) => {
         const modal = await this.modalController.create({
           component: WorkspaceDetailsComponent,
           componentProps: { workspace: detailed }
         });
-
         await modal.present();
       },
-      error: (err) => {
-        console.error('Error fetching workspace details:', err);
-      }
+      error: (err) => console.error('Error fetching workspace details:', err)
     });
   }
 
   confirmarSeleccion() {
-    if (this.selectedWorkspaces.size === 0) {
-      return;
-    }
-
+    if (this.selectedWorkspaces.size === 0) return;
 
     const selectedIds = Array.from(this.selectedWorkspaces);
     this.router.navigate(['/evento-agendar'], {
@@ -179,7 +160,9 @@ export class SeleccionEspacioPage implements OnInit {
   isConfirmDisabled(): boolean {
     return this.selectedWorkspaces.size === 0;
   }
+  
+  logout() {
+    sessionStorage.clear();
+    this.router.navigate(['/home']);
+  }
 }
-
-
-

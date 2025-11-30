@@ -1,164 +1,133 @@
+<!-- HEADER -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-    <!-- 
-      AÑADIDO: Botón de Hamburguesa (para móvil)
-    -->
+    <!-- Botón Menú Móvil -->
     <ion-buttons slot="start" class="mobile-only-button">
-      <ion-menu-button color="light"></ion-menu-button>
+      <ion-menu-button color="light" menu="menu-agendar"></ion-menu-button>
     </ion-buttons>
 
-    <ion-img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo"></ion-img>
+    <!-- Logo -->
+    <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
 
-
+    <!-- Botones Escritorio -->
     <ion-buttons slot="end" class="desktop-only-buttons">
-      <ion-button fill="clear" color="light">Recursos</ion-button>
-      <ion-button fill="clear" color="light">Memorias</ion-button>
-      <ion-button
-        class="btn-logout"
-        fill="solid"
-        color="light"
-        [routerLink]="['/home']"
-        >Cerrar sesion</ion-button
-      >
+      <ion-button fill="clear" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light" (click)="logout()">Cerrar Sesión</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-
-<ion-menu contentId="agendar-hora-content" type="overlay">
+<!-- MENÚ LATERAL -->
+<ion-menu contentId="agendar-content" type="overlay" menuId="menu-agendar">
   <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-list>
-      <ion-item button>
-        <ion-label>Recursos</ion-label>
-      </ion-item>
-      <ion-item button>
-        <ion-label>Memorias</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/home']">
-        <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
+    <ion-list lines="none">
+      <ion-item button [routerLink]="['/inicio-usuario']"><ion-icon name="home-outline" slot="start"></ion-icon><ion-label>Inicio</ion-label></ion-item>
+      <ion-item button [routerLink]="['/recursos']"><ion-icon name="folder-open-outline" slot="start"></ion-icon><ion-label>Recursos</ion-label></ion-item>
+      <ion-item button [routerLink]="['/proyectos']"><ion-icon name="library-outline" slot="start"></ion-icon><ion-label>Memorias</ion-label></ion-item>
+      <ion-item button (click)="logout()" class="logout-item"><ion-icon name="log-out-outline" slot="start"></ion-icon><ion-label>Cerrar Sesión</ion-label></ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
+<!-- CONTENIDO -->
+<ion-content [fullscreen]="true" id="agendar-content" class="agendar-content">
+  
+  <div class="page-wrapper">
+    
+    <!-- Botón Volver -->
+    <div class="nav-header">
+      <ion-button [routerLink]="['/seleccion-espacio']" fill="clear" class="back-btn">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+        <span class="back-text">VOLVER</span>
+      </ion-button>
+    </div>
 
-<ion-content [fullscreen]="true" id="agendar-hora-content">
-  <ion-grid class="main-content-grid">
-    <ion-row>
-      <ion-col>
-        <ion-button
-          fill="outline"
-          color="medium"
-          class="btn-volver"
-          [routerLink]="['/inicio-usuario']"
-          routerDirection="back"
-        >
-          <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-          Volver
-        </ion-button>
-      </ion-col>
-    </ion-row>
+    <div class="header-section">
+      <h1>Selecciona el horario</h1>
+    </div>
 
-    <ion-row>
-      <ion-col class="ion-text-center">
-        <h1>Selecciona el horario</h1>
-      </ion-col>
-    </ion-row>
-
-    <ion-row class="ion-justify-content-center">
-      <ion-col size="12" size-lg="8">
-        <!-- Contenido del calendario -->
-        <div class="content-box">
-          <ion-label>1. Elige una fecha</ion-label>
-          <ion-datetime
+    <div class="steps-container">
+      
+      <!-- PASO 1: FECHA -->
+      <div class="step-card">
+        <h3>1. Elige una fecha</h3>
+        <div class="calendar-wrapper">
+          <ion-datetime 
             presentation="date"
-            [showDefaultButtons]="false"
-            [min]="todayISO"
+            [value]="selectedDate()" 
+            [min]="todayISO" 
             [max]="maxDateISO"
-            [value]="selectedDate()"
-            [disabled]="loadingSlots()"
             [isDateEnabled]="isDateSelectable"
             (ionChange)="handleDateChange($event)"
-          ></ion-datetime>
+            color="primary"
+            mode="md">
+          </ion-datetime>
+        </div>
+      </div>
+
+      <!-- PASO 2: DURACIÓN -->
+      <div class="step-card">
+        <h3>2. Elige la duración</h3>
+        <div class="range-wrapper">
+          <div class="range-labels">
+            <span>30 min</span>
+            <span>{{ selectedDuration() }} min</span>
+            <span>120 min</span>
+          </div>
+          <ion-range 
+            [min]="30" [max]="120" [step]="30" [snaps]="true" [ticks]="true"
+            [value]="selectedDuration()" 
+            (ionChange)="handleDurationChange($event)"
+            color="primary">
+          </ion-range>
+        </div>
+      </div>
+
+      <!-- PASO 3: HORA -->
+      <div class="step-card">
+        <h3>3. Elige una hora</h3>
+        
+        <div *ngIf="loadingSlots()" class="slots-loader">
+          <ion-skeleton-text animated style="width: 100px; height: 40px; border-radius: 8px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100px; height: 40px; border-radius: 8px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100px; height: 40px; border-radius: 8px;"></ion-skeleton-text>
         </div>
 
-        <div class="content-box">
-          <ion-label>2. Elige la duración</ion-label>
-          <ng-container *ngIf="!loadingSlots(); else loadingDurationSkeleton">
-            <ion-range
-              [min]="30"
-              [max]="90"
-              [step]="30"
-              [snaps]="true"
-              [ticks]="true"
-              [value]="selectedDuration()"
-              (ionChange)="handleDurationChange($event)"
-              [disabled]="loadingSlots()"
-            >
-              <ion-label slot="start">30 min</ion-label>
-              <ion-label slot="end">90 min</ion-label>
-            </ion-range>
-          </ng-container>
-          <ng-template #loadingDurationSkeleton>
-            <ion-skeleton-text animated style="width:100%;height:40px;border-radius:8px"></ion-skeleton-text>
-          </ng-template>
+        <div *ngIf="!loadingSlots()" class="slots-grid">
+          @for (slot of slots(); track $index) {
+            <button 
+              class="slot-btn" 
+              [class.selected]="selectedSlot() === slot"
+              (click)="selectSlot(slot)">
+              {{ slot }}
+            </button>
+          }
         </div>
-
-        <div class="content-box">
-          <ion-label>3. Elige una hora</ion-label>
-          <ng-container *ngIf="!loadingSlots(); else loadingSlotsSkeleton">
-            <ion-grid class="time-slot-grid">
-              <div *ngIf="slots().length > 0; else noSlotsMessage">
-                <ion-row>
-                  <ion-col
-                    size="4"
-                    size-md="3"
-                    *ngFor="let slot of slots()"
-                  >
-                    <ion-button
-                      [fill]="selectedSlot() === slot ? 'solid' : 'outline'"
-                      expand="block"
-                      (click)="selectSlot(slot)"
-                    >
-                      {{ slot }}
-                    </ion-button>
-                  </ion-col>
-                </ion-row>
-              </div>
-
-              <ng-template #noSlotsMessage>
-                <p class="no-slots-message">
-                  No hay horas disponibles para la fecha y duración seleccionadas.
-                </p>
-              </ng-template>
-            </ion-grid>
-          </ng-container>
-          <ng-template #loadingSlotsSkeleton>
-            <ion-grid>
-              <ion-row>
-                <ion-col size="4" size-md="3" *ngFor="let i of [1,2,3,4,5,6]">
-                  <ion-skeleton-text animated style="width:100%;height:48px;border-radius:8px"></ion-skeleton-text>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ng-template>
+        
+        <div *ngIf="!loadingSlots() && slots().length === 0" class="no-slots">
+          <p>No hay horarios disponibles para esta fecha.</p>
         </div>
+      </div>
 
-        <ion-button
-          expand="block"
-          size="large"
-          class="btn-primary"
+      <!-- BOTÓN FINAL -->
+      <div class="confirm-action">
+        <button 
+          class="btn-confirm-large" 
           [disabled]="!selectedSlot()"
-          (click)="confirmarReserva()"
-        >
-          Confirmar Reserva
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+          (click)="confirmarReserva()">
+          CONFIRMAR RESERVA
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <app-footer></app-footer>
+
 </ion-content>

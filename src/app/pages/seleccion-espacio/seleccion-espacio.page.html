@@ -1,98 +1,145 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Selecciona los Espacios</ion-title>
+<!-- HEADER -->
+<ion-header class="main-header" [translucent]="true">
+  <ion-toolbar class="main-toolbar">
+    <!-- Botón Menú Móvil -->
+    <ion-buttons slot="start" class="mobile-only-button">
+      <ion-menu-button color="light" menu="menu-espacios"></ion-menu-button>
+    </ion-buttons>
+
+    <!-- Logo -->
+    <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
+
+    <!-- Botones Escritorio -->
+    <ion-buttons slot="end" class="desktop-only-buttons">
+      <ion-button fill="clear" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
+      <ion-button class="btn-logout" fill="solid" color="light" (click)="logout()">Cerrar Sesión</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="page-content">
-  <div class="page-outer">
-    <div class="container">
-      <!-- debug banner removed -->
-      <!-- Selector de todos los espacios (cuadro superior) -->
-      <div class="top-box">
-        <ion-item class="select-all-item">
-          <ion-label>Seleccionar todos los espacios disponibles</ion-label>
-          <ion-toggle
-            [(ngModel)]="selectAllEnabled"
-            (ionChange)="toggleSelectAll($event)"
-          ></ion-toggle>
-        </ion-item>
-      </div>
+<!-- MENÚ LATERAL -->
+<ion-menu contentId="espacios-content" type="overlay" menuId="menu-espacios">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list lines="none">
+      <ion-item button [routerLink]="['/inicio-usuario']">
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+        <ion-label>Mi Perfil</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/proyectos']">
+        <ion-icon name="library-outline" slot="start"></ion-icon>
+        <ion-label>Memorias</ion-label>
+      </ion-item>
+      <ion-item button [routerLink]="['/ver-eventos']">
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>Eventos</ion-label>
+      </ion-item>
+      <ion-item button (click)="logout()" class="logout-item">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        <ion-label>Cerrar Sesión</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
-      <div class="room-title">
-        <p>Vista general de la sala</p>
-      </div>
-
-    <!-- Loader -->
-    <div *ngIf="isLoading" class="loader-container">
-      <ion-spinner></ion-spinner>
-      <p>Cargando espacios...</p>
+<!-- CONTENIDO PRINCIPAL -->
+<ion-content [fullscreen]="true" id="espacios-content" class="espacios-content">
+  
+  <div class="page-wrapper">
+    
+    <!-- TÍTULO PÁGINA -->
+    <div class="page-title-header">
+      <h1>Selecciona los Espacios</h1>
     </div>
 
-    <!-- Mensaje de Error -->
-    <div *ngIf="!isLoading && error" class="error-container">
-      <ion-text color="danger">
-        <p>Error al cargar los espacios. Intenta de nuevo más tarde.</p>
-        <p><small>{{ error.message }}</small></p>
-      </ion-text>
+    <!-- BARRA DE CONTROL (Título Sección + Toggle) -->
+    <div class="control-bar">
+      <div class="control-text">
+        <h2>Vista general de la sala</h2>
+        <p>Elige los espacios que necesitas para tu evento.</p>
+      </div>
+      <div class="control-toggle">
+        <ion-label>Seleccionar todos los espacios disponibles</ion-label>
+        <ion-toggle 
+          mode="ios" 
+          [(ngModel)]="selectAllEnabled" 
+          (ionChange)="toggleSelectAll($event)">
+        </ion-toggle>
+      </div>
     </div>
 
-    <!-- Grilla de Espacios 2x3 -->
-    <div *ngIf="!isLoading && !error" class="zones-grid">
-      <div class="room-outline">
-        <div class="grid-container">
-          <ng-container *ngFor="let zone of zoneGrid; let i = index">
-            <div
-              class="grid-item"
+    <!-- LOADING / ERROR -->
+    <div *ngIf="isLoading" class="status-msg">
+      <ion-spinner color="primary"></ion-spinner>
+      <p>Cargando mapa de espacios...</p>
+    </div>
+    <div *ngIf="!isLoading && error" class="status-msg error">
+      <p>Error al cargar espacios. Intenta más tarde.</p>
+    </div>
+
+    <!-- GRILLA DE ESPACIOS -->
+    <div *ngIf="!isLoading && !error" class="spaces-grid">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6" *ngFor="let zone of zoneGrid">
+            
+            <!-- TARJETA DE ESPACIO -->
+            <div 
+              class="space-card" 
               [class.selected]="zone.workspace && isWorkspaceSelected(zone.workspace.id_workspace)"
               [class.disabled]="isWorkspaceDisabled(zone.workspace)"
-              (click)="zone.workspace && !isWorkspaceDisabled(zone.workspace) && toggleWorkspace(zone.workspace.id_workspace)"
-            >
-              <div class="zone-label">{{ zone.displayName }}</div>
+              (click)="zone.workspace && !isWorkspaceDisabled(zone.workspace) && toggleWorkspace(zone.workspace.id_workspace)">
+              
+              <!-- Etiqueta de Zona (Noroeste, etc) -->
+              <div class="zone-badge">{{ zone.displayName }}</div>
 
-              <div *ngIf="zone.workspace" class="space-content">
+              <div class="card-body" *ngIf="zone.workspace">
                 <h3>{{ zone.workspace.name }}</h3>
-                <p class="occupancy">Aforo máximo: {{ zone.workspace.max_occupancy }}</p>
+                <p>Aforo máximo: {{ zone.workspace.max_occupancy }}</p>
 
-                <ion-button
-                  fill="outline"
-                  size="small"
-                  (click)="showWorkspaceDetails(zone.workspace); $event.stopPropagation()"
-                  [disabled]="isWorkspaceDisabled(zone.workspace)"
-                  class="details-btn"
-                >
-                  <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-                  Ver detalles
-                </ion-button>
+                <!-- Botón Ver Detalles (Blanco píldora) -->
+                <button 
+                  class="btn-details" 
+                  (click)="showWorkspaceDetails(zone.workspace); $event.stopPropagation()">
+                  <ion-icon name="information-circle"></ion-icon> VER DETALLES
+                </button>
               </div>
 
-              <div *ngIf="!zone.workspace" class="space-empty">
-                <p>Sin espacio asignado</p>
+              <!-- Estado Vacío -->
+              <div class="card-body empty" *ngIf="!zone.workspace">
+                <h3>Sin Asignar</h3>
+                <p>Espacio no disponible</p>
               </div>
+
             </div>
-          </ng-container>
-        </div>
-      </div>
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
 
-    <!-- Área de líderes: rectángulo ubicado debajo de los espacios seleccionables -->
-    <div class="leaders-rect">
-      <div class="leaders-label">Área de líderes</div>
-      <div class="leaders-sub">Espacio reservado</div>
+    <!-- ÁREA DE LÍDERES (INFORMATIVO) -->
+    <div class="leaders-area">
+      <span>Área de líderes</span>
+      <span class="badge-reserved">Espacio reservado</span>
     </div>
 
-    <!-- Botón de Confirmación debajo del contorno -->
-    <div class="confirm-button-container">
-      <ion-button
-        expand="block"
-        color="primary"
-        [disabled]="isConfirmDisabled()"
-        (click)="confirmarSeleccion()"
-      >
-        Confirmar Selección ({{ selectedWorkspaces.size }} seleccionado)
-      </ion-button>
+    <!-- BOTÓN CONFIRMAR (GRANDE BLANCO) -->
+    <div class="footer-action">
+      <button 
+        class="btn-confirm" 
+        [disabled]="isConfirmDisabled()" 
+        (click)="confirmarSeleccion()">
+        CONFIRMAR SELECCIÓN ({{ selectedWorkspaces.size }} SELECCIONADO)
+      </button>
     </div>
-    </div>
+
   </div>
-</ion-content>
 
+  <app-footer></app-footer>
+
+</ion-content>
