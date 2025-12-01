@@ -42,43 +42,50 @@ $text-grey: #94a3b8;
   }
   
   .desktop-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
     .user-chip {
       --background: rgba(255,255,255,0.1); 
       --color: white; 
       font-weight: 600;
       ion-avatar { width: 24px; height: 24px; margin-right: 8px; }
     }
+    
+    /* BOTÓN CERRAR SESIÓN (HEADER) */
+    .btn-logout-header {
+      --background: #ffffff; /* Rojo */
+      --color: rgb(8, 8, 8);
+      --border-radius: 50px;
+      font-weight: 600;
+      text-transform: none;
+      height: 35px;
+      font-size: 0.9rem;
+      
+      ion-icon { font-size: 1.1rem; margin-right: 5px; }
+    }
   }
 }
 
-/* --- RESPONSIVE (BOTÓN HAMBURGUESA) --- */
-
-/* MÓVIL: Pantallas pequeñas (menos de 992px) */
+/* LÓGICA RESPONSIVE */
 @media (max-width: 991px) { 
   .main-header { 
     .desktop-user-info { display: none; } 
-    /* MUESTRA botón hamburguesa */
     .mobile-only-button { display: block; margin-right: 0; } 
-    /* Logo a la derecha */
     .logo { margin-left: auto; margin-right: 0; } 
   } 
 }
 
-/* DESKTOP: Pantallas grandes (más de 992px) */
 @media (min-width: 992px) { 
   .main-header { 
-    /* OCULTA botón hamburguesa FORZADO */
     .mobile-only-button, .desktop-hidden { display: none !important; } 
-    
-    /* Mostramos info de usuario */
     .desktop-user-info { display: flex; align-items: center; }
-    
-    /* Logo a la izquierda */
     .logo { margin-right: auto; margin-left: 0; } 
   } 
 }
 
-/* --- MENÚ AZUL --- */
+/* MENÚ AZUL */
 ion-menu {
   --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
   background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
@@ -100,18 +107,6 @@ ion-menu {
   min-height: 90vh;
 }
 
-.role-switcher {
-  margin-bottom: 30px;
-  background: rgba(255,255,255,0.05);
-  padding: 15px;
-  border-radius: 12px;
-  .switcher-label { text-align: center; margin-bottom: 5px; font-size: 0.9rem; }
-  ion-segment { 
-    --background: rgba(0,0,0,0.2);
-    ion-segment-button { --color: #94a3b8; --color-checked: white; --indicator-color: #2563eb; }
-  }
-}
-
 .welcome-section {
   margin-bottom: 40px;
   h1 { color: $text-white; font-size: 2.5rem; font-weight: 800; margin-bottom: 5px; }
@@ -129,26 +124,14 @@ ion-menu {
   padding-left: 10px;
 }
 
-/* TARJETAS UNIFICADAS */
+/* TARJETAS */
 .action-card {
-  background-color: $card-bg; 
-  border-radius: 16px; 
-  margin: 0 0 20px 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: transform 0.2s, border-color 0.2s; 
-  height: 100%; 
-  display: flex; 
-  flex-direction: column; 
-  justify-content: center; 
-  padding: 20px;
-  position: relative; /* Para posicionar la flecha absoluta si se quiere */
+  background-color: $card-bg; border-radius: 16px; margin: 0 0 20px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s, border-color 0.2s; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 20px;
+  position: relative;
 
-  &:hover { 
-    transform: translateY(-5px); 
-    border-color: rgba(37, 99, 235, 0.5); 
-    background-color: lighten($card-bg, 5%); 
-  }
+  &:hover { transform: translateY(-5px); border-color: rgba(37, 99, 235, 0.5); background-color: lighten($card-bg, 5%); }
 
   .card-icon {
     width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 15px;
@@ -166,4 +149,5 @@ ion-menu {
     ion-card-subtitle { color: $text-grey; font-size: 0.9rem; text-transform: none; }
   }
 
+ 
 }

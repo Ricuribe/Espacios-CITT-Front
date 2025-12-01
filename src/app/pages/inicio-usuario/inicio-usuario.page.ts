@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FooterComponent } from 'src/app/components/footer/footer.component';
 import { AuthService } from 'src/app/service/auth.service';
 
@@ -36,13 +36,16 @@ import {
 })
 export class InicioUsuarioPage implements OnInit {
 
-  // Variables para controlar QUÉ se muestra
-  isStudent: boolean = false;       // Alumno
-  canManageEvents: boolean = false; // Coordinador o Administrativo
-  isAdmin: boolean = false;         // Solo Administrativo
+  // Variables de control de vista
+  isStudent: boolean = false;       
+  canManageEvents: boolean = false; // Profesores y Admins
+  isAdmin: boolean = false;         // SOLO Admins
   
-  // Nombre de usuario para el saludo
+  // Nombre de usuario (Signal)
   userName = signal<string>('Usuario');
+
+  // Inyecciones
+  private router = inject(Router); // Necesario para redirecciones manuales
 
   constructor(
     private authService: AuthService,
@@ -58,29 +61,34 @@ export class InicioUsuarioPage implements OnInit {
   }
 
   ngOnInit() {
-    // 1. Suscripción al ROL real desde AuthService
+    // 1. Suscripción al ROL
     this.authService.currentRole$.subscribe(role => {
       this.setPermissions(role || '');
     });
 
-    // 2. Suscripción al NOMBRE del usuario
+    // 2. Suscripción al NOMBRE
     this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.userName.set(`${user.first_name} ${user.last_name}`);
+      } else {
+        // Fallback si no hay user en el servicio (ej. recarga de página)
+        const localFirst = sessionStorage.getItem('userFirstName');
+        const localLast = sessionStorage.getItem('userLastName');
+        if (localFirst) this.userName.set(`${localFirst} ${localLast || ''}`);
       }
     });
   }
 
   setPermissions(role: string) {
-    // Lógica estricta basada en tus roles ('alumno', 'coordinador', 'administrativo')
+    const r = role.toLowerCase();
     
-    this.isStudent = role === 'alumno';
+    this.isStudent = r === 'alumno';
     
-    // Coordinadores y Administrativos pueden gestionar eventos
-    this.canManageEvents = role === 'coordinador' || role === 'administrativo';
+    // Profesores (Coordinadores) y Admins pueden gestionar eventos
+    this.canManageEvents = r === 'coordinador' || r === 'docente' || r === 'administrativo' || r === 'admin';
     
-    // Solo Administrativos ven la gestión de usuarios y estadísticas
-    this.isAdmin = role === 'administrativo';
+    // SOLO Administrativos (Admins) pueden subir memorias
+    this.isAdmin = r === 'administrativo' || r === 'admin';
   }
 
   ionViewWillEnter() {
@@ -89,5 +97,6 @@ export class InicioUsuarioPage implements OnInit {
 
   async logout() {
     await this.authService.logout();
+    this.router.navigate(['/home']);
   }
 }

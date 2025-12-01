@@ -87,7 +87,7 @@
     </div>
 
     <div class="filter-container ion-padding-horizontal ion-margin-bottom">
-      <ion-segment [value]="filterToday() ? 'today' : 'future'" (ionChange)="segmentChanged($event)" color="primary">
+      <ion-segment [value]="filterToday() ? 'today' : 'future'" (ionChange)="segmentChanged($event)">
         <ion-segment-button value="future">
           <ion-label>Próximos Eventos</ion-label>
         </ion-segment-button>

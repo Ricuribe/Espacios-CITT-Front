@@ -82,7 +82,7 @@ ion-menu {
   ion-list { background: transparent !important; padding-top: 10px; }
   ion-item { 
     --background: transparent !important; background: transparent !important; 
-    --color: #ffffff; --border-color: rgba(255,255,255,0.1); 
+    --color: #ffffff; --border-color: rgba(255, 255, 255, 0.1); 
     font-size: 1rem; font-weight: 500; --min-height: 55px; --padding-start: 20px;
     ion-icon { color: #bfdbfe; margin-right: 15px; }
     &:hover { --background: rgba(255,255,255,0.15) !important; cursor: pointer; }
@@ -94,12 +94,41 @@ ion-menu {
 .page-wrapper { padding: 140px 20px 80px 20px; max-width: 1000px; margin: 0 auto; min-height: 90vh; }
 .nav-header { margin-bottom: 20px; .back-btn { --color: #ffffff; --padding-start: 0; font-size: 1.2rem; ion-icon { font-size: 2rem; margin-right: 5px; } .back-text { display: none; @media(min-width: 768px) { display: inline; } } } }
 .section-header { margin-bottom: 50px; h1 { color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; } p { color: $text-grey; font-size: 1.1rem; max-width: 600px; margin: 0 auto; } }
+
+/* --- ESTILOS PARA EL SEGMENTO (CORREGIDO) --- */
+.filter-container {
+  margin-top: 20px; 
+
+  ion-segment {
+
+    ion-segment-button {
+      /* TEXTO NO SELECCIONADO: Gris Claro !important */
+      --color: #cccccc !important;
+      
+      /* TEXTO SELECCIONADO: Blanco !important */
+      --color-checked: #ffffff !important;
+      
+      /* BARRA INDICADORA: Azul !important */
+      --indicator-color: #3b82f6 !important;
+
+      margin: 0 2px;
+      
+      ion-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+    }
+  }
+}
+
 .events-container { display: flex; flex-direction: column; gap: 30px; }
 
 .event-card {
   background-color: $card-bg; border-radius: 12px; overflow: hidden; display: flex; 
-  border: 1px solid rgba(255, 255, 255, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 250px;
-  &:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); border-color: rgba(59, 130, 246, 0.3); }
+  border: 1px solid rgba(255, 255, 255, 0.993); transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 250px;
+  &:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3); border-color: rgba(59, 130, 246, 0.3); }
 
   .card-image { flex: 0 0 35%; background-size: cover; background-position: center; position: relative; background-color: #1e293b; .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.8)); } }
   .card-body { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; .event-title { color: $text-blue; font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; } .event-meta { display: flex; gap: 25px; margin-bottom: 20px; color: $text-grey; font-size: 0.9rem; .meta-item { display: flex; align-items: center; gap: 8px; ion-icon { font-size: 1.1rem; color: #64748b; } } } .event-desc { color: #cbd5e1; line-height: 1.6; font-size: 1rem; margin-bottom: 20px; } .category-badge { display: inline-block; background: rgba(59, 130, 246, 0.1); color: $text-blue; padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; align-self: flex-start; } }
