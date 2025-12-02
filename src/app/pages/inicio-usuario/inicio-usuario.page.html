@@ -70,7 +70,7 @@
     <ion-grid class="dashboard-grid">
       
       <!-- VISTA ADMINISTRADOR (Solo Admin ve esto) -->
-      <ng-container *ngIf="isAdmin">
+       <!--<ng-container *ngIf="isAdmin">
         <ion-row>
           <ion-col size="12"><h3 class="section-title">Panel de Administración</h3></ion-col>
 
@@ -84,7 +84,7 @@
             </ion-card>
           </ion-col>
         </ion-row>
-      </ng-container>
+      </ng-container>-->
 
       <!-- VISTA DOCENTE / ADMIN (Gestión Académica) -->
       <ng-container *ngIf="canManageEvents">
@@ -106,7 +106,7 @@
 
           <!-- Profesores y Admin pueden crear eventos -->
           <ion-col size="12" size-sm="6" size-lg="4">
-            <ion-card class="action-card" button>
+            <ion-card class="action-card" button [routerLink]="['/evento-agendar']">
               <div class="card-icon primary"><ion-icon name="add-circle-outline"></ion-icon></div>
               <ion-card-header>
                 <ion-card-title>Crear Evento</ion-card-title>
