@@ -64,6 +64,7 @@
             [max]="maxDateISO"
             [isDateEnabled]="isDateSelectable"
             (ionChange)="handleDateChange($event)"
+            [disabled]="loadingSlots()"
             color="primary"
             mode="md">
           </ion-datetime>
@@ -83,6 +84,7 @@
             [min]="30" [max]="120" [step]="30" [snaps]="true" [ticks]="true"
             [value]="selectedDuration()" 
             (ionChange)="handleDurationChange($event)"
+            [disabled]="loadingSlots()"
             color="primary">
           </ion-range>
         </div>

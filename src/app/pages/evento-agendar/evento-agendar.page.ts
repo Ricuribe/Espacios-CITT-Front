@@ -1,21 +1,26 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Router, RouterLink, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
 import { 
   IonHeader, IonToolbar, IonButtons, IonMenuButton, IonImg, IonTitle, 
   IonContent, IonGrid, IonRow, IonCol, IonDatetime, IonRange, IonButton, 
-  IonIcon, IonSkeletonText, IonText, MenuController, IonMenu, IonList, 
-  IonItem, IonLabel, IonChip, IonAvatar
+  IonIcon, IonSkeletonText, IonText, IonMenu, IonList, IonItem, 
+  IonLabel, IonChip, IonAvatar
 } from '@ionic/angular/standalone';
+
 import { addIcons } from 'ionicons';
 import { 
   arrowBackOutline, calendarOutline, timeOutline, 
   personCircleOutline, libraryOutline, logOutOutline, 
   homeOutline, folderOpenOutline
 } from 'ionicons/icons';
+
 import { FooterComponent } from 'src/app/components/footer/footer.component';
-import { ApiService } from 'src/app/service/http-client';
+import { SlotService } from 'src/app/service/slot.service'; 
 
 @Component({
   selector: 'app-evento-agendar',
@@ -23,148 +28,275 @@ import { ApiService } from 'src/app/service/http-client';
   styleUrls: ['./evento-agendar.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink, FooterComponent,
+    CommonModule, 
+    FormsModule, 
+    RouterLink, 
+    FooterComponent,
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonImg, IonTitle, 
     IonContent, IonGrid, IonRow, IonCol, IonDatetime, IonRange, IonButton, 
-    IonIcon, IonSkeletonText, IonText, IonMenu, IonList, IonItem, IonLabel,
-    IonChip, IonAvatar
+    IonIcon, IonSkeletonText, IonText, IonMenu, IonList, IonItem, 
+    IonLabel, IonChip, IonAvatar
   ]
 })
-export class EventoAgendarPage implements OnInit {
+export class EventoAgendarPage implements OnInit, OnDestroy {
 
-  private router = inject(Router);
-  private menuCtrl = inject(MenuController);
-  // private slotService = inject(SlotService); // Descomenta si usas tu servicio real
-
-  // --- ESTADO ---
-  public userName = signal<string>('');
+  // --- Signals de Estado ---
+  selectedDate = signal<string>('');
+  selectedDuration = signal<number>(30);
+  loadingSlots = signal<boolean>(false);
   
-  // --- VARIABLES DE AGENDAMIENTO ---
+  // Base de datos local del día (Cache): Aquí guardamos los bloques de 30 min crudos
+  baseSlots = signal<string[]>([]); 
+  
+  // Slots filtrados que ve el usuario (Resultado del cálculo local)
+  slots = signal<string[]>([]);
+  
+  selectedSlot = signal<string | null>(null);
+
+  // --- Propiedades ---
   public todayISO: string;
   public maxDateISO: string;
-  
-  public selectedDate = signal<string>('');
-  public selectedDuration = signal<number>(60); // Default 60 min
-  public selectedSlot = signal<string | null>(null);
-  
-  public slots = signal<string[]>([]);
-  public loadingSlots = signal<boolean>(false);
-  
-  // Datos recibidos de la selección de espacios
-  public selectedWorkspaceIds: number[] = [];
-  public allSpacesSelected = false;
+  private routerSubscription!: Subscription;
 
-  // Filtro de fechas (No fines de semana)
-  public isDateSelectable = (isoDateString: string) => {
-    const date = new Date(isoDateString);
-    const day = date.getUTCDay();
-    return day !== 0 && day !== 6;
-  };
+  selectedWorkspaceIds: string[] | undefined; 
+  allSpacesSelected: boolean = false;
 
-  constructor() {
+  constructor(
+    private slotService: SlotService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     addIcons({ 
-      arrowBackOutline, calendarOutline, timeOutline,
-      personCircleOutline, libraryOutline, logOutOutline,
+      arrowBackOutline, calendarOutline, timeOutline, 
+      personCircleOutline, libraryOutline, logOutOutline, 
       homeOutline, folderOpenOutline
     });
 
-    // Configurar fechas
-    const today = new Date();
-    this.todayISO = today.toISOString();
+    const now = new Date();
+    this.todayISO = now.toISOString();
     
-    const maxDate = new Date(today);
-    maxDate.setMonth(today.getMonth() + 3);
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 3);
     this.maxDateISO = maxDate.toISOString();
-    
+
     this.selectedDate.set(this.todayISO);
   }
 
   ngOnInit() {
-    this.checkLogin();
-    this.recoverNavigationState();
-    this.generateSlots(); // Carga inicial de horarios
+    this.initPageData();
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.selectedDate()) {
+          this.fetchDailyAvailability(); // Solo recarga si cambió la navegación, no la duración
+        }
+      });
   }
 
-  ionViewWillEnter() {
-    this.menuCtrl.enable(true, 'menu-agendar');
-  }
-
-  checkLogin() {
-    const name = sessionStorage.getItem('userFirstName');
-    if (name) this.userName.set(name);
-  }
-
-  recoverNavigationState() {
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras?.state || history.state;
-    
-    if (state) {
-      this.selectedWorkspaceIds = state['workspaceIds'] || [];
-      this.allSpacesSelected = !!state['allSpaces'];
+  ngOnDestroy() {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
     }
   }
 
-  handleDateChange(event: any) {
-    const val = event.detail.value;
-    const newDate = (typeof val === 'string') ? val.split('T')[0] : val;
-    this.selectedDate.set(newDate);
-    this.selectedSlot.set(null);
-    this.generateSlots(); // Recargar horas al cambiar fecha
+  private initPageData() {
+    const navigation = this.router.getCurrentNavigation();
+    
+    if (navigation?.extras.state) {
+      const state = navigation.extras.state as any;
+      this.allSpacesSelected = state.allSpaces || false;
+      this.selectedWorkspaceIds = (state.workspaceIds && state.workspaceIds.length > 0) 
+        ? state.workspaceIds 
+        : ['1'];
+    } else {
+      console.log('Modo directo: Usando Workspace Default ID: 1');
+      this.selectedWorkspaceIds = ['1'];
+      this.allSpacesSelected = false;
+    }
+    this.fetchDailyAvailability();
   }
 
+  isDateSelectable = (dateString: string) => {
+    const date = new Date(dateString);
+    const utcDay = date.getUTCDay();
+    return utcDay !== 0 && utcDay !== 6; 
+  };
+
+  // --- MANEJO DE CAMBIOS DE FECHA (Llama a la API) ---
+  handleDateChange(event: any) {
+    if (this.loadingSlots()) return; 
+
+    const rawValue = event.detail.value;
+    const dateValue = Array.isArray(rawValue) ? rawValue[0] : rawValue;
+    
+    // Solo si la fecha es realmente diferente
+    if (dateValue && dateValue.split('T')[0] !== this.selectedDate().split('T')[0]) {
+      this.selectedDate.set(dateValue);
+      this.selectedSlot.set(null); 
+      this.fetchDailyAvailability(); // <--- LLAMA AL BACKEND
+    }
+  }
+
+  // --- MANEJO DE CAMBIOS DE DURACIÓN (Cálculo Local) ---
   handleDurationChange(event: any) {
-    this.selectedDuration.set(event.detail.value);
+    // Aquí NO llamamos a la API, solo recalculamos
+    const newDuration = event.detail.value;
+    this.selectedDuration.set(newDuration);
     this.selectedSlot.set(null);
-    // Si tu lógica depende de la duración, llama a generateSlots() aquí también
+    
+    // Calculamos usando los datos que ya tenemos en memoria
+    this.recalculateSlotsLocally(); 
   }
 
   selectSlot(slot: string) {
     this.selectedSlot.set(slot);
   }
 
-  // --- AQUÍ ESTÁ LA MAGIA DE LOS HORARIOS ---
-  // (Usamos esto para que la vista funcione YA. Si tienes tu backend listo, reemplaza esto)
-  generateSlots() {
-    this.loadingSlots.set(true);
-    this.slots.set([]);
+  // --- LÓGICA DE OBTENCIÓN DE DATOS (API) ---
+  async fetchDailyAvailability() {
+    const rawDate = this.selectedDate();
+    if (!rawDate) return;
 
-    // Simulamos una carga de red
-    setTimeout(() => {
-      // Generamos horas de ejemplo
-      const mockSlots = [
-        '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-        '12:00', '12:30', '13:00', '13:30', '15:00', '15:30',
-        '16:00', '16:30', '17:00', '17:30'
-      ];
-      this.slots.set(mockSlots);
+    this.loadingSlots.set(true);
+    this.slots.set([]); // Limpiamos visualmente
+    
+    try {
+      const fechaLimpia = rawDate.split('T')[0];
+      const workspaceIdsNumericos = this.selectedWorkspaceIds?.map(Number);
+
+      console.log('Fetching datos BASE del día:', fechaLimpia);
+
+      // SIEMPRE pedimos bloques de 30 minutos (la unidad mínima) al backend
+      // Esto nos permite tener el "mapa completo" del día
+      const baseDuration = 30; 
+
+      const allSlots = await this.slotService.getAvailableSlots(
+        fechaLimpia,
+        baseDuration,
+        workspaceIdsNumericos, 
+        this.allSpacesSelected,
+        true // Force refresh
+      );
+      
+      // Guardamos la respuesta cruda en nuestra "caché" local del día
+      this.baseSlots.set(allSlots);
+      
+      // Ahora calculamos qué mostramos según la duración actual seleccionada
+      this.recalculateSlotsLocally();
+
+    } catch (error) {
+      console.error('Error cargando disponibilidad:', error);
+      this.baseSlots.set([]);
+      this.slots.set([]);
+    } finally {
       this.loadingSlots.set(false);
-    }, 600);
+    }
   }
 
-  // --- BOTÓN CONFIRMAR (AHORA SÍ FUNCIONA) ---
-  confirmarReserva() {
+  // --- LÓGICA DE CÁLCULO LOCAL (Algoritmo) ---
+  recalculateSlotsLocally() {
+    const base = this.baseSlots(); // Ejemplo: ['09:00', '09:30', '10:00']
+    const duration = this.selectedDuration(); // Ejemplo: 60
+    const step = 30; // Los bloques base son de 30 min
+
+    // Si la duración es 30, es igual a la base, mostramos todo
+    if (duration === step) {
+      this.slots.set(base);
+      return;
+    }
+
+    // Si la duración es mayor (ej: 60, 90, 120), necesitamos bloques consecutivos
+    const blocksNeeded = duration / step; // 60min / 30min = 2 bloques
+    const validSlots: string[] = [];
+
+    // Algoritmo: Para cada slot base, miramos si existen los siguientes consecutivos
+    for (let i = 0; i < base.length; i++) {
+      const startSlot = base[i];
+      let isConsecutive = true;
+
+      // Miramos hacia adelante 'blocksNeeded' veces
+      for (let j = 1; j < blocksNeeded; j++) {
+        // Calculamos cuál debería ser el siguiente horario (ej: 09:00 + 30 = 09:30)
+        const nextTime = this.addMinutesToTime(startSlot, step * j);
+        
+        // Verificamos si ese horario existe en nuestra base disponible
+        if (!base.includes(nextTime)) {
+          isConsecutive = false;
+          break;
+        }
+      }
+
+      if (isConsecutive) {
+        validSlots.push(startSlot);
+      }
+    }
+
+    console.log(`Recálculo local para ${duration} min. Disponibles:`, validSlots.length);
+    this.slots.set(validSlots);
+  }
+
+  // Helper para sumar minutos a un string "HH:mm"
+  private addMinutesToTime(timeStr: string, minsToAdd: number): string {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    date.setMinutes(date.getMinutes() + minsToAdd);
+    
+    // Formatear de vuelta a HH:mm
+    const h = date.getHours().toString().padStart(2, '0');
+    const m = date.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m}`;
+  }
+
+  async confirmarReserva() {
     if (!this.selectedSlot()) return;
 
-    const datosReserva = {
-      fecha: this.selectedDate(),
-      hora: this.selectedSlot(),
-      duracion: this.selectedDuration(),
-      espacios: this.selectedWorkspaceIds,
-      allSpaces: this.allSpacesSelected
-    };
-    
-    console.log('Navegando a confirmación con:', datosReserva);
+    this.loadingSlots.set(true); 
 
-    // Navegación correcta pasando el estado
-    this.router.navigate(['/confirmar-evento'], {
-      state: {
-        reserva: datosReserva
+    try {
+      const fechaLimpia = this.selectedDate().split('T')[0];
+      const workspaceIdsNumericos = this.selectedWorkspaceIds?.map(Number);
+
+      // Validación final contra backend (siempre necesaria por seguridad)
+      const refreshedBaseSlots = await this.slotService.getAvailableSlots(
+        fechaLimpia, 
+        30, // Validamos contra base 30
+        workspaceIdsNumericos, 
+        this.allSpacesSelected, 
+        true 
+      );
+
+      // Verificamos localmente si con los nuevos datos frescos aún cabe nuestra reserva
+      this.baseSlots.set(refreshedBaseSlots);
+      this.recalculateSlotsLocally(); // Esto actualiza this.slots()
+
+      if (!this.slots().includes(this.selectedSlot()!)) {
+        alert('La hora seleccionada ya no está disponible. Se han actualizado los horarios.');
+        this.selectedSlot.set(null);
+        return;
       }
-    });
+
+      const datosReserva = {
+        fecha: fechaLimpia,
+        duracion: this.selectedDuration(),
+        hora: this.selectedSlot()
+      };
+
+      this.router.navigate(['/confirmar-evento'], {
+        state: {
+          reserva: datosReserva,
+          workspaceIds: this.selectedWorkspaceIds 
+        }
+      });
+
+    } catch (e) {
+      console.error('Error:', e);
+    } finally {
+      this.loadingSlots.set(false);
+    }
   }
 
   logout() {
-    sessionStorage.clear();
-    this.router.navigate(['/home']);
+    this.router.navigate(['/login']);
   }
 }

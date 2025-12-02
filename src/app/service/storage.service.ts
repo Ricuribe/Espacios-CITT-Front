@@ -23,6 +23,10 @@ export class StorageService {
     return this._initPromise;
   }
 
+  private async ensureReady() {
+    await this.init();
+  }
+
   // --- MÉTODOS GENÉRICOS ---
 
   async set(key: string, value: any) {
@@ -53,6 +57,11 @@ export class StorageService {
 
   async getAccessToken(): Promise<string | null> {
     return this.get('access_token');
+  }
+
+  async getUser() {
+    await this.ensureReady();
+    return this._storage?.get('user_session');
   }
 
   /**

@@ -1,129 +1,117 @@
-<!-- ==========================================================
-     CAMBIO 1: AÑADIR BOTÓN DE HAMBURGUESA Y CLASES
-     ========================================================== -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-
-    <!-- CAMBIO 1.A: Añadido el botón de hamburguesa -->
     <ion-buttons slot="start" class="mobile-only-button">
-      <ion-menu-button color="light"></ion-menu-button>
+      <ion-menu-button color="light" menu="menu-confirmacion"></ion-menu-button>
     </ion-buttons>
 
-    <ion-img src="/assets/icon/logo_CITT.png" alt="Logo Duoc UC" class="logo"></ion-img>
-    
-    <!-- CAMBIO 1.B: Añadida la clase "desktop-only-buttons" -->
+    <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
+
     <ion-buttons slot="end" class="desktop-only-buttons">
-      <ion-button fill="clear" color="light">Recursos</ion-button>
-      <ion-button fill="clear" color="light">Memorias</ion-button>
-      <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar sesion</ion-button>
+      <ion-chip class="user-chip">
+        <ion-avatar>
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
+        </ion-avatar>
+        <ion-label>{{ userName }}</ion-label>
+      </ion-chip>
+      <ion-button class="btn-logout" fill="solid" color="light" (click)="logout()">Cerrar Sesión</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-menu contentId="confirmacion-content" type="overlay">
+<ion-menu contentId="success-content" type="overlay" menuId="menu-confirmacion">
   <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-list>
-
-      <ion-item button [routerLink]="['/inicio-usuario']">
-        <ion-label>Inicio</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/recursos']">
-        <ion-label>Recursos</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/memorias']">
-        <ion-label>Memorias</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/home']">
-        <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
-
+    <ion-list lines="none">
+      <ion-item button [routerLink]="['/inicio-usuario']"><ion-icon name="home-outline" slot="start"></ion-icon><ion-label>Inicio</ion-label></ion-item>
+      <ion-item button [routerLink]="['/recursos']"><ion-icon name="folder-open-outline" slot="start"></ion-icon><ion-label>Recursos</ion-label></ion-item>
+      <ion-item button [routerLink]="['/proyectos']"><ion-icon name="library-outline" slot="start"></ion-icon><ion-label>Memorias</ion-label></ion-item>
+      <ion-item button (click)="logout()" class="logout-item"><ion-icon name="log-out-outline" slot="start"></ion-icon><ion-label>Cerrar Sesión</ion-label></ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-
-
-<ion-content [fullscreen]="true" id="confirmacion-content">
-  <ion-grid class="main-content-grid ion-justify-content-center ion-align-items-center h-100">
+<ion-content [fullscreen]="true" id="success-content" class="success-content">
+  
+  <div class="page-wrapper">
     
-    <!-- Botón 'Volver' eliminado; se añade 'Volver a Inicio' en el bloque de evento -->
+    <div class="header-section">
+      <div class="icon-circle">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <h1>¡Solicitud Exitosa!</h1>
+      <p>Tu evento ha sido registrado correctamente.</p>
+    </div>
 
-    <ion-row class="ion-justify-content-center">
-      <!-- Se muestra solo si la navegación corresponde a una reserva de espacio -->
-      <ion-col *ngIf="isWorkspace" size="12" size-md="6" size-lg="5" class="confirmation-box">
-        
-        <ion-title>Solicitud realizada</ion-title>
-        
-        <ion-img src="{{this.workspace.image}}" alt="imagen espacio"></ion-img>
+    <div class="content-card-wrapper">
+      
+      <ion-card class="summary-card">
+        <div class="card-body">
+          
+          <div class="details-section" *ngIf="isEvent && eventData">
+            <h2>{{ eventData.title }}</h2>
+            
+            <div class="meta-row">
+              <div class="meta-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>{{ eventData.start_datetime | date:'fullDate' }}</span>
+              </div>
+              <div class="meta-item">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ eventData.start_datetime | date:'shortTime' }} - {{ eventData.end_datetime | date:'shortTime' }}</span>
+              </div>
+            </div>
 
-        <ion-text> {{this.workspace.name}} ha sido agendada con éxito</ion-text>
-        
-        <ion-text>Horario</ion-text>
-
-        <ion-text>{{this.date}}</ion-text>
-
-        <ion-text> Desde {{this.startHour}}  hasta las {{this.endHour}} </ion-text>
-
-        <ion-button expand="block" class="btn-primary">
-          Ver Mis Solicitudes
-        </ion-button>
-
-      </ion-col>
-
-      <!-- Se muestra cuando la navegación contiene un evento -->
-      <ion-col *ngIf="isEvent" size="12" size-md="6" size-lg="5" class="confirmation-box event-box">
-        <div class="event-header">
-          <ion-title>Evento agendado</ion-title>
-          <ion-text class="event-type">{{ eventData?.event_type }}</ion-text>
-        </div>
-
-        <div class="event-body">
-          <h2 class="event-title">{{ eventData?.title }}</h2>
-          <p class="event-desc">{{ eventData?.description }}</p>
-
-          <div class="event-meta">
-            <div><strong>Creado por:</strong> {{ eventData?.created_by_username ?? eventData?.created_by }}</div>
-            <div><strong>Inicio:</strong> {{ eventStartFormatted }}</div>
-            <div><strong>Fin:</strong> {{ eventEndFormatted }}</div>
-          </div>
-        </div>
-
-        <div class="event-actions">
-          <!-- Botón para abrir el formulario en modo edición (solo si existe el enlace) -->
-          <ion-button *ngIf="eventEditLink" expand="block" color="primary" (click)="openEditLink()">
-            Abrir formulario (editar)
-          </ion-button>
-
-          <!-- Código QR para el enlace público del formulario (si existe) -->
-          <div *ngIf="qrValue" class="qr-container">
-            <qrcode [qrdata]="qrValue" [width]="qrWidth" [errorCorrectionLevel]="'M'" (qrCodeURL)="onQrUrl($event)"></qrcode>
-            <ion-text class="ion-text-wrap">Escanea el QR para acceder al formulario público o compártelo.</ion-text>
-            <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">Volver a Inicio</ion-button>
+            <p class="description" *ngIf="eventData.detail?.description">
+              {{ eventData.detail.description }}
+            </p>
           </div>
 
-          <!-- Si no hay QR pero sí el edit link, mostramos igualmente el botón volver -->
-          <div *ngIf="!qrValue && eventEditLink" style="margin-top:12px;">
-            <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']">Volver a Inicio</ion-button>
+          <hr class="divider">
+
+          <div class="qr-section" *ngIf="qrValue">
+            <h3>Invitación Pública</h3>
+            <p>Comparte este código para que otros se inscriban.</p>
+            
+            <div class="qr-container">
+              <qrcode 
+                [qrdata]="qrValue" 
+                [width]="qrWidth" 
+                [errorCorrectionLevel]="'M'" 
+                [margin]="2"
+                colorDark="#000000"
+                colorLight="#ffffff"
+                (qrCodeURL)="onQrUrl($event)">
+              </qrcode>
+            </div>
+
+            <div class="qr-actions">
+              <ion-button fill="outline" size="small" (click)="downloadQr()">
+                <ion-icon name="download-outline" slot="start"></ion-icon>
+                Descargar QR
+              </ion-button>
+              
+              <ion-button *ngIf="eventEditLink" fill="outline" size="small" (click)="openEditLink()">
+                <ion-icon name="share-social-outline" slot="start"></ion-icon>
+                Editar Formulario
+              </ion-button>
+            </div>
           </div>
+
+          <div class="action-area">
+            <ion-button class="btn-home" expand="block" [routerLink]="['/inicio-usuario']">
+              VOLVER AL INICIO
+            </ion-button>
+          </div>
+
         </div>
+      </ion-card>
 
-      </ion-col>
-    </ion-row>
+    </div>
+  </div>
 
-    <!-- Botón siempre visible para volver al inicio -->
-    <ion-row class="ion-justify-content-center ion-padding-top">
-      <ion-col size="12" size-md="6" size-lg="5" class="ion-text-center">
-        <ion-button expand="block" fill="outline" class="btn-secondary" [routerLink]="['/inicio-usuario']" routerDirection="root" aria-label="Volver a Inicio CITT">
-          Volver a Inicio CITT
-        </ion-button>
-      </ion-col>
-    </ion-row>
-
-  </ion-grid>
+  <app-footer></app-footer>
 </ion-content>
-

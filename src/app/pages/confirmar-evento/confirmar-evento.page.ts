@@ -7,7 +7,9 @@ import {
   IonContent, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonCard, 
   IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, 
   IonItem, IonLabel, IonInput, IonTextarea, IonMenu, IonSkeletonText, 
-  IonText, IonChip, IonAvatar, AlertController, MenuController
+  IonText, IonChip, IonAvatar, AlertController, MenuController, IonToggle,
+  ToastController, 
+  IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -15,8 +17,10 @@ import {
   peopleOutline, checkmarkCircleOutline, documentTextOutline,
   personCircleOutline, logOutOutline, homeOutline, folderOpenOutline, libraryOutline
 } from 'ionicons/icons';
+
 import { ApiService } from 'src/app/service/http-client';
 import { FooterComponent } from 'src/app/components/footer/footer.component';
+import { StorageService } from 'src/app/service/storage.service'; 
 
 @Component({
   selector: 'app-confirmar-evento',
@@ -29,28 +33,32 @@ import { FooterComponent } from 'src/app/components/footer/footer.component';
     IonContent, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonCard, 
     IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, 
     IonItem, IonLabel, IonInput, IonTextarea, IonMenu, IonSkeletonText, 
-    IonText, IonChip, IonAvatar
+    IonText, IonChip, IonAvatar, IonToggle,
+    IonSpinner
   ]
 })
 export class ConfirmarEventoPage implements OnInit {
 
-  // Inyecciones
-  public router = inject(Router); // Público para usar en HTML si es necesario
+  public router = inject(Router);
   private apiService = inject(ApiService);
   private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
   private menuCtrl = inject(MenuController);
+  private storageService = inject(StorageService); 
 
-  // Estado
   public reserva: any = null;
-  public workspaceIds: number[] = [];
+  public workspaceIds: number[] = []; 
   public isLoading = false;
   public userName: string = '';
+  public maxAttendees = 0; 
+  public userId: number | null = null;
 
-  // Formulario
   public form = {
     title: '',
+    event_type: '', // Campo de texto libre
     description: '',
-    attendees: 1
+    attendees: 1,
+    create_invitation: false 
   };
 
   constructor() {
@@ -61,19 +69,17 @@ export class ConfirmarEventoPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.loadSessionData();
+  async ngOnInit() {
+    await this.loadSessionData();
     
-    // Obtener datos pasados desde 'evento-agendar'
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state || history.state;
 
     if (state && state.reserva) {
       this.reserva = state.reserva;
-      this.workspaceIds = state.workspaceIds || [];
-      console.log('Datos recibidos:', this.reserva);
+      this.workspaceIds = (state.workspaceIds || []).map((id: any) => Number(id));
+      this.loadWorkspaceDetails();
     } else {
-      // Fallback para desarrollo (evita pantalla en blanco al recargar)
       this.reserva = {
         fecha: new Date().toISOString(),
         hora: '10:00',
@@ -83,75 +89,136 @@ export class ConfirmarEventoPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Usamos el mismo menú que en inicio
     this.menuCtrl.enable(true, 'menu-confirmar');
   }
 
-  loadSessionData() {
-    const name = sessionStorage.getItem('userFirstName');
-    const last = sessionStorage.getItem('userLastName');
-    if (name) {
-      this.userName = `${name} ${last || ''}`;
+  async loadSessionData() {
+    try {
+      const user = await this.storageService.getUser(); 
+      if (user) {
+        this.userId = user.id;
+        this.userName = `${user.first_name} ${user.last_name || ''}`;
+      }
+    } catch (e) {
+      console.error('Error cargando usuario:', e);
     }
+  }
+
+  private loadWorkspaceDetails(): void {
+    if (!this.workspaceIds || this.workspaceIds.length === 0) {
+      this.maxAttendees = 0;
+      return;
+    }
+
+    let totalOccupancy = 0;
+    if(this.workspaceIds.length === 1 && this.workspaceIds[0] === 1) {
+        this.maxAttendees = 50; 
+        return;
+    }
+
+    this.workspaceIds.forEach(id => {
+      this.apiService.getWorkspaceById(id).subscribe({
+        next: (ws) => {
+          totalOccupancy += ws.max_occupancy ?? 0;
+          this.maxAttendees = totalOccupancy;
+        },
+        error: (err) => console.error(`Error cargando espacio ${id}`, err)
+      });
+    });
   }
 
   async confirmarFinal() {
     if (!this.form.title.trim()) {
-      const alert = await this.alertCtrl.create({
-        header: 'Faltan datos',
-        message: 'Por favor ingresa un título para tu evento.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      this.presentToast('El título es obligatorio', 'warning');
       return;
     }
 
+    // Validación de texto simple
+    if (!this.form.event_type.trim()) {
+      this.presentToast('El tipo de evento es obligatorio', 'warning');
+      return;
+    }
+
+    if (!this.form.description.trim()) {
+      this.presentToast('La descripción del evento es obligatoria', 'warning');
+      return;
+    }
+
+    if (!this.form.attendees || this.form.attendees < 1 || !Number.isInteger(this.form.attendees)) {
+      this.presentToast('La cantidad de asistentes debe ser un número válido (mínimo 1)', 'warning');
+      return;
+    }
+
+    if (this.maxAttendees > 0 && this.form.attendees > this.maxAttendees) {
+      this.presentToast(`El aforo máximo es de ${this.maxAttendees} personas`, 'warning');
+      return;
+    }
+
+    if (!this.userId) {
+      this.presentToast('Error de sesión. Por favor vuelve a ingresar.', 'danger');
+      return;
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar Evento',
+      message: `¿Crear el evento "${this.form.title}"?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        { 
+          text: 'Sí, Crear', 
+          handler: () => this.enviarSolicitud() 
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private enviarSolicitud() {
     this.isLoading = true;
 
-    // Construir payload para la API
-    // Ajusta estos campos según lo que espere tu backend exactamente
+    const startDateTime = this.combinarFechaHora(this.reserva.fecha, this.reserva.hora);
+    const endDateTime = this.calcularFin(this.reserva.fecha, this.reserva.hora, this.reserva.duracion);
+
     const payload = {
       title: this.form.title,
-      description: this.form.description,
-      start_datetime: this.combinarFechaHora(this.reserva.fecha, this.reserva.hora),
-      // Calculamos fin sumando duración
-      end_datetime: this.calcularFin(this.reserva.fecha, this.reserva.hora, this.reserva.duracion),
-      attendees: this.form.attendees,
-      spaces: this.reserva.espacios || this.workspaceIds || []
+      start_datetime: startDateTime,
+      end_datetime: endDateTime,
+      created_by: this.userId,
+      create_invitation: this.form.create_invitation, 
+      
+      detail: {
+        attendees: this.form.attendees,
+        description: this.form.description,
+        event_type: this.form.event_type 
+      },
+      
+      spaces: this.workspaceIds.length > 0 ? this.workspaceIds : [1] 
     };
 
-    console.log('Enviando reserva:', payload);
+    console.log('Enviando Payload:', payload);
 
     this.apiService.creeateEvent(payload).subscribe({
-      next: async (res) => {
+      next: (res) => {
         this.isLoading = false;
-        const alert = await this.alertCtrl.create({
-          header: '¡Éxito!',
-          message: 'Tu reserva ha sido creada correctamente.',
-          buttons: [{
-            text: 'Ir al Inicio',
-            handler: () => this.router.navigate(['/inicio-usuario'])
-          }]
+        this.presentToast('Evento creado exitosamente', 'success');
+        
+        this.router.navigate(['/confirmacion-realizada'], { 
+          state: { 
+            event: res,
+            status: 'event_created'
+          } 
         });
-        await alert.present();
       },
-      error: async (err) => {
+      error: (err) => {
         this.isLoading = false;
         console.error(err);
-        const alert = await this.alertCtrl.create({
-          header: 'Error',
-          message: 'No se pudo crear la reserva. Intenta de nuevo.',
-          buttons: ['OK']
-        });
-        await alert.present();
+        const msg = err.error?.error || 'No se pudo crear el evento.';
+        this.presentToast(msg, 'danger');
       }
     });
   }
 
-  // Helpers de fecha
   private combinarFechaHora(fechaIso: string, horaStr: string): string {
-    // fechaIso: "2025-11-18T..."
-    // horaStr: "10:30"
     const datePart = fechaIso.split('T')[0];
     return `${datePart}T${horaStr}:00`;
   }
@@ -159,18 +226,22 @@ export class ConfirmarEventoPage implements OnInit {
   private calcularFin(fechaIso: string, horaStr: string, duracionMin: number): string {
     const inicio = new Date(this.combinarFechaHora(fechaIso, horaStr));
     const fin = new Date(inicio.getTime() + duracionMin * 60000);
-    
-    // Formatear a ISO string local o lo que pida tu backend
-    // Simple ISO:
-    return fin.toISOString().split('.')[0]; // Quita milisegundos si molestan
+    return fin.toISOString().split('.')[0];
+  }
+
+  async presentToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message, duration: 2000, color, position: 'bottom'
+    });
+    toast.present();
   }
 
   volver() {
     this.router.navigate(['/evento-agendar']);
   }
 
-  logout() {
-    sessionStorage.clear();
+  async logout() {
+    await this.storageService.clearSession();
     this.router.navigate(['/home']);
   }
 }

@@ -1,15 +1,11 @@
-<!-- HEADER -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-    <!-- Botón Menú Móvil -->
     <ion-buttons slot="start" class="mobile-only-button">
       <ion-menu-button color="light" menu="menu-confirmar"></ion-menu-button>
     </ion-buttons>
 
-    <!-- Logo -->
     <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
 
-    <!-- Botones Escritorio -->
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-chip class="user-chip">
         <ion-avatar>
@@ -22,7 +18,6 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- MENÚ LATERAL -->
 <ion-menu contentId="confirmar-content" type="overlay" menuId="menu-confirmar">
   <ion-header>
     <ion-toolbar>
@@ -39,12 +34,10 @@
   </ion-content>
 </ion-menu>
 
-<!-- CONTENIDO -->
 <ion-content [fullscreen]="true" id="confirmar-content" class="confirmar-content">
   
   <div class="page-wrapper">
     
-    <!-- Botón Volver -->
     <div class="nav-header">
       <ion-button fill="clear" class="back-btn" (click)="volver()">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
@@ -59,10 +52,8 @@
 
     <div class="content-card-wrapper">
       
-      <!-- TARJETA PRINCIPAL (ESTILO MOCKUP) -->
       <ion-card class="summary-card">
         
-        <!-- Encabezado Tarjeta -->
         <div class="card-top">
           <ion-icon name="document-text-outline" class="header-icon"></ion-icon>
           <h2>Resumen del Evento</h2>
@@ -70,7 +61,6 @@
 
         <div class="card-body">
           
-          <!-- DATOS DE FECHA (SOLO LECTURA) -->
           <div class="info-grid">
             <div class="info-item">
               <ion-icon name="calendar-outline"></ion-icon>
@@ -97,36 +87,54 @@
               <ion-icon name="people-outline"></ion-icon>
               <div>
                 <label>Espacios</label>
-                <span>{{ reserva?.espacios?.length || 0 }} seleccionados</span>
+                <span>{{ workspaceIds.length || 1 }} seleccionados</span>
               </div>
             </div>
           </div>
 
           <hr class="divider">
 
-          <!-- FORMULARIO FINAL (INPUTS) -->
           <div class="form-container">
+            
             <ion-item class="custom-input">
-              <ion-label position="stacked">Título del Evento</ion-label>
+              <ion-label position="stacked">Título del Evento <span style="color: #ef4444">*</span></ion-label>
               <ion-input [(ngModel)]="form.title" placeholder="Ej: Reunión de equipo"></ion-input>
             </ion-item>
 
             <ion-item class="custom-input">
-              <ion-label position="stacked">Asistentes estimados</ion-label>
-              <ion-input type="number" [(ngModel)]="form.attendees" placeholder="Ej: 4"></ion-input>
+              <ion-label position="stacked">Tipo de Evento <span style="color: #ef4444">*</span></ion-label>
+              <ion-input [(ngModel)]="form.event_type" placeholder="Ej: Taller, Charla, Clase..."></ion-input>
+            </ion-item>
+
+            <ion-item class="custom-input">
+              <ion-label position="stacked">
+                Asistentes estimados 
+                <span *ngIf="maxAttendees > 0" style="font-weight:normal; font-size:0.8em; color:#6b7280;">(Máx: {{maxAttendees}})</span>
+              </ion-label>
+              <ion-input type="number" min="1" [(ngModel)]="form.attendees" placeholder="Ej: 4"></ion-input>
+            </ion-item>
+
+            <ion-item class="custom-input toggle-item" lines="none">
+              <ion-label>
+                Generar Invitación Pública
+                <p style="font-size: 0.8em; color: #6b7280; margin-top: 2px;">Crea un enlace QR para inscripción externa</p>
+              </ion-label>
+              <ion-toggle [(ngModel)]="form.create_invitation" slot="end" color="primary"></ion-toggle>
             </ion-item>
 
             <ion-item class="custom-input area">
-              <ion-label position="stacked">Descripción (Opcional)</ion-label>
-              <ion-textarea [(ngModel)]="form.description" rows="3" placeholder="Detalles adicionales..."></ion-textarea>
+              <ion-label position="stacked">Descripción <span style="color: #ef4444">*</span></ion-label>
+              <ion-textarea [(ngModel)]="form.description" rows="3" placeholder="Detalles del evento..."></ion-textarea>
             </ion-item>
           </div>
 
-          <!-- BOTÓN CONFIRMAR -->
           <div class="action-area">
             <button class="btn-confirm-final" (click)="confirmarFinal()" [disabled]="isLoading">
               <span *ngIf="!isLoading">CONFIRMAR Y FINALIZAR</span>
-              <span *ngIf="isLoading">PROCESANDO...</span>
+              <span *ngIf="isLoading">
+                <ion-spinner name="dots" style="vertical-align: middle; margin-right: 8px;"></ion-spinner>
+                PROCESANDO...
+              </span>
             </button>
           </div>
 
