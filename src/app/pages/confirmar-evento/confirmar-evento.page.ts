@@ -55,7 +55,7 @@ export class ConfirmarEventoPage implements OnInit {
 
   public form = {
     title: '',
-    event_type: '', // Campo de texto libre
+    event_type: '', 
     description: '',
     attendees: 1,
     create_invitation: false 
@@ -133,7 +133,6 @@ export class ConfirmarEventoPage implements OnInit {
       return;
     }
 
-    // Validación de texto simple
     if (!this.form.event_type.trim()) {
       this.presentToast('El tipo de evento es obligatorio', 'warning');
       return;
@@ -176,7 +175,10 @@ export class ConfirmarEventoPage implements OnInit {
   private enviarSolicitud() {
     this.isLoading = true;
 
+    // Construir fechas en formato local limpio
     const startDateTime = this.combinarFechaHora(this.reserva.fecha, this.reserva.hora);
+    
+    // Aquí se aplica la corrección de cálculo (-1 minuto y formato local)
     const endDateTime = this.calcularFin(this.reserva.fecha, this.reserva.hora, this.reserva.duracion);
 
     const payload = {
@@ -218,15 +220,34 @@ export class ConfirmarEventoPage implements OnInit {
     });
   }
 
+  // Devuelve YYYY-MM-DDTHH:mm:ss limpio (Local)
   private combinarFechaHora(fechaIso: string, horaStr: string): string {
     const datePart = fechaIso.split('T')[0];
     return `${datePart}T${horaStr}:00`;
   }
 
+  // --- FUNCIÓN CORREGIDA ---
   private calcularFin(fechaIso: string, horaStr: string, duracionMin: number): string {
-    const inicio = new Date(this.combinarFechaHora(fechaIso, horaStr));
-    const fin = new Date(inicio.getTime() + duracionMin * 60000);
-    return fin.toISOString().split('.')[0];
+    // 1. Crear fecha inicio basada en string local (El navegador respeta la hora local)
+    const inicioStr = this.combinarFechaHora(fechaIso, horaStr);
+    const inicio = new Date(inicioStr);
+    
+    // 2. Sumar duración y RESTAR 1 minuto (en milisegundos)
+    // Esto asegura que si termina a las 17:30, la hora final sea 17:29:00
+    // Evitando solapamientos con el bloque que inicia a las 17:30
+    const finMs = inicio.getTime() + (duracionMin * 60000) - 60000;
+    const fin = new Date(finMs);
+
+    // 3. Formatear manualmente a 'YYYY-MM-DDTHH:mm:ss' usando componentes LOCALES
+    // NO usar toISOString() porque convierte a UTC (+4 horas de diferencia)
+    const year = fin.getFullYear();
+    const month = String(fin.getMonth() + 1).padStart(2, '0');
+    const day = String(fin.getDate()).padStart(2, '0');
+    const hours = String(fin.getHours()).padStart(2, '0');
+    const minutes = String(fin.getMinutes()).padStart(2, '0');
+    const seconds = String(fin.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   }
 
   async presentToast(message: string, color: string) {
