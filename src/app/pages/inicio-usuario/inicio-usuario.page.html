@@ -94,7 +94,7 @@
           <!-- IMPORTANTE: Solo Admin puede subir memorias -->
           <ng-container *ngIf="isAdmin">
             <ion-col size="12" size-sm="6" size-lg="4">
-              <ion-card class="action-card" button>
+              <ion-card class="action-card" button [routerLink]="['/crear-memoria']">
                 <div class="card-icon primary"><ion-icon name="cloud-upload-outline"></ion-icon></div>
                 <ion-card-header>
                   <ion-card-title>Subir Nueva Memoria</ion-card-title>
