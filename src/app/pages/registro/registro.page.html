@@ -33,7 +33,7 @@
       <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
         
         <!-- INPUT: NOMBRE -->
-        <div class="custom-input-group">
+        <!-- <div class="custom-input-group">
           <div class="input-wrapper" [class.error-border]="nombre?.invalid && nombre?.touched">
             <ion-icon name="person-outline" class="input-icon"></ion-icon>
             <input 
@@ -45,6 +45,30 @@
           <div class="error-msg" *ngIf="nombre?.invalid && nombre?.touched">
             <span *ngIf="nombre?.hasError('required')">Nombre requerido</span>
             <span *ngIf="nombre?.hasError('minlength')">Mínimo 3 caracteres</span>
+          </div>
+        </div> -->
+
+        <!-- INPUT: FIRST NAME -->
+        <div class="custom-input-group">
+          <div class="input-wrapper" [class.error-border]="first_name?.invalid && first_name?.touched">
+            <ion-icon name="person-outline" class="field-icon"></ion-icon>
+            <input type="text" placeholder="Nombre" formControlName="first_name" class="native-input">
+          </div>
+          <div class="error-msg" *ngIf="first_name?.invalid && first_name?.touched">
+            <span *ngIf="first_name?.hasError('required')">Nombre requerido</span>
+            <span *ngIf="first_name?.hasError('minlength')">Mínimo 2 letras</span>
+          </div>
+        </div>
+
+        <!-- INPUT: LAST NAME -->
+        <div class="custom-input-group">
+          <div class="input-wrapper" [class.error-border]="last_name?.invalid && last_name?.touched">
+            <ion-icon name="person-outline" class="field-icon"></ion-icon>
+            <input type="text" placeholder="Apellido" formControlName="last_name" class="native-input">
+          </div>
+          <div class="error-msg" *ngIf="last_name?.invalid && last_name?.touched">
+            <span *ngIf="last_name?.hasError('required')">Apellido requerido</span>
+            <span *ngIf="last_name?.hasError('minlength')">Mínimo 2 letras</span>
           </div>
         </div>
 

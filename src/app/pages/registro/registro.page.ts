@@ -35,6 +35,7 @@ import {
   checkmarkCircleOutline,
   alertCircleOutline
 } from 'ionicons/icons';
+import { ApiService } from 'src/app/service/http-client';
 
 // Importamos tu Footer Component
 import { FooterComponent } from 'src/app/components/footer/footer.component';
@@ -81,6 +82,7 @@ export class RegistroPage {
 
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
+  private api = inject(ApiService);
 
   public registroForm: FormGroup;
   public passwordVisible = false;
@@ -99,14 +101,16 @@ export class RegistroPage {
     });
 
     this.registroForm = new FormGroup({
-      nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      first_name: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      last_name: new FormControl('', [Validators.required, Validators.minLength(2)]),
       email: new FormControl('', [Validators.required, Validators.email, duocEmailValidator]),
       password: new FormControl('', [Validators.required, Validators.minLength(8)]),
       confirmPassword: new FormControl('', [Validators.required])
     }, { validators: passwordMatchValidator });
   }
 
-  get nombre() { return this.registroForm.get('nombre'); }
+  get first_name() { return this.registroForm.get('first_name'); }
+  get last_name() { return this.registroForm.get('last_name'); }
   get email() { return this.registroForm.get('email'); }
   get password() { return this.registroForm.get('password'); }
   get confirmPassword() { return this.registroForm.get('confirmPassword'); }
@@ -115,11 +119,44 @@ export class RegistroPage {
   toggleConfirmPasswordVisibility() { this.confirmPasswordVisible = !this.confirmPasswordVisible; }
 
   async onSubmit() {
-    this.registroForm.markAllAsTouched();
-    if (this.registroForm.invalid) return;
+    if (this.registroForm.invalid) {
+      this.registroForm.markAllAsTouched();
+      return;
+    }
 
-    this.mostrarAlerta('¡Cuenta creada con éxito!', 'success');
-    setTimeout(() => { this.router.navigate(['/login']); }, 2000);
+    const formValues = this.registroForm.value;
+
+    // 1. EXTRAER USERNAME DEL EMAIL (Todo antes del @)
+    // Ejemplo: juan.perez@duocuc.cl -> juan.perez
+    const username = formValues.email.split('@')[0];
+
+    // 2. PREPARAR EL PAYLOAD PARA DJANGO
+    const payload = {
+      first_name: formValues.first_name,
+      last_name: formValues.last_name,
+      email: formValues.email,
+      username: username,          // Campo calculado
+      password: formValues.password,
+      password2: formValues.confirmPassword // Enviamos la confirmación también
+    };
+
+    // 3. ENVIAR AL BACKEND
+    this.api.register(payload).subscribe({
+      next: async (res) => {
+        await this.mostrarAlerta('Registro exitoso. Ahora puedes iniciar sesión.', 'success');
+        this.router.navigate(['/login']);
+      },
+      error: async (err) => {
+        console.error('Error registro:', err);
+        // Manejo básico de errores de Django (ej: username ya existe)
+        let msg = 'Error al registrar usuario.';
+        if (err.error) {
+          if (err.error.email) msg = 'El correo ya está registrado.';
+          if (err.error.username) msg = 'El usuario ya existe.';
+        }
+        await this.mostrarAlerta(msg, 'danger');
+      }
+    });
   }
 
   async mostrarAlerta(message: string, color: 'success' | 'danger') {
