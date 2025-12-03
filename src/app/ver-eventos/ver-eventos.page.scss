@@ -1,9 +1,9 @@
 /* VARIABLES */
-$brand-blue: #2563eb; 
-$brand-dark: #020617; 
-$card-bg: #0f172a;    
-$text-blue: #3b82f6;  
-$text-grey: #94a3b8;  
+$brand-blue: #3b82f6; 
+$brand-dark: #0b1121; 
+$card-bg: #1f2937;
+$text-white: #ffffff;
+$text-grey: #9ca3af;
 
 :host {
   ion-content {
@@ -11,160 +11,161 @@ $text-grey: #94a3b8;
   }
 }
 
-/* --- HEADER (LOGO 80PX ESTÁNDAR) --- */
 .main-header {
   position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
-
-  .main-toolbar {
-    --min-height: 100px; /* Altura para logo grande */
-    --background: transparent; 
-    --border-width: 0;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Distribución */
+  .main-toolbar { 
+    --min-height: 100px; --background: transparent; --border-width: 0; 
+    padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
   }
-
-  /* LOGO GRANDE */
-  .logo {
-    height: 80px;
-    width: auto;
-    object-fit: contain;
-    cursor: pointer;
-    display: block;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    transition: all 0.3s ease;
-  }
-
-  ion-menu-button { --color: #ffffff; font-size: 2rem; margin: 0; }
-
+  .logo { height: 80px; width: auto; object-fit: contain; cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  ion-menu-button { --color: white; font-size: 2rem; }
+  
   .desktop-only-buttons {
-    ion-button {
-      font-family: 'Inter', sans-serif; font-weight: 500; text-transform: none; --border-radius: 50px;
-      &.btn-link { --color: #ffffff; --color-hover: #bfdbfe; }
-      
-      /* Botones Auth */
-      &.btn-register { --background: #ffffff; --color: #1e40af; font-weight: 700; margin-left: 10px; }
-      &.btn-login { --color: #ffffff; --border-color: rgba(255,255,255,0.5); --border-width: 1px; margin-left: 10px; }
-      
-      /* Botones Logueado */
-      &.btn-start { --color: #ffffff; --border-color: rgba(255,255,255,0.5); --border-width: 1px; margin-left: 10px; }
-      &.btn-logout { --background: #ef4444; --color: white; font-weight: 700; margin-left: 10px; }
+    display: flex; gap: 10px; align-items: center;
+    ion-button { font-weight: 500; text-transform: none; --border-radius: 50px; }
+    .user-chip { --background: rgba(255,255,255,0.1); color: white; ion-avatar { width: 24px; height: 24px; } }
+    .btn-logout { --background: white; --color: #0f172a; font-weight: 600; height: 36px; }
+  }
+}
+
+.page-container {
+  padding: 120px 20px 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+.hero-text {
+  text-align: center; margin-bottom: 20px;
+  h1 { color: white; font-size: 1.8rem; font-weight: 800; margin: 0; }
+  p { color: $text-grey; margin-top: 5px; font-size: 0.9rem; }
+}
+
+/* FILTROS */
+.filter-wrapper {
+  display: flex; justify-content: center; margin-bottom: 25px;
+  ion-segment {
+    background: rgba(255,255,255,0.05); border-radius: 8px; max-width: 300px;
+    ion-segment-button {
+      --color: $text-grey; --color-checked: white; --indicator-color: $brand-blue; font-weight: 500;
     }
   }
 }
 
-/* --- POSICIONAMIENTO LOGO --- */
-@media (max-width: 991px) {
-  .main-header {
-    .desktop-only-buttons { display: none; }
-    .mobile-only-button { display: block; margin-right: 0; }
-    /* Móvil: Logo a la derecha */
-    .logo { margin-left: auto; margin-right: 0; }
-  }
-}
-@media (min-width: 992px) {
-  .main-header {
-    .mobile-only-button { display: none; }
-    .desktop-only-buttons { display: flex; align-items: center; }
-    /* Desktop: Logo a la izquierda */
-    .logo { margin-right: auto; margin-left: 0; }
-  }
+/* LISTA DE EVENTOS */
+.events-list {
+  display: flex; flex-direction: column; gap: 15px;
 }
 
-/* --- MENÚ AZUL (DEGRADADO) --- */
-ion-menu {
-  --background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
-  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%) !important;
+.event-card {
+  background: $card-bg;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-  ion-header ion-toolbar { --background: transparent !important; background: transparent !important; --color: #ffffff; --border-width: 0; }
-  ion-content { --background: transparent !important; background: transparent !important; --color: #ffffff; }
-  ion-list { background: transparent !important; padding-top: 10px; }
-  ion-item { 
-    --background: transparent !important; background: transparent !important; 
-    --color: #ffffff; --border-color: rgba(255, 255, 255, 0.1); 
-    font-size: 1rem; font-weight: 500; --min-height: 55px; --padding-start: 20px;
-    ion-icon { color: #bfdbfe; margin-right: 15px; }
-    &:hover { --background: rgba(255,255,255,0.15) !important; cursor: pointer; }
+  &:hover {
+    border-color: rgba($brand-blue, 0.5);
+    background: lighten($card-bg, 2%);
   }
-  .logout-item { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); color: #ffadad; ion-icon { color: #ffadad; } }
-}
 
-/* --- CONTENIDO --- */
-.page-wrapper { padding: 140px 20px 80px 20px; max-width: 1000px; margin: 0 auto; min-height: 90vh; }
-.nav-header { margin-bottom: 20px; .back-btn { --color: #ffffff; --padding-start: 0; font-size: 1.2rem; ion-icon { font-size: 2rem; margin-right: 5px; } .back-text { display: none; @media(min-width: 768px) { display: inline; } } } }
-.section-header { margin-bottom: 50px; h1 { color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; } p { color: $text-grey; font-size: 1.1rem; max-width: 600px; margin: 0 auto; } }
+  &.expanded {
+    border-color: $brand-blue;
+  }
 
-/* --- ESTILOS PARA EL SEGMENTO (CORREGIDO) --- */
-.filter-container {
-  margin-top: 20px; 
+  /* CABECERA (Compacta) */
+  .card-header {
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
 
-  ion-segment {
-
-    ion-segment-button {
-      /* TEXTO NO SELECCIONADO: Gris Claro !important */
-      --color: #cccccc !important;
+    .date-box {
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 8px 5px;
+      min-width: 55px;
+      text-align: center;
+      display: flex; flex-direction: column;
       
-      /* TEXTO SELECCIONADO: Blanco !important */
-      --color-checked: #ffffff !important;
-      
-      /* BARRA INDICADORA: Azul !important */
-      --indicator-color: #3b82f6 !important;
+      .day { font-size: 1.4rem; font-weight: 800; color: white; line-height: 1; }
+      .month { font-size: 0.75rem; text-transform: uppercase; color: $brand-blue; font-weight: 700; margin-top: 2px; }
+    }
 
-      margin: 0 2px;
-      
-      ion-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+    .info-main {
+      flex: 1;
+      .top-row {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+        .status-chip { height: 18px; font-size: 0.65rem; font-weight: 700; margin: 0; }
+        .type-badge { font-size: 0.75rem; color: $text-grey; text-transform: uppercase; letter-spacing: 0.5px; }
+      }
+      h2 { color: white; font-size: 1.1rem; font-weight: 700; margin: 0 0 4px 0; line-height: 1.2; }
+      .time-row {
+        display: flex; align-items: center; gap: 6px; color: $text-grey; font-size: 0.85rem;
+        ion-icon { color: $brand-blue; }
+      }
+    }
+
+    .arrow-indicator {
+      color: $text-grey; font-size: 1.2rem;
+    }
+  }
+
+  /* DETALLE */
+  .card-detail {
+    padding: 0 20px 20px 20px;
+    animation: slideDown 0.3s ease;
+
+    .divider { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 5px 0 15px 0; }
+
+    .description { color: #d1d5db; line-height: 1.5; font-size: 0.9rem; margin-bottom: 15px; }
+
+    .contact-info {
+      display: flex; align-items: center; gap: 8px; color: $text-grey; font-size: 0.85rem; margin-bottom: 20px;
+      ion-icon { color: $brand-blue; }
+      a { color: $brand-blue; text-decoration: none; &:hover { text-decoration: underline; } }
+    }
+
+    /* INVITACIÓN */
+    .invitation-box {
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+
+      .qr-wrapper {
+        background: white; padding: 4px; border-radius: 6px; line-height: 0;
+      }
+
+      .link-wrapper {
+        flex: 1;
+        p { color: white; font-size: 0.85rem; margin: 0 0 8px 0; }
+        ion-button { --border-radius: 6px; font-size: 0.8rem; height: 32px; margin: 0; }
       }
     }
   }
 }
 
-.events-container { display: flex; flex-direction: column; gap: 30px; }
-
-.event-card {
-  background-color: $card-bg; border-radius: 12px; overflow: hidden; display: flex; 
-  border: 1px solid rgba(255, 255, 255, 0.993); transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 250px;
-  &:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3); border-color: rgba(59, 130, 246, 0.3); }
-
-  .card-image { flex: 0 0 35%; background-size: cover; background-position: center; position: relative; background-color: #1e293b; .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.8)); } }
-  .card-body { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; .event-title { color: $text-blue; font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; } .event-meta { display: flex; gap: 25px; margin-bottom: 20px; color: $text-grey; font-size: 0.9rem; .meta-item { display: flex; align-items: center; gap: 8px; ion-icon { font-size: 1.1rem; color: #64748b; } } } .event-desc { color: #cbd5e1; line-height: 1.6; font-size: 1rem; margin-bottom: 20px; } .category-badge { display: inline-block; background: rgba(59, 130, 246, 0.1); color: $text-blue; padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; align-self: flex-start; } }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+.loader, .empty-state {
+  text-align: center; color: $text-grey; padding: 50px 0;
+  ion-icon { font-size: 3rem; margin-bottom: 10px; opacity: 0.5; }
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .event-card { flex-direction: column; min-height: auto; .card-image { height: 200px; width: 100%; } .card-body { padding: 20px; } .event-title { font-size: 1.5rem; } .event-meta { flex-direction: column; gap: 10px; } }
-  .section-header h1 { font-size: 2rem; }
+  .desktop-only-buttons { display: none; }
+  .mobile-only-button { display: block; }
+  .invitation-box { justify-content: center; text-align: center; }
 }
-
-/* --- ESTILO PARA EL MENSAJE 'NO HAY EVENTOS' --- */
-/* Agrega esto al final de tu archivo SCSS */
-
-.empty-state {
-  margin-top: 30px; /* Para separarlo un poco del selector */
-
-  /* El Icono (opcional, por si quieres quitar el estilo en línea del HTML) */
-  ion-icon {
-    font-size: 60px !important;
-    color: $text-grey; /* O usa color: #64748b; */
-    margin-bottom: 15px;
-  }
-
-  /* El Título (h3) */
-  h3 {
-    color: #ffffff;      /* BLANCO: Para que resalte sobre el fondo oscuro */
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  /* El Texto secundario (p) */
-  p {
-    color: $text-grey;   /* GRIS CLARO: Usando tu variable (#94a3b8) */
-    font-size: 1.1rem;
-    max-width: 80%;      /* Para que no se estire demasiado en pantallas grandes */
-    margin: 0 auto;      /* Centrado */
-  }
+@media (min-width: 769px) {
+  .mobile-only-button { display: none; }
 }

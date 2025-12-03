@@ -6,14 +6,19 @@ import {
   IonImg, IonMenu, IonTitle, IonList, IonItem, IonLabel, IonIcon,
   MenuController, IonChip, IonAvatar, IonSegment, IonSegmentButton, IonSpinner, IonText
 } from '@ionic/angular/standalone';
+import { QRCodeComponent } from 'angularx-qrcode';
 import { addIcons } from 'ionicons';
 import { 
   calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline,
   personCircleOutline, logOutOutline, libraryOutline, folderOpenOutline, homeOutline,
-  alertCircleOutline, logInOutline
+  alertCircleOutline, logInOutline, mailOutline, linkOutline, qrCodeOutline,
+  chevronDownOutline, chevronUpOutline
 } from 'ionicons/icons';
+
 import { FooterComponent } from '../components/footer/footer.component';
 import { ApiService } from 'src/app/service/http-client'; 
+import { AuthService } from 'src/app/service/auth.service';
+import { StorageService } from 'src/app/service/storage.service';
 
 @Component({
   selector: 'app-ver-eventos',
@@ -21,138 +26,131 @@ import { ApiService } from 'src/app/service/http-client';
   styleUrls: ['./ver-eventos.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, RouterLink, FooterComponent,
+    CommonModule, RouterLink, FooterComponent, QRCodeComponent,
     IonContent, IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, 
     IonImg, IonMenu, IonTitle, IonList, IonItem, IonLabel, IonIcon,
     IonChip, IonAvatar, IonSegment, IonSegmentButton, IonSpinner, IonText
   ]
 })
 export class VerEventosPage implements OnInit {
-  
-  private menuCtrl = inject(MenuController);
-  private apiService = inject(ApiService);
+
+  private api = inject(ApiService);
+  private authService = inject(AuthService);
+  private storage = inject(StorageService);
   private router = inject(Router);
 
-  // Estado de usuario
-  public isLoggedIn = signal<boolean>(false); 
-  public userName = signal<string>('');
-
-  // Estado de eventos
+  // Datos
   public eventos = signal<any[]>([]);
   public isLoading = signal<boolean>(false);
   
-  // Filtro: true = Hoy, false = Próximos
-  public filterToday = signal<boolean>(true); 
+  // Estado de UI
+  public expandedEventId = signal<number | null>(null);
+  public filterToday = signal<boolean>(false); // false = Todos, true = Hoy
+
+  // Sesión
+  public isLoggedIn = signal<boolean>(false);
+  public userName = signal<string>('');
 
   constructor() {
     addIcons({ 
       calendarOutline, timeOutline, locationOutline, arrowForwardOutline, arrowBackOutline,
       personCircleOutline, logOutOutline, libraryOutline, folderOpenOutline, homeOutline,
-      alertCircleOutline, logInOutline
+      alertCircleOutline, logInOutline, mailOutline, linkOutline, qrCodeOutline,
+      chevronDownOutline, chevronUpOutline
     });
   }
 
   ngOnInit() {
-    this.checkLogin();
-  }
-
-  ionViewWillEnter() {
-    this.menuCtrl.enable(true, 'menu-eventos');
-    this.checkLogin();
-    this.loadEvents(); 
-  }
-
-  checkLogin() {
-    // Validamos si existe userId O si existe un token de acceso
-    const userId = sessionStorage.getItem('userId');
-    const token = sessionStorage.getItem('token') || sessionStorage.getItem('access'); 
-    
-    // Si hay cualquiera de los dos, asumimos que está logueado
-    this.isLoggedIn.set(!!(userId || token));
-    
-    if (userId) {
-      const name = sessionStorage.getItem('userFirstName');
-      const last = sessionStorage.getItem('userLastName');
-      if (name) this.userName.set(`${name} ${last || ''}`);
-    }
-  }
-
-  logout() {
-    sessionStorage.clear();
-    this.isLoggedIn.set(false);
-    this.userName.set('');
-    this.router.navigate(['/home']);
-  }
-
-  /**
-   * FUNCIÓN NUEVA: Controla a dónde vuelve el usuario
-   */
-  irAtras() {
-    if (this.isLoggedIn()) {
-      // Si está logueado, vuelve a su panel de usuario
-      this.router.navigate(['/inicio-usuario']);
-    } else {
-      // Si NO está logueado, vuelve a la portada pública
-      this.router.navigate(['/home']);
-    }
-  }
-
-  segmentChanged(event: any) {
-    const value = event.detail.value;
-    this.filterToday.set(value === 'today');
+    this.checkSession();
     this.loadEvents();
   }
 
-  loadEvents() {
-    this.isLoading.set(true);
-    this.apiService.getScheduledEvents(this.filterToday()).subscribe({
-      next: (response: any) => {
-        if (response && response.events) {
-          const mappedEvents = response.events.map((ev: any) => ({
-            id: ev.id_event || ev.id,
-            titulo: ev.title || 'Sin título',
-            fecha: this.formatDate(ev.start_datetime),
-            hora: this.formatTimeRange(ev.start_datetime, ev.end_datetime),
-            descripcion: ev.description || 'Sin descripción disponible.',
-            imagen: ev.image || this.getRandomImage(), 
-            categoria: ev.event_type_label || 'Evento'
-          }));
-          this.eventos.set(mappedEvents);
-        } else {
-          this.eventos.set([]);
-        }
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error cargando eventos:', err);
-        this.eventos.set([]); 
-        this.isLoading.set(false);
+  checkSession() {
+    this.authService.isAuthenticated$.subscribe(auth => {
+      this.isLoggedIn.set(auth);
+      if (auth) {
+        this.storage.getUser().then(user => {
+          if (user) this.userName.set(`${user.first_name} ${user.last_name || ''}`);
+        });
       }
     });
   }
 
-  private formatDate(isoString: string): string {
-    if (!isoString) return '';
-    const date = new Date(isoString);
-    return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+  // Lógica Botón Volver
+  goBack() {
+    if (this.isLoggedIn()) {
+      this.router.navigate(['/inicio-usuario']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 
-  private formatTimeRange(startIso: string, endIso: string): string {
-    if (!startIso || !endIso) return '';
-    const start = new Date(startIso);
-    const end = new Date(endIso);
-    const opts: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
-    const sTime = new Intl.DateTimeFormat('en-US', opts).format(start);
-    const eTime = new Intl.DateTimeFormat('en-US', opts).format(end);
-    return `${sTime} - ${eTime}`;
+  // Carga de Eventos (Pasando el filtro explícitamente)
+  loadEvents(event?: any) {
+    if (!event) this.isLoading.set(true);
+
+    // Pasamos el valor del signal (true o false) al servicio
+    this.api.getScheduledEvents(this.filterToday()).subscribe({
+      next: (res: any) => {
+        const lista = res.events || [];
+        this.eventos.set(lista);
+        this.isLoading.set(false);
+        if (event) event.target.complete();
+      },
+      error: (err: any) => {
+        console.error('Error cargando eventos:', err);
+        this.isLoading.set(false);
+        if (event) event.target.complete();
+      }
+    });
   }
 
-  private getRandomImage(): string {
-    const images = [
-      'https://images.unsplash.com/photo-1713918927999-6c1ddf8ffc84?q=80&w=880&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1603356033288-acfcb54801e6?w=600&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=880&auto=format&fit=crop'
-    ];
-    return images[Math.floor(Math.random() * images.length)];
+  // Cambio de filtro desde el Segmento
+  segmentChanged(ev: any) {
+    const val = ev.detail.value;
+    this.filterToday.set(val === 'today');
+    this.eventos.set([]); // Limpiar visualmente
+    this.loadEvents();
+  }
+
+  // Acordeón de tarjetas
+  toggleExpand(id: number) {
+    if (this.expandedEventId() === id) {
+      this.expandedEventId.set(null);
+    } else {
+      this.expandedEventId.set(id);
+    }
+  }
+
+  // Helpers de estado
+  getStatusLabel(status: number): string {
+    switch(status) {
+      case 1: return 'Agendado';
+      case 2: return 'Confirmado';
+      case 3: return 'En Curso';
+      case 4: return 'Realizado';
+      case 0: return 'Cancelado';
+      default: return 'Desconocido';
+    }
+  }
+
+  getStatusColor(status: number): string {
+    switch(status) {
+      case 1: return 'warning'; 
+      case 2: return 'success'; 
+      case 0: return 'danger';  
+      case 3: return 'primary'; 
+      case 4: return 'medium';  
+      default: return 'medium';
+    }
+  }
+
+  openLink(url: string) {
+    if (url) window.open(url, '_blank', 'noopener');
+  }
+
+  async logout() {
+    await this.storage.clearSession();
+    this.router.navigate(['/home']);
   }
 }
