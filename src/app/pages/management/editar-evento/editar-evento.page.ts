@@ -1,16 +1,22 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { 
-  IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, 
-  IonCard, IonCardContent, IonItem, IonLabel, IonInput, IonTextarea, 
-  IonDatetimeButton, IonModal, IonDatetime, IonSelect, IonSelectOption, 
-  IonButton, IonSpinner, IonNote, IonText, IonIcon, ToastController
+  IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
+  IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonItem, IonLabel, 
+  IonInput, IonTextarea, IonDatetime, IonButton, IonIcon, IonSpinner, 
+  IonToggle, ToastController, LoadingController, IonSegment, IonSegmentButton,
+  IonDatetimeButton, IonModal
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { alertCircle } from 'ionicons/icons';
+import { 
+  saveOutline, calendarOutline, timeOutline, textOutline, 
+  peopleOutline, arrowBackOutline, documentTextOutline
+} from 'ionicons/icons';
+
 import { ApiService } from 'src/app/service/http-client';
+import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 @Component({
   selector: 'app-editar-evento',
@@ -18,163 +24,192 @@ import { ApiService } from 'src/app/service/http-client';
   styleUrls: ['./editar-evento.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, IonContent, IonHeader, IonToolbar, 
-    IonButtons, IonBackButton, IonTitle, IonCard, IonCardContent, IonItem, 
-    IonLabel, IonInput, IonTextarea, IonDatetimeButton, IonModal, IonDatetime, 
-    IonSelect, IonSelectOption, IonButton, IonSpinner, IonNote, IonText, IonIcon
+    CommonModule, 
+    FormsModule, 
+    FooterComponent,
+    RouterLink,
+    IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
+    IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonItem, IonLabel, 
+    IonInput, IonTextarea, IonDatetime, IonButton, IonIcon, IonSpinner, 
+    IonToggle, IonSegment, IonSegmentButton,
+    IonDatetimeButton, IonModal
   ]
 })
 export class EditarEventoPage implements OnInit {
-  
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private fb = inject(FormBuilder);
   private api = inject(ApiService);
   private toastCtrl = inject(ToastController);
+  private loadingCtrl = inject(LoadingController);
 
-  public eventId: number = 0;
-  public eventForm!: FormGroup;
-  public isLoading = signal<boolean>(true);
-  public isSaving = signal<boolean>(false);
-  public timeSlots: string[] = []; // Generados cada 30 min
+  public isLoading = true;
+  public eventId: number | null = null;
+
+  public eventData: any = {
+    title: '',
+    event_type: '',
+    description: '',
+    attendees: 1,
+    start_date: '',
+    start_time: '',
+    end_time: '',
+    create_invitation: false
+  };
 
   constructor() {
-    addIcons({ alertCircle });
-    this.generateTimeSlots();
+    addIcons({ 
+      saveOutline, calendarOutline, timeOutline, textOutline, 
+      peopleOutline, arrowBackOutline, documentTextOutline
+    });
   }
 
   ngOnInit() {
-    this.eventId = Number(this.route.snapshot.paramMap.get('id'));
-    this.initForm();
-    if (this.eventId) {
-      this.loadEventData();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.eventId = Number(id);
+      this.loadEventData(this.eventId);
+    } else {
+      this.presentToast('ID de evento inválido', 'danger');
+      this.router.navigate(['/gestionar-eventos']); 
     }
   }
 
-  generateTimeSlots() {
-    // Generar slots de 08:00 a 22:00 cada 30 min
-    const startHour = 8;
-    const endHour = 22;
-    for (let h = startHour; h <= endHour; h++) {
-      this.timeSlots.push(`${h.toString().padStart(2, '0')}:00`);
-      if (h !== endHour) this.timeSlots.push(`${h.toString().padStart(2, '0')}:30`);
-    }
-  }
+  loadEventData(id: number) {
+    this.isLoading = true;
+    this.api.getManagementEventById(id).subscribe({
+      next: (res: any) => {
+        const detail = res.detail || {};
+        const startIso = res.start_datetime;
+        const endIso = res.end_datetime;
 
-  initForm() {
-    this.eventForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(5)]],
-      description: ['', [Validators.required]],
-      date: [new Date().toISOString(), Validators.required],
-      startTime: ['', Validators.required],
-      endTime: ['', Validators.required]
-    }, { validators: this.timeRangeValidator });
-  }
-
-  // Validador personalizado para rango de horas
-  timeRangeValidator(group: AbstractControl): ValidationErrors | null {
-    const start = group.get('startTime')?.value;
-    const end = group.get('endTime')?.value;
-    if (start && end && start >= end) {
-      return { invalidTimeRange: true };
-    }
-    return null;
-  }
-
-  get f() { return this.eventForm.controls; }
-
-  loadEventData() {
-    this.isLoading.set(true);
-    this.api.getManagementEventById(this.eventId).subscribe({
-      next: (data: any) => {
-        // Parsear fechas y horas del backend
-        const startDt = new Date(data.start_datetime);
-        const endDt = new Date(data.end_datetime);
-        
-        // Ajustar la hora de fin sumando 1 minuto para visualización (porque guardamos como :59)
-        // Ejemplo: Backend tiene 10:59 -> Frontend muestra 11:00
-        // Ojo: Si el backend tiene :59, al traerlo sumamos 1 min para que calce con el slot :00 o :30
-        if (endDt.getSeconds() === 59 || endDt.getSeconds() === 0) {
-           // Simplemente redondeamos al slot más cercano
-           this.roundToNearestSlot(endDt);
-        }
-
-        this.eventForm.patchValue({
-          title: data.title,
-          description: data.description,
-          date: startDt.toISOString(),
-          startTime: this.formatTimeForSelect(startDt),
-          endTime: this.formatTimeForSelect(endDt)
-        });
-        this.isLoading.set(false);
+        this.eventData = {
+          title: res.title,
+          event_type: detail.event_type || '',
+          description: detail.description || '',
+          attendees: detail.attendees || 1,
+          start_date: startIso, 
+          start_time: startIso,
+          end_time: endIso,
+          create_invitation: res.form_public_link ? true : false 
+        };
+        this.isLoading = false;
       },
-      error: () => {
-        this.presentToast('Error al cargar datos del evento', 'danger');
-        this.router.navigate(['/management/gestionar-eventos']);
+      error: (err) => {
+        console.error('Error al cargar evento:', err);
+        this.presentToast('No se pudo cargar la información del evento', 'danger');
+        this.isLoading = false;
       }
     });
   }
 
-  roundToNearestSlot(date: Date) {
-    // Lógica simple: si min > 45 -> siguiente hora :00, si min > 15 -> :30
-    const m = date.getMinutes();
-    if (m === 59) {
-      date.setMinutes(date.getMinutes() + 1); // Subir al sgte minuto exacto
+  async saveChanges() {
+    if (!this.eventId) return;
+
+    // --- VALIDACIONES ---
+
+    // 1. Título
+    if (!this.eventData.title.trim()) {
+      return this.presentToast('El título es obligatorio', 'warning');
     }
-  }
+    if (this.eventData.title.length > 150) {
+      return this.presentToast('El título no puede exceder los 150 caracteres', 'warning');
+    }
 
-  formatTimeForSelect(date: Date): string {
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
-    return `${h}:${m}`;
-  }
+    // 2. Tipo de Evento (NUEVA VALIDACIÓN)
+    if (!this.eventData.event_type.trim()) {
+      return this.presentToast('El tipo de evento es obligatorio', 'warning');
+    }
+    if (this.eventData.event_type.length > 50) {
+      return this.presentToast('El tipo de evento no puede exceder los 50 caracteres', 'warning');
+    }
 
-  saveEvent() {
-    if (this.eventForm.invalid) return;
+    // 3. Descripción
+    if (!this.eventData.description.trim()) {
+      return this.presentToast('La descripción es obligatoria', 'warning');
+    }
+    if (this.eventData.description.length > 2000) {
+      return this.presentToast('La descripción no puede exceder los 2000 caracteres', 'warning');
+    }
 
-    this.isSaving.set(true);
-    const val = this.eventForm.value;
+    // 4. Asistentes
+    const attendees = Number(this.eventData.attendees);
+    if (!attendees || attendees < 1 || attendees > 50) {
+      return this.presentToast('Los asistentes deben ser entre 1 y 50 personas', 'warning');
+    }
 
-    // Construir objetos Date
-    // La fecha base viene del datepicker
-    const baseDate = new Date(val.date);
-    const y = baseDate.getFullYear();
-    const m = baseDate.getMonth();
-    const d = baseDate.getDate();
+    // --- MANEJO DE FECHAS ---
 
-    const [sh, sm] = val.startTime.split(':').map(Number);
-    const [eh, em] = val.endTime.split(':').map(Number);
+    const baseDate = this.eventData.start_date.split('T')[0];
+    const startTimePart = this.getTimeFromIso(this.eventData.start_time);
+    const endTimePart = this.getTimeFromIso(this.eventData.end_time);
 
-    const startDateTime = new Date(y, m, d, sh, sm, 0);
-    const endDateTime = new Date(y, m, d, eh, em, 0);
+    const startObj = new Date(`${baseDate}T${startTimePart}:00`);
+    const endObj = new Date(`${baseDate}T${endTimePart}:00`);
 
-    // RESTAR 1 MINUTO A LA HORA DE TÉRMINO
-    // Para que termine en :59 o :29 y no choque con el inicio del siguiente bloque
-    endDateTime.setMinutes(endDateTime.getMinutes() - 1);
+    if (endObj <= startObj) {
+      return this.presentToast('La hora de término debe ser mayor a la de inicio', 'warning');
+    }
+
+    // Restamos 1 minuto (60000 ms) a la hora de término
+    const adjustedEndObj = new Date(endObj.getTime() - 60000);
+
+    const fullStart = this.formatDateLocal(startObj);
+    const fullEnd = this.formatDateLocal(adjustedEndObj);
+
+    const loader = await this.loadingCtrl.create({ message: 'Guardando cambios...' });
+    await loader.present();
 
     const payload = {
-      title: val.title,
-      description: val.description,
-      start_datetime: startDateTime.toISOString(),
-      end_datetime: endDateTime.toISOString()
-      // Otros campos que tu backend requiera
+      title: this.eventData.title,
+      start_datetime: fullStart,
+      end_datetime: fullEnd,
+      
+      detail: {
+        event_type: this.eventData.event_type,
+        description: this.eventData.description,
+        attendees: attendees
+      }
     };
+
+    console.log('Enviando actualización:', payload);
 
     this.api.updateManagementEvent(this.eventId, payload).subscribe({
       next: () => {
+        loader.dismiss();
         this.presentToast('Evento actualizado correctamente', 'success');
-        this.router.navigate(['/management/gestionar-eventos']);
+        this.router.navigate(['/gestionar-eventos']);
       },
       error: (err) => {
-        console.error(err);
-        this.presentToast('Error al actualizar el evento', 'danger');
-        this.isSaving.set(false);
+        loader.dismiss();
+        console.error('Error update:', err);
+        this.presentToast('Error al guardar los cambios', 'danger');
       }
     });
   }
 
-  async presentToast(msg: string, color: string) {
-    const t = await this.toastCtrl.create({ message: msg, color: color, duration: 2000 });
-    t.present();
+  private getTimeFromIso(isoString: string): string {
+    if (!isoString) return '00:00';
+    if (isoString.includes('T')) {
+      return isoString.split('T')[1].substring(0, 5);
+    }
+    return isoString.substring(0, 5); 
+  }
+
+  private formatDateLocal(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  }
+
+  async presentToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message, duration: 2000, color, position: 'bottom'
+    });
+    toast.present();
   }
 }

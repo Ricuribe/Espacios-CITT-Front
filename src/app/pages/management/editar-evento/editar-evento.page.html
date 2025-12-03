@@ -1,91 +1,122 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/management/gestionar-eventos"></ion-back-button>
+      <ion-button fill="clear" color="light" [routerLink]="['/gestionar-eventos']">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Editar Evento</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content [fullscreen]="true">
   
-  @if (isLoading()) {
-    <div class="ion-text-center ion-padding top-loader">
-      <ion-spinner name="circles"></ion-spinner>
+  <div class="container">
+    
+    <div *ngIf="isLoading" class="center-msg">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p>Cargando datos del evento...</p>
     </div>
-  }
 
-  @if (!isLoading() && eventForm) {
-    <form [formGroup]="eventForm" (ngSubmit)="saveEvent()">
+    <div *ngIf="!isLoading" class="form-wrapper">
       
-      <ion-card>
+      <ion-card class="edit-card">
         <ion-card-content>
           
-          <!-- Título -->
-          <ion-item fill="outline" class="ion-margin-bottom">
-            <ion-label position="floating">Título del Evento</ion-label>
-            <ion-input formControlName="title" type="text" placeholder="Ej: Taller de Robótica"></ion-input>
-            <ion-note slot="error" *ngIf="f['title'].invalid && f['title'].touched">El título es requerido.</ion-note>
-          </ion-item>
-
-          <!-- Descripción -->
-          <ion-item fill="outline" class="ion-margin-bottom">
-            <ion-label position="floating">Descripción</ion-label>
-            <ion-textarea formControlName="description" rows="4" placeholder="Detalles del evento..."></ion-textarea>
-            <ion-note slot="error" *ngIf="f['description'].invalid && f['description'].touched">La descripción es requerida.</ion-note>
-          </ion-item>
-
-          <!-- Fecha -->
-          <ion-item fill="outline" class="ion-margin-bottom">
-            <ion-label position="stacked">Fecha</ion-label>
-            <ion-datetime-button datetime="datePicker"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime id="datePicker" presentation="date" formControlName="date"></ion-datetime>
-              </ng-template>
-            </ion-modal>
-          </ion-item>
-
-          <div class="time-row">
-            <!-- Hora Inicio -->
-            <ion-item fill="outline" class="half-width">
-              <ion-label position="stacked">Inicio</ion-label>
-              <ion-select formControlName="startTime" interface="popover" placeholder="00:00">
-                @for (slot of timeSlots; track slot) {
-                  <ion-select-option [value]="slot">{{ slot }}</ion-select-option>
-                }
-              </ion-select>
-            </ion-item>
-
-            <!-- Hora Fin -->
-            <ion-item fill="outline" class="half-width">
-              <ion-label position="stacked">Término</ion-label>
-              <ion-select formControlName="endTime" interface="popover" placeholder="00:00">
-                @for (slot of timeSlots; track slot) {
-                  <ion-select-option [value]="slot">{{ slot }}</ion-select-option>
-                }
-              </ion-select>
-            </ion-item>
-          </div>
+          <div class="section-title">Información General</div>
           
-          <ion-text color="danger" *ngIf="eventForm.errors?.['invalidTimeRange'] && (f['startTime'].touched || f['endTime'].touched)">
-            <p class="error-msg"><ion-icon name="alert-circle"></ion-icon> La hora de término debe ser mayor a la de inicio.</p>
-          </ion-text>
+          <ion-item class="custom-input">
+            <ion-icon name="text-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-label position="stacked">Título del Evento (Máx 150)</ion-label>
+            <ion-input [(ngModel)]="eventData.title" type="text" maxlength="150"></ion-input>
+          </ion-item>
+
+          <ion-item class="custom-input">
+            <ion-icon name="document-text-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-label position="stacked">Tipo de Evento (Máx 50)</ion-label>
+            <ion-input [(ngModel)]="eventData.event_type" placeholder="Ej: Taller, Charla..." maxlength="50"></ion-input>
+          </ion-item>
+
+          <div class="section-title">Horario</div>
+
+          <ion-grid class="time-grid">
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="custom-input">
+                  <ion-icon name="calendar-outline" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Fecha</ion-label>
+                  <ion-datetime-button datetime="datePicker"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="datePicker" presentation="date" [(ngModel)]="eventData.start_date"></ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+              
+              <ion-col size="6">
+                <ion-item class="custom-input">
+                  <ion-icon name="time-outline" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Inicio</ion-label>
+                  <ion-datetime-button datetime="startTime"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime 
+                        id="startTime" 
+                        presentation="time" 
+                        minuteValues="0,30" 
+                        [(ngModel)]="eventData.start_time">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="6">
+                <ion-item class="custom-input">
+                  <ion-icon name="time-outline" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Término</ion-label>
+                  <ion-datetime-button datetime="endTime"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime 
+                        id="endTime" 
+                        presentation="time" 
+                        minuteValues="0,30" 
+                        [(ngModel)]="eventData.end_time">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          <div class="section-title">Detalles</div>
+
+          <ion-item class="custom-input">
+            <ion-icon name="people-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-label position="stacked">Asistentes (1-50)</ion-label>
+            <ion-input type="number" min="1" max="50" [(ngModel)]="eventData.attendees"></ion-input>
+          </ion-item>
+
+          <ion-item class="custom-input area">
+            <ion-label position="stacked">Descripción (Máx 2000)</ion-label>
+            <ion-textarea [(ngModel)]="eventData.description" rows="4" maxlength="2000" placeholder="Detalles del evento..."></ion-textarea>
+          </ion-item>
+
+          <div class="actions">
+            <ion-button expand="block" (click)="saveChanges()" class="btn-save">
+              <ion-icon name="save-outline" slot="start"></ion-icon>
+              Guardar Cambios
+            </ion-button>
+          </div>
 
         </ion-card-content>
       </ion-card>
 
-      <div class="ion-padding-vertical">
-        <ion-button expand="block" type="submit" [disabled]="eventForm.invalid || isSaving()">
-          @if (isSaving()) {
-            <ion-spinner name="crescent"></ion-spinner> Guardando...
-          } @else {
-            Guardar Cambios
-          }
-        </ion-button>
-      </div>
+    </div>
+  </div>
 
-    </form>
-  }
+  <app-footer></app-footer>
 </ion-content>

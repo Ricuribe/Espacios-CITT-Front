@@ -1,34 +1,106 @@
-ion-card {
-  margin: 0;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border-radius: 12px;
-}
+/* VARIABLES */
+$brand-blue: #3b82f6; 
+$brand-dark: #0b1121; 
+$card-bg: #1f2937;
+$text-white: #ffffff;
+$text-grey: #9ca3af;
 
-.time-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-
-  .half-width {
-    flex: 1;
+:host {
+  ion-content {
+    --background: #{$brand-dark};
   }
 }
 
-.error-msg {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  margin-left: 5px;
+ion-header {
+  ion-toolbar {
+    --background: rgba(11, 17, 33, 0.95);
+    --border-width: 0;
+    --color: white;
+  }
 }
 
-.top-loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 50vh;
-  color: var(--ion-color-medium);
+.container {
+  padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.center-msg {
+  text-align: center;
+  margin-top: 100px;
+  color: $text-grey;
+}
+
+.edit-card {
+  background: $card-bg;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.section-title {
+  color: $brand-blue;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 20px 0 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
+  
+  &:first-child { margin-top: 0; }
+}
+
+/* INPUTS PERSONALIZADOS */
+.custom-input {
+  --background: rgba(255,255,255,0.03);
+  --border-radius: 8px;
+  --padding-start: 10px;
+  margin-bottom: 15px;
+  border: 1px solid rgba(255,255,255,0.05);
+  
+  ion-label {
+    color: $text-grey !important;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+  }
+  
+  ion-input, ion-textarea {
+    color: white;
+    font-size: 1rem;
+    --padding-start: 0;
+  }
+
+  .input-icon {
+    color: $brand-blue;
+    margin-right: 10px;
+    margin-top: 15px; /* Alineación visual */
+  }
+  
+  /* Arreglo para datetime buttons */
+  ion-datetime-button {
+    margin-top: 5px;
+    &::part(native) {
+      background: transparent;
+      color: white;
+      padding-left: 0;
+      justify-content: flex-start;
+    }
+  }
+}
+
+.time-grid {
+  --ion-grid-padding: 0;
+  ion-col { padding-top: 0; padding-bottom: 0; }
+}
+
+.actions {
+  margin-top: 30px;
+  .btn-save {
+    --border-radius: 10px;
+    font-weight: 600;
+    --background: #{$brand-blue};
+    height: 50px;
+  }
 }

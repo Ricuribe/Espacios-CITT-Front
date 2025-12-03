@@ -184,7 +184,7 @@ export class ApiService {
       });
     }
     // Asumiendo que la ruta en manage_service/urls.py es 'manage/events/'
-    return this.http.get(`${this.baseUrl}manage/manage/events-manage/`, { params });
+    return this.http.get(`${this.baseUrl}manage/manage/events-manage/filter/`, { params });
   }
 
   /** Obtiene un evento específico para edición */
@@ -195,6 +195,11 @@ export class ApiService {
   /** Actualiza un evento completo (PUT) */
   updateManagementEvent(id: number, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}manage/manage/events-manage/${id}/`, data);
+  }
+
+  /** Actualiza solo ciertos campos de un evento (PATCH) */
+  patchManagementEvent(id: number, data: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl}manage/manage/events-manage/${id}/`, data);
   }
 
   /** * Cambia el estado del evento (Confirmar/Rechazar).

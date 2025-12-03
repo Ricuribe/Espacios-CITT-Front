@@ -1,7 +1,7 @@
 /* VARIABLES */
-$brand-blue: #2563eb; 
-$brand-dark: #0b1121; /* Fondo muy oscuro página */
-$card-bg: #111827;    /* Fondo tarjeta */
+$brand-blue: #3b82f6; 
+$brand-dark: #0b1121; 
+$card-bg: #1f2937;
 $text-white: #ffffff;
 $text-grey: #9ca3af;
 
@@ -11,192 +11,172 @@ $text-grey: #9ca3af;
   }
 }
 
-/* --- HEADER (LOGO ESTÁNDAR) --- */
 .main-header {
-  position: absolute; top: 0; left: 0; width: 100%; z-index: 10; --box-shadow: none;
-  
-  .main-toolbar { 
-    --min-height: 100px; /* Altura para logo grande */
-    --background: transparent; 
-    --border-width: 0; 
-    padding: 0 20px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-  }
-  
-  /* Logo Grande y Controlado */
-  .logo { 
-    height: 80px; 
-    width: auto; 
-    object-fit: contain; 
-    display: block; 
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    cursor: pointer;
-  }
-  
-  ion-menu-button { --color: #ffffff; font-size: 2rem; }
-  
-  /* --- POSICIONAMIENTO DEL LOGO (AQUÍ ESTÁ EL CAMBIO) --- */
-  
-  /* MÓVIL: Logo a la derecha (estándar) */
-  @media (max-width: 991px) { 
-    .desktop-only-buttons { display: none; }
-    .logo { margin-left: auto; margin-right: 0; } 
-  }
-  
-  /* DESKTOP: Logo a la DERECHA (Excepción para esta página) */
-  @media (min-width: 992px) { 
-    /* Ocultamos botones móviles si los hubiera */
-    .mobile-only-button { display: none; }
-    
-    /* Empujamos el logo a la DERECHA con margin-left: auto */
-    .logo { 
-      margin-left: auto; 
-      margin-right: 0; 
-    } 
+  ion-toolbar {
+    --background: rgba(11, 17, 33, 0.95);
+    --border-width: 0;
+    --color: white;
   }
 }
 
-/* --- CONTENIDO --- */
-.page-container {
-  padding: 140px 20px 80px 20px; /* Espacio para header alto */
-  max-width: 1000px;
+/* BARRA DE FILTROS */
+.filter-toolbar {
+  --background: #{$brand-dark};
+  --border-width: 0;
+  padding-bottom: 10px;
+
+  ion-segment {
+    --background: rgba(255,255,255,0.05);
+    margin: 0 10px;
+    border-radius: 8px;
+    
+    ion-segment-button {
+      --color: $text-grey;
+      --color-checked: $brand-blue;
+      --indicator-color: transparent;
+      font-weight: 500;
+      
+      &.segment-button-checked {
+        border-bottom: 2px solid $brand-blue;
+      }
+    }
+  }
+}
+
+.container {
+  padding: 15px;
+  max-width: 800px;
   margin: 0 auto;
-  min-height: 90vh;
+  min-height: 70vh;
 }
 
-.page-header {
-  margin-bottom: 30px;
-  h1 { color: $text-white; font-size: 1.8rem; font-weight: 700; }
-}
-
-/* --- TABS / SEGMENTOS --- */
-.tabs-container {
-  margin-bottom: 30px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.custom-segment {
-  --background: transparent;
-  
-  ion-segment-button {
-    --color: #6b7280;
-    --color-checked: #3b82f6; /* Azul brillante al seleccionar */
-    --indicator-color: #3b82f6;
-    --indicator-height: 3px;
-    text-transform: uppercase;
-    font-weight: 600;
-    font-size: 0.9rem;
-    min-width: 100px;
-    letter-spacing: 0.5px;
-    
-    &::part(indicator-background) { background: #3b82f6; }
-  }
-}
-
-/* --- LISTA DE TARJETAS --- */
-.events-list {
+/* LISTA DE EVENTOS */
+.events-grid {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
 .event-card {
-  background-color: $card-bg;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  padding: 0;
+  margin: 0;
+  background: $card-bg;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  min-height: 80px;
-  
-  /* Franja lateral azul */
-  .status-strip {
-    width: 4px;
-    height: 100%;
-    background-color: #0ea5e9; /* Cyan/Azul claro */
-    position: absolute;
-    left: 0; top: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:active { transform: scale(0.98); }
+
+  .card-status-bar {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    /* El color se asigna inline en el HTML */
   }
 
-  .card-body {
-    flex: 1;
-    padding: 15px 20px 15px 25px; /* Padding extra a la izq por la franja */
-    
-    .event-title {
-      color: $text-white;
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin: 0 0 8px 0;
+  ion-card-header {
+    padding-bottom: 5px;
+    .status-badge {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+      .date { font-size: 0.85rem; color: $text-grey; }
+      ion-chip { height: 20px; font-size: 0.7rem; font-weight: 700; margin: 0; }
     }
-    
-    .event-meta {
-      display: flex;
-      gap: 20px;
-      color: $text-grey;
-      font-size: 0.9rem;
-      
-      .meta-item {
-        display: flex; align-items: center; gap: 6px;
-        ion-icon { font-size: 1rem; }
-      }
-    }
+    ion-card-title { font-size: 1.1rem; color: white; font-weight: 600; }
+    ion-card-subtitle { color: $brand-blue; font-size: 0.9rem; }
   }
 
-  /* Botones Circulares */
-  .card-actions {
-    display: flex;
-    gap: 10px;
-    padding-right: 20px;
-    
-    .circle-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      background-color: white; /* Botón blanco */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.2s;
-      
-      ion-icon {
-        font-size: 1.2rem;
-        color: #111827; /* Icono oscuro */
-      }
-      
-      &:hover {
-        transform: scale(1.1);
-        background-color: #f3f4f6;
-      }
+  ion-card-content {
+    .info-row {
+      display: flex; align-items: center; gap: 8px; color: $text-grey; font-size: 0.9rem;
+      ion-icon { color: $brand-blue; }
     }
   }
 }
 
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  .event-card {
-    flex-direction: column;
-    align-items: flex-start;
-    
-    .card-body { width: 100%; }
-    
-    .card-actions {
-      width: 100%;
-      justify-content: flex-end;
-      padding: 0 20px 15px 0;
-    }
-    
-    .event-meta { flex-direction: column; gap: 5px; }
-  }
+.center-msg {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 200px; color: $text-grey; gap: 10px;
+  ion-icon { font-size: 3rem; opacity: 0.5; }
 }
 
-.loader-container, .empty-state {
-  text-align: center;
-  padding: 40px;
-  color: $text-grey;
+/* ================= MODAL STYLES (CORREGIDO) ================= */
+ion-modal {
+  --background: #111827; /* Fondo general del modal */
+  --border-radius: 16px;
+
+  ion-toolbar {
+    --background: #1f2937;
+    --color: white;
+    --border-color: rgba(255,255,255,0.1);
+  }
+
+  /* Aseguramos que el contenido del modal sea oscuro */
+  .modal-content {
+    --background: #111827; 
+    --color: white;
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+  }
+
+  .detail-wrapper {
+    padding: 20px;
+    
+    .modal-header-section {
+      text-align: center; margin-bottom: 30px;
+      .status-chip-lg { margin-bottom: 15px; }
+      h1 { color: white; font-size: 1.5rem; font-weight: 700; margin: 0 0 5px 0; }
+      .subtitle { color: $brand-blue; font-size: 1rem; margin: 0; }
+    }
+
+    .info-block {
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+      
+      h3 { 
+        color: $text-grey; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; 
+        margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; 
+      }
+      
+      /* CORRECCIÓN PRINCIPAL: Forzar transparencia en listas */
+      ion-list {
+        background: transparent !important;
+        padding: 0;
+      }
+      
+      ion-item {
+        --background: transparent; 
+        --color: white;
+        --padding-start: 0; 
+        --inner-padding-end: 0;
+        --border-color: rgba(255,255,255,0.05); /* Separador sutil */
+        
+        h2 { color: $text-grey; font-size: 0.8rem; margin-bottom: 2px; }
+        p { color: white; font-size: 1rem; font-weight: 500; }
+        .small-email { font-size: 0.85rem; color: #60a5fa; } /* Email en azul claro */
+        ion-icon { margin-right: 15px; font-size: 1.2rem; }
+      }
+
+      .desc-box { 
+        color: #e5e7eb; line-height: 1.6; font-size: 0.95rem; white-space: pre-line; 
+        padding: 5px 0;
+      }
+    }
+  }
+
+  ion-footer {
+    ion-toolbar { 
+      --background: #1f2937; 
+      --border-color: rgba(255,255,255,0.1);
+      padding: 5px; 
+    }
+    .actions-grid {
+      display: flex; gap: 10px; justify-content: space-between;
+      ion-button { flex: 1; margin: 0; }
+      .full-width-btn { flex: 100%; }
+    }
+  }
 }

@@ -1,21 +1,17 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // Agregado RouterLink
-import { 
-  IonContent, IonHeader, IonToolbar, IonButtons, IonButton, IonMenuButton, 
-  IonTitle, IonCard, IonIcon, IonChip, IonLabel, IonSegment, IonSegmentButton,
-  IonSpinner, IonBackButton, AlertController, ToastController,
-  IonImg, IonMenu // Agregados para header estándar
-} from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonChip, IonIcon, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonLabel, IonModal, IonButton, IonList, IonItem, IonNote, IonAvatar, IonText, IonSpinner, ToastController, AlertController, LoadingController, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
-  calendarOutline, timeOutline, chevronDownOutline, chevronUpOutline, 
-  createOutline, checkmarkCircleOutline, closeCircleOutline, calendarNumberOutline,
-  pencilOutline, trashOutline, arrowBackOutline // Nuevos iconos para el diseño
+  calendarOutline, timeOutline, personOutline, filterOutline, 
+  checkmarkCircleOutline, closeCircleOutline, createOutline, 
+  eyeOutline, peopleOutline, documentTextOutline, alertCircleOutline
 } from 'ionicons/icons';
+
 import { ApiService } from 'src/app/service/http-client';
-import { FooterComponent } from 'src/app/components/footer/footer.component'; // Footer
+import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 @Component({
   selector: 'app-gestionar-eventos',
@@ -23,32 +19,40 @@ import { FooterComponent } from 'src/app/components/footer/footer.component'; //
   styleUrls: ['./gestionar-eventos.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink, FooterComponent,
-    IonContent, IonHeader, IonToolbar, IonButtons, 
-    IonButton, IonMenuButton, IonTitle, IonCard, IonIcon, IonChip, IonLabel, 
-    IonSegment, IonSegmentButton, IonSpinner, IonBackButton, IonImg, IonMenu
-  ]
+    CommonModule, FormsModule, FooterComponent,
+    IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent,
+    IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle,
+    IonCardSubtitle, IonCardContent, IonChip, IonIcon, IonRefresher,
+    IonRefresherContent, IonSegment, IonSegmentButton, IonLabel,
+    IonModal, IonButton, IonList, IonItem, IonNote, IonAvatar, IonText,
+    IonSpinner,
+    IonFooter
+]
 })
 export class GestionarEventosPage implements OnInit {
-  
+
   private api = inject(ApiService);
   private router = inject(Router);
-  private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
+  private alertCtrl = inject(AlertController);
+  private loadingCtrl = inject(LoadingController);
 
+  // Estados de carga y datos
   public events = signal<any[]>([]);
   public isLoading = signal<boolean>(false);
-  public statusFilter = 'all'; 
+  
+  public currentStatus = signal<string>('1');
 
-  readonly STATUS_PENDING = 1;
-  readonly STATUS_CONFIRMED = 2;
-  readonly STATUS_CANCELLED = 5;
+  // Modal de Detalle
+  public isModalOpen = false;
+  public selectedEvent: any = null;
+  public loadingDetail = false;
 
   constructor() {
     addIcons({ 
-      calendarOutline, timeOutline, chevronDownOutline, chevronUpOutline, 
-      createOutline, checkmarkCircleOutline, closeCircleOutline, calendarNumberOutline,
-      pencilOutline, trashOutline, arrowBackOutline
+      calendarOutline, timeOutline, personOutline, filterOutline, 
+      checkmarkCircleOutline, closeCircleOutline, createOutline, 
+      eyeOutline, peopleOutline, documentTextOutline, alertCircleOutline
     });
   }
 
@@ -56,77 +60,143 @@ export class GestionarEventosPage implements OnInit {
     this.loadEvents();
   }
 
-  ionViewWillEnter() {
-    this.loadEvents();
-  }
+  loadEvents(event?: any) {
+    if (!event) this.isLoading.set(true);
 
-  loadEvents() {
-    this.isLoading.set(true);
-    this.api.getEvents().subscribe({ // Asegúrate que este método traiga los eventos de gestión
-      next: (resp: any) => {
-        const data = Array.isArray(resp) ? resp : resp.results || [];
-        this.events.set(data);
+    const statusFilter = this.currentStatus() === 'all' ? undefined : Number(this.currentStatus());
+
+    this.api.getManagementEvents({ status: statusFilter }).subscribe({
+      next: (res: any) => {
+        const lista = Array.isArray(res) ? res : (res.results || []);
+        this.events.set(lista);
         this.isLoading.set(false);
+        if (event) event.target.complete();
       },
       error: (err) => {
-        console.error('Error cargando eventos', err);
-        this.presentToast('Error al cargar eventos', 'danger');
+        console.error('Error cargando eventos:', err);
         this.isLoading.set(false);
+        if (event) event.target.complete();
       }
     });
   }
 
-  public filteredEvents = computed(() => {
-    const all = this.events();
-    if (this.statusFilter === 'all') return all;
-    if (this.statusFilter === 'pending') return all.filter(e => e.status === this.STATUS_PENDING);
-    if (this.statusFilter === 'confirmed') return all.filter(e => e.status === this.STATUS_CONFIRMED);
-    return all;
-  });
-
-  goToEdit(id: number) {
-    this.router.navigate(['/management/editar-evento', id]);
+  segmentChanged(ev: any) {
+    this.currentStatus.set(ev.detail.value);
+    this.events.set([]); 
+    this.loadEvents();
   }
 
-  // Función para eliminar (usando el icono de basura del mockup)
-  async deleteEvent(ev: any) {
+  openDetail(eventSummary: any) {
+    this.isModalOpen = true;
+    this.loadingDetail = true;
+    this.selectedEvent = null; 
+
+    this.api.getManagementEventById(eventSummary.id_event).subscribe({
+      next: (fullEvent) => {
+        this.selectedEvent = fullEvent;
+        this.loadingDetail = false;
+      },
+      error: (err) => {
+        console.error('Error cargando detalle:', err);
+        this.loadingDetail = false;
+        this.presentToast('Error al cargar detalles', 'danger');
+        this.closeModal();
+      }
+    });
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    // Retraso para limpiar datos visualmente después de la animación
+    setTimeout(() => {
+        this.selectedEvent = null;
+    }, 200);
+  }
+
+  /**
+   * CORRECCIÓN: Esperar a que el modal cierre antes de navegar
+   */
+  editEvent() {
+    if (!this.selectedEvent) return;
+    
+    // 1. Guardar ID
+    const eventId = this.selectedEvent.id_event; 
+    
+    // 2. Cerrar Modal
+    this.isModalOpen = false;
+    
+    // 3. Esperar animación (300ms) y LUEGO navegar
+    setTimeout(() => {
+      this.selectedEvent = null; // Limpieza
+      this.router.navigate(['/editar-evento', eventId]);
+    }, 300);
+  }
+
+  async confirmChangeStatus(newStatus: number) {
+    const action = newStatus === 2 ? 'Confirmar' : 'Cancelar';
+    
     const alert = await this.alertCtrl.create({
-      header: 'Eliminar Evento',
-      message: `¿Estás seguro de eliminar "${ev.title}"?`,
+      header: `${action} Evento`,
+      message: `¿Estás seguro de que deseas <strong>${action.toLowerCase()}</strong> este evento?`,
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: 'Volver', role: 'cancel' },
         { 
-          text: 'Eliminar', role: 'destructive',
-          handler: () => this.changeStatus(ev.id, this.STATUS_CANCELLED) // O lógica de borrado real
+          text: 'Sí, aplicar', 
+          handler: () => this.executeStatusChange(newStatus) 
         }
       ]
     });
     await alert.present();
   }
 
-  changeStatus(id: number, status: number, comment?: string) {
-    this.isLoading.set(true);
-    // Simulación de llamada o usa tu método real updateScheduleStatus o similar
-    // this.api.updateEventStatus(...) 
-    setTimeout(() => {
-        this.presentToast('Estado actualizado', 'success');
-        this.isLoading.set(false);
-        this.loadEvents(); // Recargar
-    }, 1000);
+  private async executeStatusChange(status: number) {
+    if (!this.selectedEvent) return;
+
+    const loader = await this.loadingCtrl.create({ message: 'Procesando...' });
+    await loader.present();
+
+    this.api.patchManagementEventStatus(this.selectedEvent.id_event, status).subscribe({
+      next: () => {
+        loader.dismiss();
+        this.presentToast(`Estado actualizado correctamente`, 'success');
+        this.closeModal();
+        this.loadEvents(); 
+      },
+      error: (err) => {
+        loader.dismiss();
+        console.error(err);
+        this.presentToast('Error al actualizar estado', 'danger');
+      }
+    });
   }
 
-  formatDate(iso: string) {
-    if (!iso) return '';
-    return new Date(iso).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
+  async presentToast(message: string, color: string) {
+    const toast = await this.toastCtrl.create({
+      message, duration: 2000, color, position: 'bottom'
+    });
+    toast.present();
   }
 
-  formatTime(iso: string) {
-    if (!iso) return '';
-    return new Date(iso).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+  getStatusColor(status: number): string {
+    switch (status) {
+      case 1: return 'warning'; 
+      case 2: return 'success'; 
+      case 0: return 'danger';  
+      case 3: return 'primary'; 
+      case 4: return 'medium';  
+      default: return 'medium';
+    }
   }
 
-  async presentToast(msg: string, color: string) {
-    const t = await this.toastCtrl.create({ message: msg, color: color, duration: 2000, position: 'bottom' });
-    t.present();
+  getStatusLabel(status: number): string {
+    switch (status) {
+      case 1: return 'Pendiente';
+      case 2: return 'Confirmado';
+      case 0: return 'Cancelado';
+      case 3: return 'En Curso';
+      case 4: return 'Realizado';
+      case 5: return 'Rechazado';
+      default: return 'Desc.';
+    }
   }
 }
