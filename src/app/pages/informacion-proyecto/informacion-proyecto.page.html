@@ -1,25 +1,18 @@
-<!-- HEADER -->
 <ion-header class="main-header" [translucent]="true">
   <ion-toolbar class="main-toolbar">
-    
-    <!-- IZQUIERDA: Botón Menú -->
     <ion-buttons slot="start" class="mobile-only-button">
       <ion-menu-button color="light" menu="menu-info-proyecto"></ion-menu-button>
     </ion-buttons>
 
-    <!-- LOGO GRANDE (Posición controlada por CSS) -->
     <img src="/assets/icon/Gemvirt_logo.png" alt="Logo" class="logo">
 
-    <!-- DERECHA: Botones Escritorio -->
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-button class="btn-start" fill="clear" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
       <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar Sesión</ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
-<!-- MENÚ LATERAL (Azul Degradado con Iconos) -->
 <ion-menu contentId="info-proyecto-content" type="overlay" menuId="menu-info-proyecto">
   <ion-header>
     <ion-toolbar>
@@ -28,121 +21,141 @@
   </ion-header>
   <ion-content>
     <ion-list lines="none">
-      <ion-item button [routerLink]="['/inicio-usuario']">
-        <ion-icon slot="start" name="home-outline"></ion-icon>
-        <ion-label>Inicio</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/recursos']">
-        <ion-icon slot="start" name="folder-open-outline"></ion-icon>
-        <ion-label>Recursos</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/proyectos']">
-        <ion-icon slot="start" name="library-outline"></ion-icon>
-        <ion-label>Memorias</ion-label>
-      </ion-item>
-      <ion-item button [routerLink]="['/home']" class="logout-item">
-        <ion-icon slot="start" name="log-out-outline"></ion-icon>
-        <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
+      <ion-item button [routerLink]="['/inicio-usuario']"><ion-icon name="home-outline" slot="start"></ion-icon><ion-label>Inicio</ion-label></ion-item>
+      <ion-item button [routerLink]="['/proyectos']"><ion-icon name="library-outline" slot="start"></ion-icon><ion-label>Memorias</ion-label></ion-item>
+      <ion-item button [routerLink]="['/home']" class="logout-item"><ion-icon name="log-out-outline" slot="start"></ion-icon><ion-label>Cerrar Sesión</ion-label></ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<!-- CONTENIDO -->
-<ion-content [fullscreen]="true" id="info-proyecto-content" class="project-detail-content">
+<ion-content [fullscreen]="true" id="info-proyecto-content">
   
-  <!-- LOADER -->
   <div *ngIf="isLoading()" class="loader-container">
-    <ion-grid>
-      <ion-row>
-        <ion-col size="12">
-          <ion-skeleton-text animated style="width: 100%; height: 300px; border-radius: 12px;"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 60%; height: 40px; margin-top: 20px;"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 100%; height: 20px; margin-top: 10px;"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 100%; height: 20px; margin-top: 10px;"></ion-skeleton-text>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <ion-skeleton-text animated style="width: 100%; height: 300px;"></ion-skeleton-text>
   </div>
 
-  <!-- ERROR -->
-  <div *ngIf="!isLoading() && error()" class="error-container">
-    <ion-text color="danger">
-      <h2>Error al cargar el proyecto</h2>
-      <p>Por favor intenta nuevamente.</p>
-    </ion-text>
-    <ion-button fill="outline" color="light" [routerLink]="['/proyectos']">Volver a Memorias</ion-button>
-  </div>
-
-  <!-- CONTENIDO REAL -->
-  <div *ngIf="!isLoading() && !error() && memory()">
+  <div *ngIf="!isLoading() && memory()" class="content-wrapper">
     
-    <!-- HERO -->
-    <div class="project-hero" [style.backgroundImage]="'url(' + getImageUrl() + ')'">
-      <div class="hero-overlay">
-        <div class="hero-content">
-          <div class="breadcrumbs">
-            <span [routerLink]="['/proyectos']" class="link">Memorias</span> / <span>{{ memory().titulo }}</span>
-          </div>
+    <div class="hero-section" [style.backgroundImage]="'url(' + getImageUrl() + ')'">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <ion-button fill="clear" class="back-btn" [routerLink]="['/proyectos']">
+          <ion-icon name="chevron-back-outline"></ion-icon> Volver
+        </ion-button>
+        
+        <div class="project-title-block">
+          <ion-chip color="primary" class="status-chip" title="Tipo de Memoria">{{ memory().tipo_memoria }}</ion-chip>
           <h1>{{ memory().titulo }}</h1>
           
           <div class="meta-info">
-            <span class="author"><ion-icon name="person-outline"></ion-icon> {{ memory().profesor }}</span>
-            <span class="separator">|</span>
-            <span class="date"><ion-icon name="calendar-outline"></ion-icon> {{ memory().fecha_subida | date:'dd MMMM, yyyy' }}</span>
+            <span class="meta-item">
+              <ion-icon name="person-outline"></ion-icon> 
+              Profesor Guía: <strong>{{ memory().profesor }}</strong>
+            </span>
+            <span class="meta-separator">|</span>
+            <span class="meta-item">
+              <ion-icon name="calendar-outline"></ion-icon> 
+              {{ memory().fecha_inicio | date:'MM/yyyy' }} - {{ memory().fecha_termino | date:'MM/yyyy' }}
+            </span>
           </div>
-
-          <ion-button fill="outline" color="warning" (click)="irAEditarMemoria()">
+        </div>
+        <ion-button fill="outline" color="warning" (click)="irAEditarMemoria()">
             <ion-icon slot="start" name="create-outline"></ion-icon>
             Editar Proyecto
           </ion-button>
-
-          <div class="hero-actions">
-            <ion-button class="btn-download" (click)="descargarArchivo('informe')">
-              <ion-icon slot="start" name="download-outline"></ion-icon> Descargar Memoria
-            </ion-button>
-            <ion-button class="btn-back" fill="outline" [routerLink]="['/proyectos']">
-              <ion-icon slot="start" name="chevron-back-outline"></ion-icon> Volver
-            </ion-button>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- DETALLES -->
-    <div class="project-body">
+    <div class="main-body">
       <ion-grid>
         <ion-row>
+          
           <ion-col size="12" size-md="8">
-            <div class="text-section">
+            
+            <div class="section-block">
               <h3>Resumen del Proyecto</h3>
-              <p class="description">{{ memory().descripcion }}</p>
-              
-              <h3>Desafíos y Soluciones</h3>
-              <p>
-                Uno de los mayores desafíos fue la integración de los componentes de hardware con el software de control. 
-                Se resolvió utilizando una arquitectura modular que permitió probar cada sensor de forma independiente.
+              <p class="description-text">
+                {{ memory().descripcion }}
               </p>
             </div>
 
-            <div class="documents-section">
-              <h3>Documentos Adjuntos</h3>
-              <div class="doc-card" (click)="descargarArchivo('informe')">
-                <div class="doc-icon"><ion-icon name="document-text-outline"></ion-icon></div>
-                <div class="doc-info"><span class="doc-name">Informe del Proyecto.pdf</span></div>
-                <ion-button fill="clear" size="small">Descargar</ion-button>
-              </div>
-              <div class="doc-card" (click)="descargarArchivo('presentacion')">
-                <div class="doc-icon"><ion-icon name="easel-outline"></ion-icon></div>
-                <div class="doc-info"><span class="doc-name">Presentación Final.pptx</span></div>
-                <ion-button fill="clear" size="small">Descargar</ion-button>
-              </div>
-              <div class="doc-card" (click)="descargarArchivo('codigo')">
-                <div class="doc-icon"><ion-icon name="code-slash-outline"></ion-icon></div>
-                <div class="doc-info"><span class="doc-name">Código Fuente.zip</span></div>
-                <ion-button fill="clear" size="small">Descargar</ion-button>
+            <hr class="divider">
+
+            <div class="section-block technical-sheet">
+              <h3>Ficha Técnica</h3>
+              <div class="tech-grid">
+                <div class="tech-item">
+                  <span class="label"><ion-icon name="school-outline"></ion-icon> Escuela</span>
+                  <span class="value">{{ getSchoolName(memory().escuela) }}</span>
+                </div>
+                <div class="tech-item">
+                  <span class="label"><ion-icon name="book-outline"></ion-icon> Carrera</span>
+                  <span class="value">{{ getCareerName(memory().carrera) }}</span>
+                </div>
+                <div class="tech-item">
+                  <span class="label"><ion-icon name="business-outline"></ion-icon> Entidad Involucrada</span>
+                  <span class="value">{{ memory().entidad_involucrada }}</span>
+                </div>
+                <div class="tech-item">
+                  <span class="label"><ion-icon name="briefcase-outline"></ion-icon> Tipo de Entidad</span>
+                  <span class="value">{{ memory().tipo_entidad }}</span>
+                </div>
               </div>
             </div>
+
+            <hr class="divider">
+
+            <div class="section-block creators-section">
+              <h3>Creadores del proyecto</h3>
+              <div class="creators-list">
+                <div class="creator-card" *ngFor="let s of creators()">
+                  <div class="creator-avatar">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                  </div>
+                  <div class="creator-info">
+                    <div class="name-line">
+                      <h4>
+                        {{ s.nombre_estudiante }} {{ s.segundo_nombre_estudiante }} 
+                        {{ s.apellido_estudiante }} {{ s.segundo_apellido_estudiante }}
+                      </h4>
+                      <ion-button 
+                        fill="clear" size="small" class="linkedin-btn"
+                        *ngIf="s.linkedin" (click)="openLinkedin(s.linkedin)"
+                        title="Ver perfil">
+                        <ion-icon slot="icon-only" name="logo-linkedin"></ion-icon>
+                      </ion-button>
+                    </div>
+                    <span class="rut">RUT: {{ s.rut_estudiante }}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="creators().length === 0" class="no-data">
+                  <p>No se especificaron integrantes.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="documents-section">
+              <h3>Documentos del Proyecto</h3>
+              <div class="docs-grid">
+                <div class="doc-card" (click)="descargarArchivo('informe')">
+                  <div class="doc-icon"><ion-icon name="document-text-outline"></ion-icon></div>
+                  <div class="doc-info"><span class="doc-name">Informe del Proyecto.pdf</span></div>
+                  <ion-button fill="clear" size="small">Descargar</ion-button>
+                </div>
+                <div class="doc-card" (click)="descargarArchivo('presentacion')">
+                  <div class="doc-icon"><ion-icon name="easel-outline"></ion-icon></div>
+                  <div class="doc-info"><span class="doc-name">Presentación Final.pptx</span></div>
+                  <ion-button fill="clear" size="small">Descargar</ion-button>
+                </div>
+                <!-- <div class="doc-card" (click)="descargarArchivo('codigo')">
+                  <div class="doc-icon"><ion-icon name="code-slash-outline"></ion-icon></div>
+                  <div class="doc-info"><span class="doc-name">Código Fuente.zip</span></div>
+                  <ion-button fill="clear" size="small">Descargar</ion-button>
+                </div> -->
+              </div>
+            </div>
+
           </ion-col>
 
           <ion-col size="12" size-md="4">
@@ -150,7 +163,9 @@
               <img [src]="getImageUrl()" alt="Detalle Proyecto" class="side-image">
               <div class="image-caption">Visualización del proyecto</div>
             </div>
-          </ion-col>
+            
+            </ion-col>
+
         </ion-row>
       </ion-grid>
     </div>
