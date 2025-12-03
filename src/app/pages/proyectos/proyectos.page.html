@@ -4,7 +4,9 @@
     <ion-buttons slot="start" class="mobile-only-button">
       <ion-menu-button color="light" menu="menu-proyectos"></ion-menu-button>
     </ion-buttons>
+    <a [routerLink]="['/inicio-usuario']" class="logo-container">
     <img src="/assets/icon/Gemvirt_logo.png" alt="Logo GemVirt" class="logo">
+    </a>
     <ion-buttons slot="end" class="desktop-only-buttons">
       <ion-button class="btn-start" fill="clear" color="light" [routerLink]="['/inicio-usuario']">Inicio</ion-button>
       <ion-button class="btn-logout" fill="solid" color="light" [routerLink]="['/home']">Cerrar Sesión</ion-button>

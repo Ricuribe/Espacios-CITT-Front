@@ -138,3 +138,33 @@ ion-menu {
   .event-card { flex-direction: column; min-height: auto; .card-image { height: 200px; width: 100%; } .card-body { padding: 20px; } .event-title { font-size: 1.5rem; } .event-meta { flex-direction: column; gap: 10px; } }
   .section-header h1 { font-size: 2rem; }
 }
+
+/* --- ESTILO PARA EL MENSAJE 'NO HAY EVENTOS' --- */
+/* Agrega esto al final de tu archivo SCSS */
+
+.empty-state {
+  margin-top: 30px; /* Para separarlo un poco del selector */
+
+  /* El Icono (opcional, por si quieres quitar el estilo en línea del HTML) */
+  ion-icon {
+    font-size: 60px !important;
+    color: $text-grey; /* O usa color: #64748b; */
+    margin-bottom: 15px;
+  }
+
+  /* El Título (h3) */
+  h3 {
+    color: #ffffff;      /* BLANCO: Para que resalte sobre el fondo oscuro */
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  /* El Texto secundario (p) */
+  p {
+    color: $text-grey;   /* GRIS CLARO: Usando tu variable (#94a3b8) */
+    font-size: 1.1rem;
+    max-width: 80%;      /* Para que no se estire demasiado en pantallas grandes */
+    margin: 0 auto;      /* Centrado */
+  }
+}
