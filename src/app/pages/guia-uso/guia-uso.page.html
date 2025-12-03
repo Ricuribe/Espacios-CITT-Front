@@ -3,7 +3,7 @@
   <ion-toolbar class="main-toolbar">
     <!-- Botón Volver (Izquierda) -->
     <ion-buttons slot="start">
-      <ion-button [routerLink]="['/home']" color="light">
+      <ion-button (click)="goBack()" color="light">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -73,7 +73,7 @@
     </ion-grid>
 
     <!-- SECCIÓN CTA (REGISTRO REQUERIDO) -->
-    <div class="cta-banner">
+    <div class="cta-banner" *ngIf="!isLoggedIn()">
       <div class="cta-content">
         <div class="cta-icon">
           <ion-icon name="lock-closed-outline"></ion-icon>

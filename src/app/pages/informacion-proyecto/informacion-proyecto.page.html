@@ -60,10 +60,12 @@
             </span>
           </div>
         </div>
-        <ion-button fill="outline" color="warning" (click)="irAEditarMemoria()">
-            <ion-icon slot="start" name="create-outline"></ion-icon>
-            Editar Proyecto
-          </ion-button>
+        <div class="admin-actions ion-margin-top" *ngIf="isAdmin()">
+          <ion-button fill="outline" color="warning" (click)="irAEditarMemoria()">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar Proyecto
+            </ion-button>
+        </div>
       </div>
     </div>
 

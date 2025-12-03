@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { ApiService, Memory } from 'src/app/service/http-client'; 
+import { AuthService } from 'src/app/service/auth.service';
+import { StorageService } from 'src/app/service/storage.service';
 import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 import {
@@ -46,11 +48,13 @@ export class ProyectosPage implements OnInit {
   private apiService = inject(ApiService);
   private router = inject(Router);
   private menuCtrl = inject(MenuController);
+  private auth = inject(AuthService);
 
   public memories = signal<Memory[]>([]);
   public filteredMemories = signal<Memory[]>([]); 
   public isLoading = signal<boolean>(true);
   public error = signal<any>(null);
+  public isAdmin = signal<boolean>(false);
   
   public searchTerm = signal<string>('');
   public selectedYear = signal<number | null>(null);
@@ -67,6 +71,15 @@ export class ProyectosPage implements OnInit {
 
   ngOnInit() {
     this.loadMemories();
+    this.checkPermissions();
+  }
+
+  // Verificar rol
+  checkPermissions() {
+    this.auth.currentRole$.subscribe(role => {
+      // Solo 'administrativo' puede crear memorias
+      this.isAdmin.set(role === 'administrativo');
+    });
   }
 
   ionViewWillEnter() {

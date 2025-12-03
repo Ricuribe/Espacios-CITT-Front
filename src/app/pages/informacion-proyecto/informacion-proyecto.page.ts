@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/service/http-client'; 
 import { FooterComponent } from 'src/app/components/footer/footer.component';
+import { AuthService } from 'src/app/service/auth.service';
 
 // IMPORTAMOS LAS FUNCIONES EXISTENTES (Usamos alias para evitar conflicto de nombres)
 import { 
@@ -44,11 +45,13 @@ export class InformacionProyectoPage implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private menuCtrl = inject(MenuController);
+  private authService = inject(AuthService);
 
   public memory = signal<any>(null);
   public creators = signal<any[]>([]);
   public isLoading = signal<boolean>(true);
   public error = signal<any>(null);
+  public isAdmin = signal<boolean>(false);
 
   constructor() {
     addIcons({ 
@@ -65,6 +68,13 @@ export class InformacionProyectoPage implements OnInit {
     if (id) {
       this.loadMemoryData(Number(id));
     }
+    this.checkPermissions();
+  }
+
+  checkPermissions() {
+    this.authService.currentRole$.subscribe(role => {
+      this.isAdmin.set(role === 'administrativo');
+    });
   }
 
   ionViewWillEnter() {
