@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonChip, IonIcon, IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonLabel, IonModal, IonButton, IonList, IonItem, IonNote, IonAvatar, IonText, IonSpinner, ToastController, AlertController, LoadingController, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   calendarOutline, timeOutline, personOutline, filterOutline, 
   checkmarkCircleOutline, closeCircleOutline, createOutline, 
-  eyeOutline, peopleOutline, documentTextOutline, alertCircleOutline
+  eyeOutline, peopleOutline, documentTextOutline, alertCircleOutline, arrowBackOutline
 } from 'ionicons/icons';
 
 import { ApiService } from 'src/app/service/http-client';
@@ -26,7 +26,8 @@ import { FooterComponent } from 'src/app/components/footer/footer.component';
     IonRefresherContent, IonSegment, IonSegmentButton, IonLabel,
     IonModal, IonButton, IonList, IonItem, IonNote, IonAvatar, IonText,
     IonSpinner,
-    IonFooter
+    IonFooter,
+    RouterLink
 ]
 })
 export class GestionarEventosPage implements OnInit {
@@ -52,7 +53,7 @@ export class GestionarEventosPage implements OnInit {
     addIcons({ 
       calendarOutline, timeOutline, personOutline, filterOutline, 
       checkmarkCircleOutline, closeCircleOutline, createOutline, 
-      eyeOutline, peopleOutline, documentTextOutline, alertCircleOutline
+      eyeOutline, peopleOutline, documentTextOutline, alertCircleOutline, arrowBackOutline
     });
   }
 
